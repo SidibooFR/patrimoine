@@ -1,0 +1,87 @@
+{
+  "name": "patrimoine",
+  "version": "1.1.0",
+  "description": "Gestion de patrimoine personnel – budget, comptes, bourse, crypto – avec serveur MCP pour Claude",
+  "private": true,
+  "main": "dist-electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "npm run build:electron && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+    "build": "npm run build:renderer && npm run build:electron && npm run build:mcp",
+    "build:renderer": "vite build",
+    "build:electron": "esbuild electron/main.ts electron/preload.ts --bundle --platform=node --format=cjs --external:electron --outdir=dist-electron --out-extension:.js=.cjs && node scripts/copy-wasm.mjs dist-electron",
+    "build:mcp": "esbuild mcp/server.ts --bundle --platform=node --format=cjs --outfile=dist-mcp/server.cjs && node scripts/copy-wasm.mjs dist-mcp",
+    "mcp": "node dist-mcp/server.cjs",
+    "test": "vitest run",
+    "package": "npm run build && electron-builder --win",
+    "package:dir": "npm run build && electron-builder --dir"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "chart.js": "^4.4.7",
+    "exceljs": "^4.4.0",
+    "sql.js": "^1.13.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "xlsx": "^0.18.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/sql.js": "^1.4.9",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.12",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^3.0.0",
+    "vue-tsc": "^2.2.0"
+  },
+  "author": "Théo Vacant",
+  "build": {
+    "appId": "fr.echoloop.patrimoine",
+    "productName": "Patrimoine",
+    "copyright": "Théo Vacant",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "dist-mcp",
+        "to": "mcp"
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Office"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.finance"
+    }
+  }
+}

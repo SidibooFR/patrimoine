@@ -1,0 +1,13 @@
+<script setup lang="ts">
+defineProps<{ title: string }>();
+const emit = defineEmits<{ close: [] }>();
+</script>
+<template>
+  <div class="modal-back" @mousedown.self="emit('close')">
+    <div class="modal" role="dialog" :aria-label="title">
+      <div class="card-title"><h2 style="margin:0">{{ title }}</h2><button class="small" @click="emit('close')">✕</button></div>
+      <slot />
+      <div class="modal-foot"><slot name="foot" /></div>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-electron/
+dist-mcp/
+release/
+*.sqlite
+*.sqlite.tmp
+.DS_Store
+
+# Relevés bancaires réels (données personnelles) : à garder en local
+tests/fixtures/
