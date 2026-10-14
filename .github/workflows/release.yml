@@ -33,6 +33,16 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Tag de base v1.1.0 (point de départ de la numérotation)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          remote="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if ! git ls-remote --exit-code --tags "$remote" refs/tags/v1.1.0 >/dev/null; then
+            git tag v1.1.0 f89f534baf9f165f506b7d23e39ee032846db8f3
+            git push "$remote" refs/tags/v1.1.0
+          fi
       - name: semantic-release (calcule la version, construit les .exe, publie)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
