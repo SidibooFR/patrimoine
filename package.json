@@ -1,6 +1,6 @@
 {
   "name": "patrimoine",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Gestion de patrimoine personnel – budget, comptes, bourse, crypto – avec serveur MCP pour Claude",
   "private": true,
   "main": "dist-electron/main.cjs",
