@@ -2,6 +2,7 @@
 import { onMounted, ref, computed } from "vue";
 import { api } from "../api";
 import { eur, eur0, pct, monthLong, date, sign } from "../format";
+import { theme, rgba } from "../appearance";
 import { guard } from "../toast";
 import Chart from "../components/Chart.vue";
 import { CLASS_COLORS, eurTick, pctTick, eurTip } from "../charts";
@@ -13,7 +14,7 @@ onMounted(async () => { d.value = await guard(() => api.dashboard()); });
 const nwChart = computed<any>(() => ({
   type: "line",
   data: { labels: d.value!.series.months.map((m) => new Date(m + "T00:00:00").toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })),
-    datasets: [{ label: "Patrimoine", data: d.value!.series.total, borderColor: "#1f3a5f", backgroundColor: "rgba(31,58,95,.12)", fill: true, tension: .25, spanGaps: true, pointRadius: 4 }] },
+    datasets: [{ label: "Patrimoine", data: d.value!.series.total, borderColor: theme.navy, backgroundColor: rgba(theme.navy, .12), fill: true, tension: .25, spanGaps: true, pointRadius: 4 }] },
   options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } } },
 }));
 const classChart = computed<any>(() => {
@@ -29,7 +30,7 @@ const budgetChart = computed<any>(() => ({
 }));
 const rateChart = computed<any>(() => ({
   type: "bar",
-  data: { labels: budgetChart.value.data.labels, datasets: [{ label: "Taux d'épargne", data: d.value!.budgetSeries.rate, backgroundColor: d.value!.budgetSeries.rate.map((r) => (r ?? 0) < 0 ? "#c0392b" : "#2f6fed") }] },
+  data: { labels: budgetChart.value.data.labels, datasets: [{ label: "Taux d'épargne", data: d.value!.budgetSeries.rate, backgroundColor: d.value!.budgetSeries.rate.map((r) => (r ?? 0) < 0 ? "#c0392b" : theme.accent) }] },
   options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c: any) => pct(c.parsed.y) } } }, scales: { y: { ticks: { callback: pctTick }, min: -1, max: 1 } } },
 }));
 </script>

@@ -2,8 +2,8 @@
 import ExcelJS from "exceljs";
 import type { Store } from "./db.js";
 import type { Api } from "./api.js";
+import { currencyOf } from "./history.js";
 
-const EUR = '#,##0.00 "€";-#,##0.00 "€";"-"';
 const PCT = "0.0%";
 
 function sheet(wb: ExcelJS.Workbook, name: string, columns: { header: string; key: string; width?: number; fmt?: string }[]) {
@@ -16,6 +16,9 @@ function sheet(wb: ExcelJS.Workbook, name: string, columns: { header: string; ke
 }
 
 export async function exportWorkbook(store: Store, api: Api, file: string): Promise<void> {
+  const sym = new Intl.NumberFormat("fr-FR", { style: "currency", currency: currencyOf(store) }).formatToParts(0).find((p) => p.type === "currency")?.value ?? "€";
+  const EUR = `#,##0.00 "${sym}";-#,##0.00 "${sym}";"-"`;
+  const UNIT = `#,##0.00#### "${sym}"`;
   const wb = new ExcelJS.Workbook();
   wb.creator = "Patrimoine";
   const year = new Date().getFullYear();
@@ -70,14 +73,14 @@ export async function exportWorkbook(store: Store, api: Api, file: string): Prom
   // Opérations & portefeuille
   const ow = sheet(wb, "Opérations", [
     { header: "Date", key: "date", width: 12 }, { header: "Actif", key: "asset", width: 30 }, { header: "Type", key: "kind", width: 11 },
-    { header: "Quantité", key: "quantity", fmt: "#,##0.########" }, { header: "Prix unitaire", key: "unit_price", fmt: '#,##0.00#### "€"' }, { header: "Frais", key: "fees", fmt: EUR }, { header: "Note", key: "note", width: 24 },
+    { header: "Quantité", key: "quantity", fmt: "#,##0.########" }, { header: "Prix unitaire", key: "unit_price", fmt: UNIT }, { header: "Frais", key: "fees", fmt: EUR }, { header: "Note", key: "note", width: 24 },
   ]);
   for (const o of [...api.listOperations()].reverse()) ow.addRow(o);
   const pf = api.portfolio();
   const fw = sheet(wb, "Portefeuille", [
     { header: "Actif", key: "name", width: 30 }, { header: "Symbole", key: "symbol", width: 14 }, { header: "Compte", key: "account", width: 24 }, { header: "Classe", key: "asset_class", width: 16 },
-    { header: "Quantité", key: "qty", fmt: "#,##0.########" }, { header: "PRU", key: "pru", fmt: '#,##0.00#### "€"' }, { header: "Prix de revient", key: "heldCost", fmt: EUR },
-    { header: "Cours", key: "price", fmt: '#,##0.00#### "€"' }, { header: "Source cours", key: "priceSource", width: 14 }, { header: "Valeur", key: "value", fmt: EUR },
+    { header: "Quantité", key: "qty", fmt: "#,##0.########" }, { header: "PRU", key: "pru", fmt: UNIT }, { header: "Prix de revient", key: "heldCost", fmt: EUR },
+    { header: "Cours", key: "price", fmt: UNIT }, { header: "Source cours", key: "priceSource", width: 14 }, { header: "Valeur", key: "value", fmt: EUR },
     { header: "Plus-value latente", key: "unrealized", fmt: EUR }, { header: "Plus-value %", key: "unrealizedPct", fmt: PCT }, { header: "Plus-value réalisée", key: "realized", fmt: EUR },
     { header: "Dividendes", key: "dividends", fmt: EUR }, { header: "Poids", key: "weight", fmt: PCT },
   ]);
@@ -161,7 +164,7 @@ export async function exportWorkbook(store: Store, api: Api, file: string): Prom
   for (const p of ph.points) hw.addRow(p);
   hw.addRow([]); hw.addRow(["Performance (TWR)"]).font = { bold: true };
   for (const p of ph.periods) { const row = hw.addRow([p.label, p.twr, p.gain, p.reliable ? "" : p.reason ?? ""]); row.getCell(2).numFmt = PCT; row.getCell(3).numFmt = EUR; }
-  const cw0 = sheet(wb, "Historique des cours", [{ header: "Actif", key: "asset", width: 30 }, { header: "Date", key: "date", width: 12 }, { header: "Cours", key: "price", fmt: '#,##0.00#### "€"' }, { header: "Source", key: "source", width: 16 }]);
+  const cw0 = sheet(wb, "Historique des cours", [{ header: "Actif", key: "asset", width: 30 }, { header: "Date", key: "date", width: 12 }, { header: "Cours", key: "price", fmt: UNIT }, { header: "Source", key: "source", width: 16 }]);
   for (const r of store.all<any>("SELECT a.name AS asset, h.date, h.price, h.source FROM price_history h JOIN assets a ON a.id=h.asset_id ORDER BY a.name, h.date")) cw0.addRow(r);
 
   // Référentiels

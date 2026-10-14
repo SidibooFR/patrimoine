@@ -8,6 +8,7 @@ type Bridge = {
   showItem: (p: string) => Promise<void>;
   openExternal: (u: string) => Promise<void>;
   paths: () => Promise<{ db: string; documents: string; mcpServer: string }>;
+  setZoom?: (factor: number) => void;
 };
 declare global { interface Window { patrimoine?: Bridge } }
 

@@ -2,7 +2,6 @@
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { Chart, type ChartConfiguration, registerables } from "chart.js";
 Chart.register(...registerables);
-Chart.defaults.font.family = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 Chart.defaults.color = "#67748a";
 
 const props = defineProps<{ config: ChartConfiguration; height?: number }>();
