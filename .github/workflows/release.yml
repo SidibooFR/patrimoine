@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Version, .exe et release GitHub
+    needs: verify
+    runs-on: windows-latest
+    permissions:
+      contents: write        # tag, commit du CHANGELOG, release
+      issues: write
+      pull-requests: write
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"   # pas de certificat de signature de code
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # semantic-release lit tout l'historique et les tags
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: semantic-release (calcule la version, construit les .exe, publie)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: npx semantic-release
+      - name: Conserver les fichiers construits
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patrimoine-windows
+          path: |
+            release/*.exe
+            release/*.zip
+          if-no-files-found: ignore
+          retention-days: 14

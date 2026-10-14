@@ -10,6 +10,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { Store, defaultDbPath } from "../core/db.js";
 import { createApi } from "../core/api.js";
+import { VERSION } from "../core/version.js";
 
 const text = (v: unknown) => ({ content: [{ type: "text" as const, text: typeof v === "string" ? v : JSON.stringify(v, null, 2) }] });
 const fail = (e: unknown) => ({ content: [{ type: "text" as const, text: `Erreur : ${(e as Error).message ?? e}` }], isError: true });
@@ -18,7 +19,7 @@ const wrap = <A extends unknown[]>(fn: (...a: A) => unknown) => async (...a: A) 
 async function main() {
   const store = await Store.open(defaultDbPath());
   const api = createApi(store);
-  const server = new McpServer({ name: "patrimoine", version: "1.1.0" }, {
+  const server = new McpServer({ name: "patrimoine", version: VERSION }, {
     instructions:
       "Outils de gestion de patrimoine personnel de l'utilisateur (comptes bancaires, budget, bourse, crypto). " +
       "Les montants sont en euros. Les opérations ont un montant signé (négatif = sortie). " +

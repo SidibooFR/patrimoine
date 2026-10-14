@@ -40,6 +40,27 @@ npm run package        # → release/Patrimoine Setup 1.1.0.exe (installeur) et 
 
 Le serveur MCP est copié dans `resources/mcp/server.cjs` à côté de l'application installée.
 
+## Versions et releases automatiques
+
+Chaque push sur `main` déclenche le workflow **Release** (GitHub Actions) :
+
+1. tests, vérification des types et build sur Linux (workflow **CI**, aussi lancé sur les autres branches et les pull requests) ;
+2. sur un runner Windows, **semantic-release** lit les messages de commit depuis la dernière version, calcule le nouveau numéro, met à jour `package.json` et `CHANGELOG.md`, construit les exécutables puis publie la release GitHub avec :
+   - `Patrimoine-Setup-x.y.z.exe` : installeur (choix du dossier, raccourci bureau) ;
+   - `Patrimoine-Portable-x.y.z.exe` : version portable, sans installation ;
+   - `patrimoine-mcp-x.y.z.zip` : le serveur MCP seul, pour Claude Desktop.
+
+Le numéro de version dépend du préfixe des commits ([Conventional Commits](https://www.conventionalcommits.org/fr/)) :
+
+| Commit | Effet | Exemple |
+|---|---|---|
+| `fix: …` | correctif → 1.1.**1** | `fix(import): solde Revolut avec deux opérations le même jour` |
+| `feat: …` | fonctionnalité → 1.**2**.0 | `feat(budget): export PDF mensuel` |
+| `feat!: …` ou pied `BREAKING CHANGE:` | rupture → **2**.0.0 | `feat!: nouveau format de base` |
+| `docs:`, `chore:`, `ci:`, `refactor:`, `test:` | pas de release | `docs: README` |
+
+Les exécutables ne sont pas signés : au premier lancement, Windows SmartScreen affiche « Windows a protégé votre ordinateur » → « Informations complémentaires » → « Exécuter quand même ».
+
 ## Où sont les données
 
 | Système | Fichier |

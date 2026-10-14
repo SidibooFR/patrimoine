@@ -14,8 +14,10 @@
     "build:mcp": "esbuild mcp/server.ts --bundle --platform=node --format=cjs --outfile=dist-mcp/server.cjs && node scripts/copy-wasm.mjs dist-mcp",
     "mcp": "node dist-mcp/server.cjs",
     "test": "vitest run",
-    "package": "npm run build && electron-builder --win",
-    "package:dir": "npm run build && electron-builder --dir"
+    "package": "npm run build && electron-builder --win --publish never && node scripts/zip-mcp.mjs",
+    "package:dir": "npm run build && electron-builder --dir --publish never",
+    "typecheck": "vue-tsc --noEmit -p .",
+    "release": "semantic-release"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
@@ -28,13 +30,18 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "7.0.0",
+    "@semantic-release/exec": "7.1.0",
+    "@semantic-release/git": "11.0.1",
     "@types/node": "^22.10.2",
     "@types/sql.js": "^1.4.9",
     "@vitejs/plugin-vue": "^5.2.1",
+    "conventional-changelog-conventionalcommits": "10.4.1",
     "cross-env": "^7.0.3",
     "electron": "^39.0.0",
     "electron-builder": "^26.0.12",
     "esbuild": "^0.25.0",
+    "semantic-release": "25.0.9",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
     "vitest": "^3.0.0",
@@ -69,7 +76,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "artifactName": "Patrimoine-Setup-${version}.${ext}"
     },
     "linux": {
       "target": [
@@ -82,6 +90,16 @@
         "dmg"
       ],
       "category": "public.app-category.finance"
+    },
+    "portable": {
+      "artifactName": "Patrimoine-Portable-${version}.${ext}"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SidibooFR/patrimoine.git"
+  },
+  "engines": {
+    "node": ">=22.14"
   }
 }

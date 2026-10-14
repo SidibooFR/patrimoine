@@ -2,6 +2,7 @@
  * API applicative : toutes les opérations exposées à l'interface (via IPC Electron)
  * et au serveur MCP. Une seule implémentation, deux façades.
  */
+import { VERSION } from "./version.js";
 import type { Store } from "./db.js";
 import { buildCategorizer, recategorizeAll } from "./categorize.js";
 import { importFile, parseFile, type Source } from "./importers.js";
@@ -27,7 +28,7 @@ export function createApi(store: Store) {
     // ------------------------------------------------------------ méta
     meta() {
       return {
-        dbPath: store.file, assetClasses: ASSET_CLASSES, accountTypes: ACCOUNT_TYPES, categoryKinds: CATEGORY_KINDS, version: "1.1.0",
+        dbPath: store.file, assetClasses: ASSET_CLASSES, accountTypes: ACCOUNT_TYPES, categoryKinds: CATEGORY_KINDS, version: VERSION,
         envelopeKinds: ENVELOPE_KIND_NAMES.map((k) => ({ name: k, ceiling: ENVELOPE_KINDS[k].ceiling, ceilingOn: ENVELOPE_KINDS[k].ceilingOn, rate: officialRate(k, today()), help: ENVELOPE_KINDS[k].help })),
         ratesAsOf: RATES_AS_OF, goalSources: GOAL_SOURCES,
       };
