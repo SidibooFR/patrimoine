@@ -1,5 +1,11 @@
 # Journal des versions
 
+## [1.3.0](https://github.com/SidibooFR/patrimoine/compare/v1.2.0...v1.3.0) (2026-10-14)
+
+### Nouveautés
+
+* **paramètres:** apparence personnalisable (couleur, police, taille du texte, devise) ([8cb9418](https://github.com/SidibooFR/patrimoine/commit/8cb94185ee4b2e0778ac5f9f70ae55a26105406b))
+
 ## [1.2.0](https://github.com/SidibooFR/patrimoine/compare/v1.1.0...v1.2.0) (2026-10-14)
 
 ### Nouveautés
