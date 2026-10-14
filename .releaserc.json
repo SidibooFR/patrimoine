@@ -27,6 +27,8 @@
     ["@semantic-release/github", {
       "assets": [
         { "path": "release/Patrimoine-Setup-*.exe", "label": "Installeur Windows (Patrimoine-Setup-${nextRelease.version}.exe)" },
+        { "path": "release/Patrimoine-Setup-*.exe.blockmap", "label": "Blockmap (mises à jour différentielles)" },
+        { "path": "release/latest.yml", "label": "latest.yml (mises à jour automatiques)" },
         { "path": "release/Patrimoine-Portable-*.exe", "label": "Version portable Windows (Patrimoine-Portable-${nextRelease.version}.exe)" },
         { "path": "release/patrimoine-mcp-*.zip", "label": "Serveur MCP seul (patrimoine-mcp-${nextRelease.version}.zip)" }
       ],

@@ -9,4 +9,10 @@ contextBridge.exposeInMainWorld("patrimoine", {
   openExternal: (url: string) => ipcRenderer.invoke("shell:openExternal", url),
   paths: () => ipcRenderer.invoke("app:paths"),
   setZoom: (factor: number) => webFrame.setZoomFactor(factor),
+  update: {
+    state: () => ipcRenderer.invoke("update:state"),
+    check: () => ipcRenderer.invoke("update:check"),
+    install: () => ipcRenderer.invoke("update:install"),
+    onState: (cb: (s: unknown) => void) => { ipcRenderer.on("update:state", (_e, s) => cb(s)); },
+  },
 });

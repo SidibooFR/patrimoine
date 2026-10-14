@@ -3,6 +3,7 @@ import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from "electron";
 import path from "node:path";
 import { Store, defaultDbPath } from "../core/db.js";
 import { createApi, type Api } from "../core/api.js";
+import { setupUpdater } from "./updater.js";
 
 let api: Api;
 let store: Store;
@@ -54,6 +55,7 @@ app.whenReady().then(async () => {
     { label: "Affichage", submenu: [{ role: "zoomIn", label: "Zoom +" }, { role: "zoomOut", label: "Zoom −" }, { role: "resetZoom", label: "Zoom normal" }, { type: "separator" }, { role: "togglefullscreen", label: "Plein écran" }, { role: "toggleDevTools", label: "Outils de développement" }] },
   ]));
 
+  setupUpdater();
   await createWindow();
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });

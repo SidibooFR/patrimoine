@@ -4,6 +4,7 @@ import { toast } from "./toast";
 import { ref, onMounted } from "vue";
 import { api } from "./api";
 import { applyAppearance, fromSettings } from "./appearance";
+import { update, installUpdate } from "./update";
 const version = ref("");
 onMounted(async () => {
   try { version.value = (await api.meta()).version; applyAppearance(fromSettings(await api.settings())); } catch { /* hors Electron sans API */ }
@@ -19,7 +20,9 @@ onMounted(async () => {
         <router-link :to="r.path"><span style="width:16px;text-align:center">{{ r.icon }}</span>{{ r.name }}</router-link>
       </template>
     </nav>
-    <div class="foot">Données locales uniquement.<br />Serveur MCP intégré pour Claude.<br /><span v-if="version">Version {{ version }}</span></div>
+    <div class="foot">Données locales uniquement.<br />Serveur MCP intégré pour Claude.<br /><span v-if="version">Version {{ version }}</span>
+      <button v-if="update.status === 'downloaded'" class="small primary update-btn" @click="installUpdate">⟳ Installer la version {{ update.version }}</button>
+      <button v-else-if="update.status === 'portable'" class="small update-btn" @click="installUpdate">⇩ Version {{ update.version }} disponible</button></div>
   </aside>
   <main>
     <router-view v-slot="{ Component }">

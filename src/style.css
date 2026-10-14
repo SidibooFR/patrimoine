@@ -27,6 +27,7 @@ a { color: var(--accent); }
 .sidebar nav .sep { height: 1px; background: rgba(255,255,255,.12); margin: 6px 12px; }
 .sidebar nav { overflow-y: auto; }
 .sidebar .foot { margin-top: auto; padding: 14px 18px; font-size: 11px; color: #9fb3cc; }
+.sidebar .foot .update-btn { display: block; width: 100%; margin-top: 8px; }
 main { flex: 1; padding: 26px 32px 60px; min-width: 0; }
 .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
 .page-head .actions { display: flex; gap: 8px; flex-wrap: wrap; }

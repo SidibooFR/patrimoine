@@ -4,6 +4,7 @@ import { api, files, isElectron } from "../api";
 import { guard, notify } from "../toast";
 import { appearance, applyAppearance, fromSettings, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES, DEFAULT_ACCENT } from "../appearance";
 import { eur } from "../format";
+import { update, checkUpdate, installUpdate, describe } from "../update";
 
 const accounts = ref<any[]>([]);
 const categories = ref<any[]>([]);
@@ -125,6 +126,17 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
       <pre>{{ mcpConfig }}</pre>
       <button @click="copyConfig">Copier la configuration</button>
       <p class="help" style="margin-top:10px">L'application et Claude partagent le même fichier de base : les modifications faites par l'un sont visibles par l'autre au prochain rafraîchissement de page (<kbd>Ctrl</kbd>+<kbd>R</kbd>).</p>
+    </div>
+
+    <div class="card">
+      <h2>Mises à jour</h2>
+      <p>Version installée : <b>{{ meta.version }}</b><br /><span class="help">{{ describe(update) }}</span></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button :disabled="['unsupported', 'checking', 'downloading', 'downloaded'].includes(update.status)" @click="checkUpdate">Rechercher une mise à jour</button>
+        <button v-if="update.status === 'downloaded'" class="primary" @click="installUpdate">Redémarrer et installer</button>
+        <button v-if="update.status === 'portable'" class="primary" @click="installUpdate">Ouvrir la page de téléchargement</button>
+      </div>
+      <p class="help" style="margin-top:10px">L'application vérifie au démarrage puis toutes les 6 heures s'il existe une nouvelle version sur GitHub et la télécharge en arrière-plan. Elle s'installe en redémarrant, ou automatiquement à la prochaine fermeture. Tes données ne sont pas touchées.</p>
     </div>
   </div>
 </template>
