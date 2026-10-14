@@ -44,10 +44,10 @@ const curMonth = new Date().getMonth();
   <div v-if="b" class="card pad0">
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Catégorie</th><th class="num" style="background:#fffbe6">Budget / mois</th><th v-for="(m, i) in MONTHS" :key="m" class="num" :style="i === curMonth && year === new Date().getFullYear() ? 'color:#1f3a5f' : ''">{{ m }}</th><th class="num">Total</th><th class="num">Moy. / mois</th><th class="num">Écart</th></tr></thead>
+        <thead><tr><th>Catégorie</th><th class="num" style="background:#fffbe6">Budget / mois</th><th v-for="(m, i) in MONTHS" :key="m" class="num" :style="i === curMonth && year === new Date().getFullYear() ? 'color:var(--navy)' : ''">{{ m }}</th><th class="num">Total</th><th class="num">Moy. / mois</th><th class="num">Écart</th></tr></thead>
         <tbody>
           <template v-for="g in groupsShown" :key="g.kind">
-            <tr><td colspan="17" style="background:#f3f6fb;font-weight:700;color:#1f3a5f">{{ g.kind === "Revenu" ? "Revenus" : g.kind === "Dépense" ? "Dépenses" : "Épargne & investissements placés" }}</td></tr>
+            <tr><td colspan="17" style="background:#f3f6fb;font-weight:700;color:var(--navy)">{{ g.kind === "Revenu" ? "Revenus" : g.kind === "Dépense" ? "Dépenses" : "Épargne & investissements placés" }}</td></tr>
             <tr v-for="r in g.rows" :key="r.category_id">
               <td>{{ r.name }} <span v-if="r.refunded" class="tag ok" :title="`Remboursements rapprochés : ${eur0(r.refunded)} sur l'année (onglet Remboursements)`">↺ {{ eur0(r.refunded) }}</span></td>
               <td class="num"><input class="cell" type="number" step="10" :value="r.budget ?? ''" placeholder="–" @change="setBudget(r, ($event.target as HTMLInputElement).value)" /></td>

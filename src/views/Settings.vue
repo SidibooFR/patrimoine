@@ -2,6 +2,8 @@
 import { onMounted, ref, computed } from "vue";
 import { api, files, isElectron } from "../api";
 import { guard, notify } from "../toast";
+import { appearance, applyAppearance, fromSettings, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES, DEFAULT_ACCENT } from "../appearance";
+import { eur } from "../format";
 
 const accounts = ref<any[]>([]);
 const categories = ref<any[]>([]);
@@ -25,6 +27,11 @@ async function saveCat(c: any, patch: any) { await guard(() => api.saveCategory(
 async function addCat() { if (!newCat.value.name) return; await guard(() => api.saveCategory(newCat.value), "Catégorie ajoutée"); newCat.value.name = ""; await load(); }
 async function delCat(c: any) { if (!window.confirm(`Supprimer « ${c.name} » ? Les opérations de cette catégorie redeviendront « sans catégorie ».`)) return; await guard(() => api.deleteCategory(c.id)); await load(); }
 async function setSetting(k: string, v: string) { settings.value = (await guard(() => api.setSetting(k, v))) ?? settings.value; }
+async function setLook(k: string, v: string) { await setSetting(k, v); applyAppearance(fromSettings(settings.value)); }
+async function resetLook() {
+  for (const [k, v] of [["ui_accent", DEFAULT_ACCENT], ["ui_font", "system"], ["ui_scale", "1"]]) await setSetting(k, v);
+  applyAppearance(fromSettings(settings.value)); notify("Apparence réinitialisée");
+}
 const excluded = computed(() => (settings.value.recurring_exclude_categories ?? "").split("|").filter(Boolean));
 function setExcluded(el: HTMLSelectElement) { setSetting("recurring_exclude_categories", Array.from(el.selectedOptions).map((o) => o.value).join("|")); }
 
@@ -93,6 +100,23 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
           <span class="help">Dépenses variables (courses, restaurants…) qui reviennent souvent sans être des abonnements. Ctrl+clic pour en choisir plusieurs.</span></label>
       </div>
       <p class="help" style="margin-top:12px">Base de données : <code>{{ paths.db }}</code><br />Sauvegarde = copier ce fichier. Pour repartir de zéro, supprime-le (l'application le recrée avec les valeurs par défaut).</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><h2 style="margin:0">Apparence</h2><button class="small" @click="resetLook">Réinitialiser</button></div>
+      <div class="form">
+        <div class="field full">Couleur principale
+          <div class="swatches">
+            <button v-for="c in ACCENT_PRESETS" :key="c.color" class="swatch" :class="{ on: appearance.accent.toLowerCase() === c.color }" :style="{ background: c.color }" :title="c.name" @click="setLook('ui_accent', c.color)"></button>
+            <label class="swatch custom" title="Couleur personnalisée" :class="{ on: !ACCENT_PRESETS.some((c) => c.color === appearance.accent.toLowerCase()) }" :style="{ background: appearance.accent }">
+              <input type="color" :value="appearance.accent" @change="setLook('ui_accent', ($event.target as HTMLInputElement).value)" />✎</label>
+          </div>
+        </div>
+        <label class="field">Police<select :value="appearance.font" @change="setLook('ui_font', ($event.target as HTMLSelectElement).value)"><option v-for="f in FONTS" :key="f.id" :value="f.id" :style="{ fontFamily: f.stack }">{{ f.name }}</option></select></label>
+        <label class="field">Taille du texte<select :value="appearance.scale" @change="setLook('ui_scale', ($event.target as HTMLSelectElement).value)"><option v-for="z in SCALES" :key="z.value" :value="z.value">{{ z.name }} ({{ Math.round(z.value * 100) }} %)</option></select></label>
+        <label class="field full">Devise<select :value="appearance.currency" @change="setLook('currency', ($event.target as HTMLSelectElement).value)"><option v-for="c in CURRENCIES" :key="c.code" :value="c.code">{{ c.code }} – {{ c.name }}</option></select>
+          <span class="help">Aperçu : {{ eur(1234.5) }}. Les montants ne sont pas convertis : choisis la devise dans laquelle sont tenus tes comptes. Les cours bourse et crypto sont récupérés dans cette devise.</span></label>
+      </div>
     </div>
 
     <div class="card">

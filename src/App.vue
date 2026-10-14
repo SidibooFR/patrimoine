@@ -3,8 +3,11 @@ import { routes } from "./router";
 import { toast } from "./toast";
 import { ref, onMounted } from "vue";
 import { api } from "./api";
+import { applyAppearance, fromSettings } from "./appearance";
 const version = ref("");
-onMounted(async () => { try { version.value = (await api.meta()).version; } catch { /* hors Electron sans API */ } });
+onMounted(async () => {
+  try { version.value = (await api.meta()).version; applyAppearance(fromSettings(await api.settings())); } catch { /* hors Electron sans API */ }
+});
 </script>
 
 <template>

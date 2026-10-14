@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import { api } from "../api";
-import { eur, eur0, pct, date } from "../format";
+import { eur, eur0, pct, date, cur } from "../format";
 import { guard } from "../toast";
 import Modal from "../components/Modal.vue";
 import type { EnvelopesReport, EnvelopeRow } from "../../core/envelopes";
@@ -116,11 +116,11 @@ const threshold = 0.5;
     <div class="form">
       <label class="field">Compte<select v-model="modal.account_id"><option v-for="a in freeAccounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
       <label class="field">Type<select v-model="modal.kind"><option v-for="k in kinds" :key="k.name">{{ k.name }}</option></select></label>
-      <label class="field">Plafond (€)<input v-model="modal.ceiling" type="number" step="any" :placeholder="modalKind?.ceiling ? 'officiel : ' + modalKind.ceiling.toLocaleString('fr-FR') : 'aucun'" /></label>
+      <label class="field">Plafond ({{ cur() }})<input v-model="modal.ceiling" type="number" step="any" :placeholder="modalKind?.ceiling ? 'officiel : ' + modalKind.ceiling.toLocaleString('fr-FR') : 'aucun'" /></label>
       <label class="field">Taux annuel net (%)<input v-model="modal.ratePct" type="number" step="0.01" :placeholder="modalKind?.rate !== null && modalKind?.rate !== undefined ? 'officiel : ' + (modalKind.rate * 100).toLocaleString('fr-FR') : 'constaté si vide'" /></label>
-      <label class="field">Versement programmé (€ / mois)<input v-model="modal.monthly_deposit" type="number" step="any" /></label>
+      <label class="field">Versement programmé ({{ cur() }} / mois)<input v-model="modal.monthly_deposit" type="number" step="any" /></label>
       <label class="field">Date d'ouverture<input v-model="modal.opened_on" type="date" /></label>
-      <label v-if="modalKind?.ceilingOn === 'deposits'" class="field">Versements antérieurs aux relevés (€)<input v-model="modal.initial_deposits" type="number" step="any" /></label>
+      <label v-if="modalKind?.ceilingOn === 'deposits'" class="field">Versements antérieurs aux relevés ({{ cur() }})<input v-model="modal.initial_deposits" type="number" step="any" /></label>
       <label class="field full">Note<input v-model="modal.note" /></label>
     </div>
     <p class="help">{{ modalKind?.help }} Laisse plafond et taux vides pour suivre automatiquement les valeurs officielles (et leurs changements au 1er février et au 1er août).</p>

@@ -3,7 +3,7 @@
  * Aucune clé d'API nécessaire. En cas d'échec, le cours manuel est conservé.
  */
 import type { Store } from "./db.js";
-import { recordPrice } from "./history.js";
+import { currencyOf, recordPrice } from "./history.js";
 
 const UA = "Mozilla/5.0 (compatible; Patrimoine/1.0)";
 
@@ -22,15 +22,16 @@ export async function fetchYahooPrice(symbol: string): Promise<{ price: number; 
   }
 }
 
-export async function fetchCoinGeckoPrices(ids: string[]): Promise<Record<string, number>> {
+export async function fetchCoinGeckoPrices(ids: string[], currency = "EUR"): Promise<Record<string, number>> {
   if (!ids.length) return {};
-  const url = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=eur&ids=${encodeURIComponent(ids.join(","))}`;
+  const vs = currency.toLowerCase();
+  const url = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=${vs}&ids=${encodeURIComponent(ids.join(","))}`;
   try {
     const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
     if (!res.ok) return {};
     const j: any = await res.json();
     const out: Record<string, number> = {};
-    for (const id of ids) if (typeof j?.[id]?.eur === "number") out[id] = j[id].eur;
+    for (const id of ids) if (typeof j?.[id]?.[vs] === "number") out[id] = j[id][vs];
     return out;
   } catch {
     return {};
@@ -48,7 +49,8 @@ export async function refreshPrices(store: Store): Promise<RefreshResult> {
   const res: RefreshResult = { updated: 0, failed: [], at };
   const cryptos = assets.filter((a) => a.asset_class === "Crypto");
   const others = assets.filter((a) => a.asset_class !== "Crypto");
-  const gecko = await fetchCoinGeckoPrices(cryptos.map((a) => a.symbol.trim().toLowerCase()));
+  const currency = currencyOf(store);
+  const gecko = await fetchCoinGeckoPrices(cryptos.map((a) => a.symbol.trim().toLowerCase()), currency);
   const updates: [number, number, string][] = [];
   for (const a of cryptos) {
     const p = gecko[a.symbol.trim().toLowerCase()];
@@ -57,7 +59,7 @@ export async function refreshPrices(store: Store): Promise<RefreshResult> {
   for (const a of others) {
     const y = await fetchYahooPrice(a.symbol);
     if (!y) { res.failed.push(a.name); continue; }
-    if (y.currency && y.currency !== "EUR") { res.failed.push(`${a.name} (coté en ${y.currency})`); continue; }
+    if (y.currency && y.currency !== currency) { res.failed.push(`${a.name} (coté en ${y.currency})`); continue; }
     updates.push([a.id, y.price, "Yahoo Finance"]);
   }
   store.transaction(() => {

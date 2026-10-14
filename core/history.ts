@@ -24,7 +24,13 @@ export function recordPrice(store: Store, assetId: number, date: string, price: 
              ${keepManual ? "WHERE price_history.source <> 'Manuel'" : ""}`, [assetId, date, price, source]);
 }
 
-/** Clôtures quotidiennes Yahoo Finance entre deux dates (EUR uniquement). */
+/** Devise de référence choisie dans Paramètres (cours, montants, export). */
+export function currencyOf(store: Store): string {
+  const v = store.get<{ value: string }>("SELECT value FROM settings WHERE key='currency'")?.value ?? "";
+  return /^[A-Z]{3}$/.test(v) ? v : "EUR";
+}
+
+/** Clôtures quotidiennes Yahoo Finance entre deux dates (avec la devise de cotation). */
 export async function fetchYahooHistory(symbol: string, from: string, to: string = today()): Promise<{ points: [string, number][]; currency: string } | null> {
   const p1 = Math.floor(Date.parse(from + "T00:00:00Z") / 1000);
   const p2 = Math.floor(Date.parse(to + "T23:59:59Z") / 1000);
@@ -44,10 +50,10 @@ export async function fetchYahooHistory(symbol: string, from: string, to: string
   }
 }
 
-/** Cours quotidiens CoinGecko en euros (365 jours maximum avec l'API publique). */
-export async function fetchCoinGeckoHistory(id: string, days: number): Promise<[string, number][] | null | "rate-limited"> {
+/** Cours quotidiens CoinGecko dans la devise demandée (365 jours maximum avec l'API publique). */
+export async function fetchCoinGeckoHistory(id: string, days: number, currency = "EUR"): Promise<[string, number][] | null | "rate-limited"> {
   const d = Math.max(1, Math.min(365, Math.ceil(days)));
-  const url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(id.trim().toLowerCase())}/market_chart?vs_currency=eur&days=${d}&interval=daily`;
+  const url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(id.trim().toLowerCase())}/market_chart?vs_currency=${currency.toLowerCase()}&days=${d}&interval=daily`;
   try {
     const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
     if (res.status === 429) return "rate-limited";
@@ -70,6 +76,7 @@ export async function backfillPriceHistory(store: Store, opts: { coingeckoDelayM
     `SELECT a.id, a.name, a.symbol, a.asset_class, (SELECT MIN(date) FROM operations o WHERE o.asset_id=a.id) AS first
      FROM assets a WHERE TRIM(a.symbol) <> ''`);
   const res: BackfillResult = { assets: 0, points: 0, failed: [], from: null };
+  const currency = currencyOf(store);
   const delay = opts.coingeckoDelayMs ?? 2500;
   let geckoCalls = 0;
   for (const a of assets) {
@@ -80,12 +87,12 @@ export async function backfillPriceHistory(store: Store, opts: { coingeckoDelayM
     if (a.asset_class === "Crypto") {
       if (geckoCalls++ > 0) await sleep(delay);
       const days = (Date.parse(t) - Date.parse(from)) / 86_400_000 + 1;
-      let r = await fetchCoinGeckoHistory(a.symbol, days);
-      if (r === "rate-limited") { await sleep(Math.max(delay * 12, 1000)); r = await fetchCoinGeckoHistory(a.symbol, days); }
+      let r = await fetchCoinGeckoHistory(a.symbol, days, currency);
+      if (r === "rate-limited") { await sleep(Math.max(delay * 12, 1000)); r = await fetchCoinGeckoHistory(a.symbol, days, currency); }
       if (r && r !== "rate-limited") { points = r; source = "CoinGecko"; }
     } else {
       const r = await fetchYahooHistory(a.symbol, from, t);
-      if (r && r.currency && r.currency !== "EUR") { res.failed.push(`${a.name} (coté en ${r.currency})`); continue; }
+      if (r && r.currency && r.currency !== currency) { res.failed.push(`${a.name} (coté en ${r.currency})`); continue; }
       if (r) { points = r.points; source = "Yahoo Finance"; }
     }
     if (!points || !points.length) { res.failed.push(a.name); continue; }

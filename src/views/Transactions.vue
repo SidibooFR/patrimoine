@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive, watch, computed } from "vue";
 import { api } from "../api";
-import { eur, date, sign, todayIso } from "../format";
+import { eur, date, sign, todayIso, cur } from "../format";
 import { guard, notify } from "../toast";
 import Modal from "../components/Modal.vue";
 
@@ -135,7 +135,7 @@ async function remove(row: any) {
       <label class="field">Date<input v-model="modal.date" type="date" /></label>
       <label class="field">Compte<select v-model="modal.account_id"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
       <label class="field">Sens<select v-model="modal.direction"><option value="-">Sortie (dépense)</option><option value="+">Entrée (revenu)</option></select></label>
-      <label class="field">Montant (€)<input v-model.number="modal.amount" type="number" step="0.01" min="0" /></label>
+      <label class="field">Montant ({{ cur() }})<input v-model.number="modal.amount" type="number" step="0.01" min="0" /></label>
       <label class="field full">Libellé<input v-model="modal.label" placeholder="ex. Marché, espèces" /></label>
       <label class="field">Catégorie<select v-model="modal.category_id"><option value="">Automatique (règles)</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></label>
       <label class="field">Note<input v-model="modal.note" /></label>

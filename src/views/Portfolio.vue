@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import { api, files } from "../api";
-import { eur, eur0, pct, num, sign, date, todayIso } from "../format";
+import { eur, eur0, pct, num, sign, date, todayIso, cur } from "../format";
+import { theme, rgba } from "../appearance";
 import { guard, notify } from "../toast";
 import Modal from "../components/Modal.vue";
 import Chart from "../components/Chart.vue";
@@ -47,7 +48,7 @@ const histChart = computed<any>(() => {
     data: {
       labels: pts.map((p) => new Date(p.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "2-digit" })),
       datasets: [
-        { label: "Valeur", data: pts.map((p) => p.value), borderColor: "#2f6fed", backgroundColor: "rgba(47,111,237,.10)", fill: true, tension: .2, pointRadius: 0, borderWidth: 2 },
+        { label: "Valeur", data: pts.map((p) => p.value), borderColor: theme.accent, backgroundColor: rgba(theme.accent, .10), fill: true, tension: .2, pointRadius: 0, borderWidth: 2 },
         { label: "Montant investi", data: pts.map((p) => p.invested), borderColor: "#67748a", borderDash: [5, 4], pointRadius: 0, borderWidth: 1.5, stepped: true },
       ],
     },
@@ -202,7 +203,7 @@ async function exportOps() {
       <label class="field">Classe<select v-model="assetModal.asset_class"><option v-for="c in classes" :key="c">{{ c }}</option></select></label>
       <label class="field">Compte<select v-model="assetModal.account_id"><option value="">–</option><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
       <label class="field">Symbole de cotation<input v-model="assetModal.symbol" :placeholder="assetModal.asset_class === 'Crypto' ? 'id CoinGecko, ex. bitcoin' : 'symbole Yahoo, ex. VUAA.DE'" /></label>
-      <label class="field">Cours manuel de secours (€)<input v-model="assetModal.manual_price" type="number" step="any" /></label>
+      <label class="field">Cours manuel de secours ({{ cur() }})<input v-model="assetModal.manual_price" type="number" step="any" /></label>
     </div>
     <p class="help">ETF / actions : symbole Yahoo Finance (suffixe .DE pour Xetra, .PA pour Paris). Cryptos : identifiant CoinGecko, visible dans l'adresse de la page coingecko.com (ex. « bitcoin », « ethereum », « polygon-ecosystem-token »).</p>
     <template #foot><button @click="assetModal = null">Annuler</button><button class="primary" :disabled="!assetModal.name" @click="saveAsset">Enregistrer</button></template>
@@ -214,8 +215,8 @@ async function exportOps() {
       <label class="field">Actif<select v-model="opModal.asset_id"><option v-for="a in assets" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
       <label class="field">Type<select v-model="opModal.kind"><option>Achat</option><option>Vente</option><option>Dividende</option><option>Frais</option></select></label>
       <label class="field">Quantité<input v-model="opModal.quantity" type="number" step="any" :placeholder="opModal.kind === 'Dividende' ? '1' : ''" /></label>
-      <label class="field">Prix unitaire (€)<input v-model="opModal.unit_price" type="number" step="any" :placeholder="opModal.kind === 'Dividende' ? 'montant reçu' : ''" /></label>
-      <label class="field">Frais (€)<input v-model="opModal.fees" type="number" step="any" /></label>
+      <label class="field">Prix unitaire ({{ cur() }})<input v-model="opModal.unit_price" type="number" step="any" :placeholder="opModal.kind === 'Dividende' ? 'montant reçu' : ''" /></label>
+      <label class="field">Frais ({{ cur() }})<input v-model="opModal.fees" type="number" step="any" /></label>
       <label class="field full">Note<input v-model="opModal.note" /></label>
     </div>
     <p class="help">Dividende : quantité 1 et prix unitaire = montant reçu. Frais seuls : type « Frais » avec le montant dans Frais.</p>

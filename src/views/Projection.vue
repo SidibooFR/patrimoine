@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed, watch } from "vue";
 import { api } from "../api";
-import { eur0, pct } from "../format";
+import { eur0, pct, cur } from "../format";
+import { theme } from "../appearance";
 import { guard } from "../toast";
 import Chart from "../components/Chart.vue";
 import { eurTick, eurTip } from "../charts";
@@ -36,7 +37,7 @@ const chart = computed<any>(() => ({
   data: { labels: pr.value!.rows.map((r) => r.year), datasets: [
     { label: "Total versé", data: pr.value!.rows.map((r) => r.paid), borderColor: "#7f8c8d", borderDash: [4, 4], pointRadius: 0 },
     { label: `Prudent ${p.rateLow} %`, data: pr.value!.rows.map((r) => r.low), borderColor: "#1a7f4b", pointRadius: 0 },
-    { label: `Central ${p.rateMid} %`, data: pr.value!.rows.map((r) => r.mid), borderColor: "#2f6fed", borderWidth: 3, pointRadius: 0 },
+    { label: `Central ${p.rateMid} %`, data: pr.value!.rows.map((r) => r.mid), borderColor: theme.accent, borderWidth: 3, pointRadius: 0 },
     { label: `Dynamique ${p.rateHigh} %`, data: pr.value!.rows.map((r) => r.high), borderColor: "#c55a11", pointRadius: 0 },
     { label: "Objectif", data: pr.value!.rows.map(() => p.goal), borderColor: "#c0392b", borderDash: [2, 4], pointRadius: 0, borderWidth: 1 }] },
   options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } }, interaction: { mode: "index", intersect: false } },
@@ -51,15 +52,15 @@ const chart = computed<any>(() => ({
     <div class="card">
       <h2>Hypothèses</h2>
       <div class="form" style="grid-template-columns: 1fr">
-        <label class="field">Capital de départ (€)
+        <label class="field">Capital de départ ({{ cur() }})
           <input v-model.number="p.initial" type="number" step="100" :disabled="p.useNetworth" />
           <span class="help"><input v-model="p.useNetworth" type="checkbox" /> Patrimoine actuel ({{ eur0(nwTotal) }})</span></label>
-        <label class="field">Versement mensuel (€)<input v-model.number="p.monthly" type="number" step="50" /></label>
+        <label class="field">Versement mensuel ({{ cur() }})<input v-model.number="p.monthly" type="number" step="50" /></label>
         <label class="field">Rendement prudent (%/an)<input v-model.number="p.rateLow" type="number" step="0.5" /></label>
         <label class="field">Rendement central (%/an)<input v-model.number="p.rateMid" type="number" step="0.5" /></label>
         <label class="field">Rendement dynamique (%/an)<input v-model.number="p.rateHigh" type="number" step="0.5" /></label>
         <label class="field">Inflation (%/an)<input v-model.number="p.inflation" type="number" step="0.5" /></label>
-        <label class="field">Objectif de patrimoine (€)<input v-model.number="p.goal" type="number" step="10000" /></label>
+        <label class="field">Objectif de patrimoine ({{ cur() }})<input v-model.number="p.goal" type="number" step="10000" /></label>
         <label class="field">Horizon (années)<input v-model.number="p.years" type="number" min="1" max="50" /></label>
       </div>
       <div class="note" style="margin-top:14px">
@@ -77,7 +78,7 @@ const chart = computed<any>(() => ({
   <div v-if="pr" class="card pad0" style="margin-top:16px">
     <div class="table-wrap" style="max-height:420px">
       <table>
-        <thead><tr><th>Année</th><th class="num">Total versé</th><th class="num">Prudent</th><th class="num">Central</th><th class="num">Dynamique</th><th class="num">Central en € d'aujourd'hui</th><th class="num">Gains (central)</th></tr></thead>
+        <thead><tr><th>Année</th><th class="num">Total versé</th><th class="num">Prudent</th><th class="num">Central</th><th class="num">Dynamique</th><th class="num">Central en {{ cur() }} d'aujourd'hui</th><th class="num">Gains (central)</th></tr></thead>
         <tbody><tr v-for="r in pr.rows" :key="r.year" :style="r.mid >= p.goal ? 'background:#e7f6ee' : ''"><td>{{ r.year }}</td><td class="num">{{ eur0(r.paid) }}</td><td class="num">{{ eur0(r.low) }}</td><td class="num"><b>{{ eur0(r.mid) }}</b></td><td class="num">{{ eur0(r.high) }}</td><td class="num">{{ eur0(r.midReal) }}</td><td class="num pos">{{ eur0(r.gain) }}</td></tr></tbody>
       </table>
     </div>

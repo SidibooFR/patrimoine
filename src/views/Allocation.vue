@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from "vue";
 import { api } from "../api";
-import { eur0, pct, sign, monthLong } from "../format";
+import { eur0, pct, sign, monthLong, cur } from "../format";
+import { theme, rgba } from "../appearance";
 import { guard } from "../toast";
 import Chart from "../components/Chart.vue";
 import { CLASS_COLORS, pctTick } from "../charts";
@@ -26,7 +27,7 @@ const chart = computed<any>(() => ({
   type: "bar",
   data: { labels: al.value!.rows.map((r) => r.asset_class), datasets: [
     { label: "Actuel", data: al.value!.rows.map((r) => r.pct ?? 0), backgroundColor: al.value!.rows.map((r) => CLASS_COLORS[r.asset_class] ?? "#999") },
-    { label: "Cible", data: al.value!.rows.map((r) => r.target), backgroundColor: "rgba(31,58,95,.25)", borderColor: "#1f3a5f", borderWidth: 1 }] },
+    { label: "Cible", data: al.value!.rows.map((r) => r.target), backgroundColor: rgba(theme.navy, .25), borderColor: theme.navy, borderWidth: 1 }] },
   options: { plugins: { tooltip: { callbacks: { label: (c: any) => `${c.dataset.label} : ${pct(c.parsed.y)}` } } }, scales: { y: { ticks: { callback: pctTick }, max: 1 } } },
 }));
 const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "Alléger" ? "" : a === "OK" ? "ok" : "");
@@ -40,7 +41,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
   <div v-if="al" class="grid" style="grid-template-columns: 1fr 420px">
     <div class="card">
       <table>
-        <thead><tr><th>Classe d'actif</th><th class="num">Valeur</th><th class="num">% actuel</th><th class="num" style="background:#fffbe6">% cible</th><th class="num">Écart</th><th class="num">Écart €</th><th>Action</th></tr></thead>
+        <thead><tr><th>Classe d'actif</th><th class="num">Valeur</th><th class="num">% actuel</th><th class="num" style="background:#fffbe6">% cible</th><th class="num">Écart</th><th class="num">Écart {{ cur() }}</th><th>Action</th></tr></thead>
         <tbody>
           <tr v-for="r in al.rows" :key="r.asset_class">
             <td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px" :style="{ background: CLASS_COLORS[r.asset_class] }"></span>{{ r.asset_class }}</td>
@@ -61,7 +62,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
     <div>
       <div class="card">
         <h2>Où placer mon prochain versement ?</h2>
-        <label class="field">Montant à placer ce mois-ci (€)<input v-model.number="deposit" type="number" step="50" min="0" /></label>
+        <label class="field">Montant à placer ce mois-ci ({{ cur() }})<input v-model.number="deposit" type="number" step="50" min="0" /></label>
         <table style="margin-top:10px">
           <thead><tr><th>Classe</th><th class="num">À placer</th></tr></thead>
           <tbody>

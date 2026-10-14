@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import { api } from "../api";
-import { eur, eur0, pct, date, sign, monthLong } from "../format";
+import { eur, eur0, pct, date, sign, monthLong, cur } from "../format";
 import { guard } from "../toast";
 import Modal from "../components/Modal.vue";
 import type { GoalsReport, GoalRow } from "../../core/goals";
@@ -86,7 +86,7 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
           Suivi : {{ origin(g) }}.
           <template v-if="g.status !== 'Atteint'"><span v-if="g.projectedDate"> Au rythme actuel : atteint en <b>{{ monthLong(g.projectedDate) }}</b>.</span><span v-else-if="g.pace !== null"> Au rythme actuel, l'objectif n'avance pas.</span></template>
         </p>
-        <label v-if="g.source === 'manual'" class="field" style="max-width:220px">Montant épargné (€)<input type="number" step="any" :value="g.manual_amount" @change="setManual(g, ($event.target as HTMLInputElement).value)" /></label>
+        <label v-if="g.source === 'manual'" class="field" style="max-width:220px">Montant épargné ({{ cur() }})<input type="number" step="any" :value="g.manual_amount" @change="setManual(g, ($event.target as HTMLInputElement).value)" /></label>
         <div style="display:flex;gap:6px"><button class="small" @click="openEdit(g)">✎ Modifier</button><button class="small" @click="archive(g)">{{ g.archived ? "↶ Réactiver" : "▣ Archiver" }}</button><button class="small danger" @click="remove(g)">✕</button></div>
       </div>
     </div>
@@ -99,8 +99,8 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
       <label class="field full">Comment mesurer l'avancement ?<select v-model="modal.source"><option v-for="(l, k) in SOURCES" :key="k" :value="k">{{ l }}</option></select></label>
       <label v-if="modal.source === 'account'" class="field">Compte<select v-model="modal.account_id"><option value="" disabled>Choisir…</option><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
       <label v-if="modal.source === 'class'" class="field">Classe d'actif<select v-model="modal.asset_class"><option v-for="c in classes" :key="c">{{ c }}</option></select></label>
-      <label v-if="modal.source === 'manual'" class="field">Déjà épargné (€)<input v-model="modal.manual_amount" type="number" step="any" /></label>
-      <label class="field">Montant visé (€)<input v-model="modal.target" type="number" step="any" :placeholder="modal.source === 'emergency' ? 'calculé si vide' : ''" /></label>
+      <label v-if="modal.source === 'manual'" class="field">Déjà épargné ({{ cur() }})<input v-model="modal.manual_amount" type="number" step="any" /></label>
+      <label class="field">Montant visé ({{ cur() }})<input v-model="modal.target" type="number" step="any" :placeholder="modal.source === 'emergency' ? 'calculé si vide' : ''" /></label>
       <label class="field">Échéance<input v-model="modal.target_date" type="date" /></label>
     </div>
     <p class="help">Lié à un compte, l'objectif suit son solde automatiquement (et tient compte du taux du livret pour le versement mensuel). L'épargne de précaution vise par défaut {{ "le nombre de mois de dépenses réglé dans Paramètres" }}.</p>
