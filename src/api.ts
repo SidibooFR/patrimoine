@@ -1,5 +1,6 @@
 /** Client API côté interface : Electron (IPC) ou serveur de dev Vite (HTTP). */
 import type { Api } from "../core/api";
+import type { UpdateState } from "../electron/updater";
 
 type Bridge = {
   call: (m: string, a: unknown[]) => Promise<{ ok: boolean; value?: unknown; error?: string }>;
@@ -9,6 +10,12 @@ type Bridge = {
   openExternal: (u: string) => Promise<void>;
   paths: () => Promise<{ db: string; documents: string; mcpServer: string }>;
   setZoom?: (factor: number) => void;
+  update?: {
+    state: () => Promise<UpdateState>;
+    check: () => Promise<UpdateState>;
+    install: () => Promise<void>;
+    onState: (cb: (s: UpdateState) => void) => void;
+  };
 };
 declare global { interface Window { patrimoine?: Bridge } }
 

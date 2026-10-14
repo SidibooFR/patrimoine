@@ -48,7 +48,14 @@ Chaque push sur `main` déclenche le workflow **Release** (GitHub Actions) :
 2. sur un runner Windows, **semantic-release** lit les messages de commit depuis la dernière version, calcule le nouveau numéro, met à jour `package.json` et `CHANGELOG.md`, construit les exécutables puis publie la release GitHub avec :
    - `Patrimoine-Setup-x.y.z.exe` : installeur (choix du dossier, raccourci bureau) ;
    - `Patrimoine-Portable-x.y.z.exe` : version portable, sans installation ;
-   - `patrimoine-mcp-x.y.z.zip` : le serveur MCP seul, pour Claude Desktop.
+   - `patrimoine-mcp-x.y.z.zip` : le serveur MCP seul, pour Claude Desktop ;
+   - `latest.yml` et `Patrimoine-Setup-x.y.z.exe.blockmap` : utilisés par les mises à jour automatiques.
+
+### Mises à jour automatiques
+
+Une fois installée avec `Patrimoine-Setup-x.y.z.exe`, l'application vérifie au démarrage puis toutes les 6 heures si une nouvelle release existe sur GitHub ([electron-updater](https://www.electron.build/auto-update)). La nouvelle version est téléchargée en arrière-plan ; un bouton « Installer la version x.y.z » apparaît alors en bas de la barre latérale (et dans Paramètres → Mises à jour). Sinon, elle s'installe toute seule à la prochaine fermeture. La base de données, stockée hors du dossier d'installation, n'est pas touchée.
+
+La version portable ne peut pas se remplacer elle-même : elle signale seulement la nouvelle version et ouvre la page de téléchargement. Les versions installées avant la 1.3 doivent être mises à jour une dernière fois à la main.
 
 Le numéro de version dépend du préfixe des commits ([Conventional Commits](https://www.conventionalcommits.org/fr/)) :
 
@@ -128,7 +135,7 @@ L'application et le serveur MCP partagent le fichier SQLite : chaque processus r
 ```
 core/        cœur métier partagé (db.ts, migrate.ts, importers.ts, categorize.ts, reports.ts, balances.ts, envelopes.ts,
              recurring.ts, goals.ts, refunds.ts, history.ts, prices.ts, export.ts, api.ts)
-electron/    processus principal + preload (pont IPC → core/api.ts)
+electron/    processus principal + preload (pont IPC → core/api.ts), mises à jour automatiques (updater.ts)
 mcp/         serveur MCP stdio (→ core/api.ts)
 src/         interface Vue 3 (views/, components/, api.ts client IPC/HTTP)
 tests/       vitest + fixtures (exports bancaires réels)
