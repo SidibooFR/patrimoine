@@ -3,12 +3,13 @@ import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
 import { eur, eur0, date } from "../lib/format";
 import { guard } from "../lib/toast";
-import type { EnvelopesReport, EnvelopeRow, EnvelopeKindInfo } from "../../core/envelopes";
+import type { EnvelopesReport, EnvelopeRow } from "../../core/envelopes";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
 import MovesCard from "./envelopes/MovesCard.vue";
 import EnvelopeCard from "./envelopes/EnvelopeCard.vue";
 import EnvelopeModal from "./envelopes/EnvelopeModal.vue";
+import type { EnvelopeKindInfo } from "./envelopes/EnvelopeModal.vue";
 
 const rep = ref<EnvelopesReport>();
 const accounts = ref<any[]>([]);
@@ -66,5 +67,5 @@ async function remove() {
     <p class="help mt-2">Intérêts des livrets réglementés estimés selon la règle des quinzaines (un versement compte à partir du 1er ou du 16 suivant, un retrait cesse de compter dès le début de sa quinzaine) aux taux officiels successifs, en supposant le solde constant jusqu'au 31 décembre, versement programmé compris. Les intérêts des livrets sont versés en fin d'année ; ceux d'un compte rémunéré au fil de l'eau.</p>
   </template>
 
-  <EnvelopeModal v-if="modal" :envelope="modal" :accounts="accounts" :kinds="kinds" @close="modal = null" @saved="modal = null; load()" @remove="remove" />
+  <EnvelopeModal v-if="modal" :envelope="modal" :accounts="freeAccounts" :kinds="kinds" @close="modal = null" @saved="modal = null; load()" @remove="remove" />
 </template>

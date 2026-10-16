@@ -24,9 +24,6 @@ export interface EnvelopeKind {
   help: string;
 }
 
-/** Type d'enveloppe tel qu'exposé à l'interface (api.meta). */
-export interface EnvelopeKindInfo { name: string; ceiling: number | null; ceilingOn: string | null; rate: number | null; help: string }
-
 // Taux officiels publiés au Journal officiel (Livret A / LDDS / LEP), plafonds légaux.
 const LA_RATES: [string, number][] = [["2025-02-01", 0.024], ["2025-08-01", 0.017], ["2026-02-01", 0.015], ["2026-08-01", 0.017]];
 export const ENVELOPE_KINDS: Record<string, EnvelopeKind> = {

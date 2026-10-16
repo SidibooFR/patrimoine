@@ -1,10 +1,14 @@
+<script lang="ts">
+/** Type d'enveloppe tel qu'exposé par api.meta. */
+export interface EnvelopeKindInfo { name: string; ceiling: number | null; ceilingOn: string | null; rate: number | null; help: string }
+</script>
+
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
-import type { EnvelopeKindInfo } from "../../../core/envelopes";
 
 const props = defineProps<{ envelope: any; accounts: any[]; kinds: EnvelopeKindInfo[] }>();
 const emit = defineEmits<{ close: []; saved: []; remove: [] }>();
