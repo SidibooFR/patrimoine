@@ -49,6 +49,9 @@ input.cell.cell-left { text-align: left; background: var(--panel); }
 .kpi { display: flex; flex-direction: column; gap: 4px; }
 .kpi .label { color: var(--muted); font-size: 12.5px; }
 .kpi .value { font-size: 24px; font-weight: 400; color: var(--text); letter-spacing: 0; }
+.kpi .value.pos { color: var(--pos); }
+.kpi .value.neg { color: var(--neg); }
+.kpi .value.warn { color: var(--warn); }
 .kpi .value.small { font-size: 16px; font-weight: 500; }
 .kpi .hint { font-size: 12px; color: var(--muted); }
 .pos { color: var(--pos); } .neg { color: var(--neg); } .muted { color: var(--muted); } .warn { color: var(--warn); }
