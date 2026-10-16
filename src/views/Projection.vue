@@ -2,7 +2,7 @@
 import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, reactive, computed, watch } from "vue";
 import { api } from "../lib/api";
-import { eur0, pct, cur } from "../lib/format";
+import { eur0, cur } from "../lib/format";
 import { theme } from "../lib/appearance";
 import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";

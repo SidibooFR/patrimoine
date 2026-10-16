@@ -156,6 +156,7 @@ a.link-card:hover { background: var(--surface-2); }
 
 /* Utilitaires d'espacement (en fin de fichier pour l'emporter sur les règles de composants) */
 .mt-1 { margin-top: 8px; }
+.mb-1 { margin-bottom: 8px; }
 .mt-2 { margin-top: 12px; }
 .mt-3 { margin-top: 16px; }
 .mb-2 { margin-bottom: 12px; }

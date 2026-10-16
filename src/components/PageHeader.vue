@@ -7,7 +7,7 @@ defineProps<{
 <template>
   <div class="page-head">
     <div>
-      <h1><slot name="title">{{ title }}</slot></h1>
+      <h1>{{ title }}</h1>
       <p v-if="sub !== undefined || $slots.sub" class="sub"><slot name="sub">{{ sub }}</slot></p>
     </div>
     <div v-if="$slots.default" class="actions"><slot /></div>

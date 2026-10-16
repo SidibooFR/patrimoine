@@ -31,7 +31,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
 </script>
 
 <template>
-  <PageHeader title="Abonnements &amp; charges fixes" sub="Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.">
+  <PageHeader title="Abonnements & charges fixes" sub="Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.">
     <div class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div>
   </PageHeader>
 
@@ -64,7 +64,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
                   <td :class="{ muted: !i.active }" class="nowrap">{{ i.active ? date(i.next) : "–" }}</td>
                 </tr>
                 <tr v-if="open === i.key"><td colspan="7" style="background:var(--surface-2)">
-                  <div style="display:flex;gap:6px;margin-bottom:8px">
+                  <div class="row-actions mb-1">
                     <button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')">✓ Confirmer</button>
                     <button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')">✕ Ignorer (pas un abonnement)</button>
                     <button v-if="i.status !== 'auto'" class="small" @click="setStatus(i, 'auto')">↶ Annuler ma décision</button>

@@ -84,7 +84,7 @@ const rateChart = computed<any>(() => ({
       <router-link to="/enveloppes" class="card link-card">
         <h3>Livrets &amp; PEA</h3>
         <KpiCard :value="eur0(d.envelopes.balance)" :hint="`intérêts estimés cette année : ${eur(d.envelopes.estimateThisYear)} · place restante ${eur0(d.envelopes.room)}`" />
-        <div v-if="d.envelopes.missed > 0" class="tag warn" style="margin-top:8px">+{{ eur(d.envelopes.missed) }} / an possibles</div>
+        <div v-if="d.envelopes.missed > 0" class="tag warn mt-1">+{{ eur(d.envelopes.missed) }} / an possibles</div>
       </router-link>
       <router-link to="/objectifs" class="card link-card">
         <h3>Objectifs</h3>

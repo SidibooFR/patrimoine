@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
-import { eur, eur0, pct, date, sign, monthLong, cur } from "../lib/format";
+import { eur0, pct, date, sign, monthLong, cur } from "../lib/format";
 import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { GoalsReport, GoalRow } from "../../core/goals";
@@ -61,7 +61,7 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
       <KpiCard label="Besoin mensuel total" :value="eur0(rep.totals.monthlyNeeded)" hint="pour tenir toutes les échéances" card />
       <KpiCard label="Ta capacité d'épargne" :value="rep.capacity === null ? '–' : eur0(rep.capacity)" hint="revenus − dépenses, moyenne des mois terminés" :tone="sign(rep.capacity)" card />
     </div>
-    <div v-if="rep.margin !== null && rep.totals.monthlyNeeded > 0" class="note" :class="rep.margin >= 0 ? 'ok' : 'warn'" style="margin-bottom:16px">
+    <div v-if="rep.margin !== null && rep.totals.monthlyNeeded > 0" class="note mb-3" :class="rep.margin >= 0 ? 'ok' : 'warn'">
       <template v-if="rep.margin >= 0">Tes objectifs demandent {{ eur0(rep.totals.monthlyNeeded) }} par mois et tu épargnes en moyenne {{ eur0(rep.capacity) }} : il reste {{ eur0(rep.margin) }} par mois pour investir.</template>
       <template v-else>Tes objectifs demandent {{ eur0(rep.totals.monthlyNeeded) }} par mois, mais ton épargne moyenne cette année est de {{ eur0(rep.capacity) }} par mois. Il manque {{ eur0(-rep.margin) }} par mois : repousse une échéance, réduis un montant, ou trouve cette somme dans tes charges fixes (onglet Abonnements).</template>
     </div>
