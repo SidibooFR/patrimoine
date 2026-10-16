@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
-import { eur, eur0, pct, date, cur } from "../lib/format";
+import { eur, eur0, date } from "../lib/format";
 import { guard } from "../lib/toast";
-import Modal from "../components/Modal.vue";
 import type { EnvelopesReport, EnvelopeRow } from "../../core/envelopes";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
+import MovesCard from "./envelopes/MovesCard.vue";
+import EnvelopeCard from "./envelopes/EnvelopeCard.vue";
+import EnvelopeModal from "./envelopes/EnvelopeModal.vue";
 
 const rep = ref<EnvelopesReport>();
 const accounts = ref<any[]>([]);
@@ -20,7 +22,6 @@ async function load() {
 onMounted(load);
 
 const kindOf = (k: string) => kinds.value.find((x) => x.name === k);
-const RATE_SRC: Record<string, string> = { officiel: "taux officiel", personnalisé: "taux saisi", constaté: "taux net constaté sur tes intérêts" };
 
 // Édition
 const modal = ref<any>(null);
@@ -32,23 +33,11 @@ function openNew() {
 function openEdit(r: EnvelopeRow) {
   modal.value = { id: r.id, account_id: r.account_id, kind: r.kind, ceiling: r.ceiling !== kindOf(r.kind)?.ceiling ? r.ceiling ?? "" : "", ratePct: r.rateSource === "personnalisé" ? +(r.rate! * 100).toFixed(3) : "", opened_on: r.opened_on ?? "", initial_deposits: r.initial_deposits, monthly_deposit: r.monthly_deposit, note: r.note };
 }
-async function save() {
-  const m = modal.value;
-  const ok = await guard(() => api.saveEnvelope({
-    id: m.id, account_id: Number(m.account_id), kind: m.kind,
-    ceiling: m.ceiling === "" || m.ceiling === null ? null : Number(m.ceiling),
-    rate: m.ratePct === "" || m.ratePct === null ? null : Number(m.ratePct) / 100,
-    opened_on: m.opened_on || null, initial_deposits: Number(m.initial_deposits) || 0, monthly_deposit: Number(m.monthly_deposit) || 0, note: m.note,
-  }), "Enveloppe enregistrée");
-  if (ok !== undefined) { modal.value = null; await load(); }
-}
 async function remove() {
   if (!window.confirm("Retirer cette enveloppe ? Le compte et ses opérations sont conservés.")) return;
   await guard(() => api.deleteEnvelope(modal.value.id), "Enveloppe retirée");
   modal.value = null; await load();
 }
-const modalKind = computed(() => (modal.value ? kindOf(modal.value.kind) : undefined));
-const threshold = 0.5;
 </script>
 
 <template>
@@ -64,45 +53,10 @@ const threshold = 0.5;
       <KpiCard label="Gain possible par an" :value="rep.missed > 0 ? '+' + eur(rep.missed) : '–'" hint="en appliquant les transferts conseillés" :tone="rep.missed > 0 ? 'warn' : 'pos'" card />
     </div>
 
-    <div class="card mb-3">
-      <h2>Transferts conseillés</h2>
-      <div v-if="rep.moves.length" class="grid" style="gap:8px">
-        <div v-for="m in rep.moves" :key="m.from_account_id + '-' + m.to_account_id" class="move">
-          <span style="font-size:18px">→</span>
-          <span>Transférer <b>{{ eur0(m.amount) }}</b> de <b>{{ m.from }}</b> ({{ pct(m.fromRate, 2) }} net) vers <b>{{ m.to }}</b> ({{ pct(m.toRate, 2) }} net)</span>
-          <span style="margin-left:auto;font-weight:700;white-space:nowrap">+{{ eur(m.gainPerYear) }} / an</span>
-        </div>
-        <p class="help" style="margin:4px 0 0">Les livrets réglementés sont disponibles à tout moment et exonérés d'impôt : y placer ton épargne de précaution ne la bloque pas. Sur les comptes courants, l'application garde un mois de dépenses de côté.</p>
-      </div>
-      <div v-else class="note ok">Rien à optimiser : ton épargne est déjà sur les supports les mieux rémunérés disponibles.</div>
-    </div>
+    <MovesCard :moves="rep.moves" />
 
     <div class="grid c2">
-      <div v-for="r in rep.rows" :key="r.id" class="card env-card">
-        <div class="head">
-          <div><span class="tag">{{ r.kind }}</span><h2 style="margin-top:6px">{{ r.account }}</h2></div>
-          <button class="small" @click="openEdit(r)">✎ Modifier</button>
-        </div>
-
-        <template v-if="r.ceiling !== null">
-          <div>
-            <div class="gauge" :class="{ low: r.ceilingOn === 'balance' && (r.fill ?? 0) < threshold }"><span :style="{ width: Math.max(1.5, (r.fill ?? 0) * 100) + '%' }"></span></div>
-            <div class="gauge-legend">
-              <span>{{ r.ceilingOn === "deposits" ? "Versements" : "Solde" }} : <b>{{ eur(r.used) }}</b> sur {{ eur0(r.ceiling) }} ({{ pct(r.fill, 0) }})</span>
-              <span>reste <b>{{ eur0(r.room) }}</b></span>
-            </div>
-          </div>
-        </template>
-        <div v-else class="help">Pas de plafond · solde <b>{{ eur(r.balance) }}</b></div>
-
-        <div class="stat-row">
-          <KpiCard label="Taux net" :value="r.rate === null ? '–' : pct(r.rate, 2)" :hint="r.rateSource ? RATE_SRC[r.rateSource] : r.ceilingOn === 'deposits' ? 'selon les placements' : 'à renseigner'" />
-          <KpiCard :label="`Intérêts perçus ${rep.year}`" :value="eur(r.interestThisYear)" :hint="`${rep.year - 1} : ${eur(r.interestLastYear)}`" />
-          <KpiCard :label="`Estimés ${rep.year}`" :value="r.estimateThisYear === null ? '–' : eur(r.estimateThisYear)" :hint="r.estimateAtCeiling !== null ? `au plafond : ${eur0(r.estimateAtCeiling)} / an` : undefined" tone="pos" />
-        </div>
-        <p v-if="r.fiveYears" class="note m0">Ancienneté fiscale : 5 ans le <b>{{ date(r.fiveYears) }}</b>. Après cette date, les gains ne sont plus soumis à l'impôt sur le revenu (prélèvements sociaux seuls).</p>
-        <p class="help m0">{{ r.help }}<span v-if="r.balanceSource"> Solde au {{ date(r.balanceDate) }} ({{ r.balanceSource }}).</span><span v-if="r.monthly_deposit"> Versement programmé : {{ eur(r.monthly_deposit) }} / mois.</span></p>
-      </div>
+      <EnvelopeCard v-for="r in rep.rows" :key="r.id" :row="r" :year="rep.year" @edit="openEdit(r)" />
     </div>
     <div v-if="!rep.rows.length" class="card empty">Aucune enveloppe. Ajoute ton LEP, ton Livret A ou ton PEA pour suivre leurs plafonds et leurs intérêts.</div>
 
@@ -112,21 +66,5 @@ const threshold = 0.5;
     <p class="help mt-2">Intérêts des livrets réglementés estimés selon la règle des quinzaines (un versement compte à partir du 1er ou du 16 suivant, un retrait cesse de compter dès le début de sa quinzaine) aux taux officiels successifs, en supposant le solde constant jusqu'au 31 décembre, versement programmé compris. Les intérêts des livrets sont versés en fin d'année ; ceux d'un compte rémunéré au fil de l'eau.</p>
   </template>
 
-  <Modal v-if="modal" :title="modal.id ? 'Modifier l\'enveloppe' : 'Nouvelle enveloppe'" @close="modal = null">
-    <div class="form">
-      <label class="field">Compte<select v-model="modal.account_id"><option v-for="a in freeAccounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label class="field">Type<select v-model="modal.kind"><option v-for="k in kinds" :key="k.name">{{ k.name }}</option></select></label>
-      <label class="field">Plafond ({{ cur() }})<input v-model="modal.ceiling" type="number" step="any" :placeholder="modalKind?.ceiling ? 'officiel : ' + modalKind.ceiling.toLocaleString('fr-FR') : 'aucun'" /></label>
-      <label class="field">Taux annuel net (%)<input v-model="modal.ratePct" type="number" step="0.01" :placeholder="modalKind?.rate !== null && modalKind?.rate !== undefined ? 'officiel : ' + (modalKind.rate * 100).toLocaleString('fr-FR') : 'constaté si vide'" /></label>
-      <label class="field">Versement programmé ({{ cur() }} / mois)<input v-model="modal.monthly_deposit" type="number" step="any" /></label>
-      <label class="field">Date d'ouverture<input v-model="modal.opened_on" type="date" /></label>
-      <label v-if="modalKind?.ceilingOn === 'deposits'" class="field">Versements antérieurs aux relevés ({{ cur() }})<input v-model="modal.initial_deposits" type="number" step="any" /></label>
-      <label class="field full">Note<input v-model="modal.note" /></label>
-    </div>
-    <p class="help">{{ modalKind?.help }} Laisse plafond et taux vides pour suivre automatiquement les valeurs officielles (et leurs changements au 1er février et au 1er août).</p>
-    <template #foot>
-      <button v-if="modal.id" class="danger" style="margin-right:auto" @click="remove">Retirer</button>
-      <button @click="modal = null">Annuler</button><button class="primary" :disabled="!modal.account_id" @click="save">Enregistrer</button>
-    </template>
-  </Modal>
+  <EnvelopeModal v-if="modal" :envelope="modal" :accounts="accounts" :rows="rep?.rows ?? []" :kinds="kinds" @close="modal = null" @saved="modal = null; load()" @remove="remove" />
 </template>
