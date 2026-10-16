@@ -2,9 +2,10 @@
 import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, reactive, watch, computed } from "vue";
 import { api } from "../lib/api";
-import { eur, date, sign, todayIso, cur } from "../lib/format";
-import { guard, notify } from "../lib/toast";
-import Modal from "../components/Modal.vue";
+import { eur, date, sign, todayIso } from "../lib/format";
+import { guard } from "../lib/toast";
+import RuleModal from "./transactions/RuleModal.vue";
+import TransactionModal from "./transactions/TransactionModal.vue";
 
 const accounts = ref<any[]>([]);
 const categories = ref<any[]>([]);
@@ -40,30 +41,11 @@ async function setCategory(row: any, v: string) {
 }
 const ruleModal = ref<null | { keyword: string; category_id: number | ""; label: string }>(null);
 function ruleFrom(row: any) { ruleModal.value = { keyword: row.label, category_id: row.category_id ?? "", label: row.label }; }
-async function saveRule() {
-  const m = ruleModal.value!;
-  if (!m.keyword || m.category_id === "") return;
-  const ok = await guard(() => api.saveRule({ keyword: m.keyword, category_id: Number(m.category_id) }));
-  if (ok === undefined) return;
-  const r = await api.recategorize();
-  notify(`Règle ajoutée · ${r.updated} opération(s) recatégorisée(s)`);
-  ruleModal.value = null;
-  await load();
-}
 
 // Ajout / édition manuelle
 const modal = ref<null | any>(null);
 function openNew() { modal.value = { date: todayIso(), account_id: accounts.value[0]?.id, label: "", amount: null, category_id: "", note: "", direction: "-" }; }
 function openEdit(row: any) { if (row.source !== "manuel") return; modal.value = { ...row, amount: Math.abs(row.amount), direction: row.amount < 0 ? "-" : "+", category_id: row.category_id ?? "" }; }
-async function save() {
-  const m = modal.value;
-  const amount = (m.direction === "-" ? -1 : 1) * Math.abs(Number(m.amount));
-  const cat = m.category_id === "" ? null : Number(m.category_id);
-  const ok = m.id
-    ? await guard(() => api.updateTransaction(m.id, { date: m.date, account_id: m.account_id, label: m.label, amount, category_id: cat, note: m.note }), "Opération modifiée")
-    : await guard(() => api.addTransaction({ date: m.date, account_id: m.account_id, label: m.label, amount, category_id: cat, note: m.note }), "Opération ajoutée");
-  if (ok !== undefined) { modal.value = null; await load(); }
-}
 async function remove(row: any) {
   if (!window.confirm(`Supprimer « ${row.label} » (${eur(row.amount)}) ?`)) return;
   await guard(() => api.deleteTransaction(row.id), "Opération supprimée");
@@ -121,25 +103,6 @@ async function remove(row: any) {
     <button :disabled="page === 0" @click="page--">‹</button><span class="muted">Page {{ page + 1 }} / {{ pages }}</span><button :disabled="page >= pages - 1" @click="page++">›</button>
   </div>
 
-  <Modal v-if="ruleModal" title="Nouvelle règle de catégorisation" @close="ruleModal = null">
-    <p class="help">Toute opération dont le libellé contient ce mot-clé prendra cette catégorie, maintenant et pour les prochains imports. Raccourcis le mot-clé à la partie stable du libellé (ex. « CARREFOUR »).</p>
-    <div class="form">
-      <label class="field">Mot-clé<input v-model="ruleModal.keyword" /></label>
-      <label class="field">Catégorie<select v-model="ruleModal.category_id"><option value="" disabled>Choisir…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></label>
-    </div>
-    <template #foot><button @click="ruleModal = null">Annuler</button><button class="primary" :disabled="!ruleModal.keyword || ruleModal.category_id === ''" @click="saveRule">Créer la règle</button></template>
-  </Modal>
-
-  <Modal v-if="modal" :title="modal.id ? 'Modifier l\'opération' : 'Saisie manuelle'" @close="modal = null">
-    <div class="form">
-      <label class="field">Date<input v-model="modal.date" type="date" /></label>
-      <label class="field">Compte<select v-model="modal.account_id"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label class="field">Sens<select v-model="modal.direction"><option value="-">Sortie (dépense)</option><option value="+">Entrée (revenu)</option></select></label>
-      <label class="field">Montant ({{ cur() }})<input v-model.number="modal.amount" type="number" step="0.01" min="0" /></label>
-      <label class="field full">Libellé<input v-model="modal.label" placeholder="ex. Marché, espèces" /></label>
-      <label class="field">Catégorie<select v-model="modal.category_id"><option value="">Automatique (règles)</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></label>
-      <label class="field">Note<input v-model="modal.note" /></label>
-    </div>
-    <template #foot><button @click="modal = null">Annuler</button><button class="primary" :disabled="!modal.label || !modal.amount" @click="save">Enregistrer</button></template>
-  </Modal>
+  <RuleModal v-if="ruleModal" :rule="ruleModal" :categories="categories" @close="ruleModal = null" @saved="ruleModal = null; load()" />
+  <TransactionModal v-if="modal" :tx="modal" :accounts="accounts" :categories="categories" @close="modal = null" @saved="modal = null; load()" />
 </template>
