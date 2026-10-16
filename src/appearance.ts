@@ -2,14 +2,16 @@
 import { reactive } from "vue";
 import { Chart } from "chart.js";
 
-export const DEFAULT_ACCENT = "#2f6fed";
+export const DEFAULT_ACCENT = "#0b57d0";
+const LEGACY_ACCENT = "#2f6fed"; // ancien bleu par défaut, remplacé par celui de Material 3
 export const ACCENT_PRESETS = [
-  { name: "Bleu", color: DEFAULT_ACCENT }, { name: "Vert", color: "#1a8a5a" }, { name: "Violet", color: "#7048c8" },
-  { name: "Bordeaux", color: "#b03052" }, { name: "Orange", color: "#d4661c" }, { name: "Graphite", color: "#4a5568" },
+  { name: "Bleu", color: DEFAULT_ACCENT }, { name: "Vert", color: "#146c2e" }, { name: "Violet", color: "#6750a4" },
+  { name: "Bordeaux", color: "#b3261e" }, { name: "Orange", color: "#b05a00" }, { name: "Graphite", color: "#444746" },
 ];
 const SANS = "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif";
 export const FONTS: { id: string; name: string; stack: string }[] = [
-  { id: "system", name: "Système (par défaut)", stack: SANS },
+  { id: "roboto", name: "Roboto (par défaut)", stack: `"Roboto Variable", Roboto, ${SANS}` },
+  { id: "system", name: "Système", stack: SANS },
   { id: "segoe", name: "Segoe UI", stack: `"Segoe UI", ${SANS}` },
   { id: "arial", name: "Arial", stack: "Arial, Helvetica, sans-serif" },
   { id: "verdana", name: "Verdana", stack: "Verdana, Geneva, sans-serif" },
@@ -31,11 +33,12 @@ export const CURRENCIES = [
 ];
 
 export interface Appearance { accent: string; font: string; scale: number; currency: string }
-const DEFAULTS: Appearance = { accent: DEFAULT_ACCENT, font: "system", scale: 1, currency: "EUR" };
+export const DEFAULT_FONT = "roboto";
+const DEFAULTS: Appearance = { accent: DEFAULT_ACCENT, font: DEFAULT_FONT, scale: 1, currency: "EUR" };
 
 /** Préférences actives + couleurs dérivées (réactives : les vues et graphiques se mettent à jour). */
 export const appearance = reactive<Appearance>({ ...DEFAULTS });
-export const theme = reactive({ accent: DEFAULT_ACCENT, navy: "#1f3a5f", navy2: "#2d5484" });
+export const theme = reactive({ accent: DEFAULT_ACCENT, navy: "#0842a0" });
 
 const hex = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
 const toHex = (rgb: number[]) => "#" + rgb.map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
@@ -50,7 +53,7 @@ const valid = /^#[0-9a-f]{6}$/i;
 export function fromSettings(s: Record<string, string>): Appearance {
   const scale = Number(s.ui_scale);
   return {
-    accent: valid.test(s.ui_accent ?? "") ? s.ui_accent : DEFAULTS.accent,
+    accent: valid.test(s.ui_accent ?? "") && s.ui_accent.toLowerCase() !== LEGACY_ACCENT ? s.ui_accent : DEFAULTS.accent,
     font: FONTS.some((f) => f.id === s.ui_font) ? s.ui_font : DEFAULTS.font,
     scale: scale >= 0.7 && scale <= 1.5 ? scale : DEFAULTS.scale,
     currency: /^[A-Z]{3}$/.test(s.currency ?? "") ? s.currency : DEFAULTS.currency,
@@ -59,16 +62,14 @@ export function fromSettings(s: Record<string, string>): Appearance {
 
 export function applyAppearance(p: Appearance) {
   Object.assign(appearance, p);
-  const isDefault = p.accent.toLowerCase() === DEFAULT_ACCENT;
   theme.accent = p.accent;
-  theme.navy = isDefault ? "#1f3a5f" : mix(p.accent, "#0b1220", 0.5);
-  theme.navy2 = isDefault ? "#2d5484" : mix(p.accent, "#0b1220", 0.7);
+  theme.navy = mix(p.accent, "#000000", 0.75);
   const root = document.documentElement.style;
   root.setProperty("--accent", p.accent);
-  root.setProperty("--accent-hover", mix(p.accent, "#000000", 0.82));
-  root.setProperty("--accent-soft", mix(p.accent, "#ffffff", 0.11));
-  root.setProperty("--navy", theme.navy);
-  root.setProperty("--navy-2", theme.navy2);
+  root.setProperty("--accent-hover", mix(p.accent, "#000000", 0.8));
+  root.setProperty("--accent-soft", mix(p.accent, "#ffffff", 0.18));
+  root.setProperty("--on-accent-soft", mix(p.accent, "#000000", 0.35));
+  root.setProperty("--accent-tint", rgba(p.accent, 0.08));
   const stack = FONTS.find((f) => f.id === p.font)?.stack ?? SANS;
   root.setProperty("--font", stack);
   Chart.defaults.font.family = stack;

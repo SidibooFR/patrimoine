@@ -2,7 +2,7 @@
 import { onMounted, ref, computed } from "vue";
 import { api, files, isElectron } from "../api";
 import { guard, notify } from "../toast";
-import { appearance, applyAppearance, fromSettings, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES, DEFAULT_ACCENT } from "../appearance";
+import { appearance, applyAppearance, fromSettings, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES, DEFAULT_ACCENT, DEFAULT_FONT } from "../appearance";
 import { eur } from "../format";
 import { update, checkUpdate, installUpdate, describe } from "../update";
 
@@ -30,7 +30,7 @@ async function delCat(c: any) { if (!window.confirm(`Supprimer « ${c.name} » ?
 async function setSetting(k: string, v: string) { settings.value = (await guard(() => api.setSetting(k, v))) ?? settings.value; }
 async function setLook(k: string, v: string) { await setSetting(k, v); applyAppearance(fromSettings(settings.value)); }
 async function resetLook() {
-  for (const [k, v] of [["ui_accent", DEFAULT_ACCENT], ["ui_font", "system"], ["ui_scale", "1"]]) await setSetting(k, v);
+  for (const [k, v] of [["ui_accent", DEFAULT_ACCENT], ["ui_font", DEFAULT_FONT], ["ui_scale", "1"]]) await setSetting(k, v);
   applyAppearance(fromSettings(settings.value)); notify("Apparence réinitialisée");
 }
 const excluded = computed(() => (settings.value.recurring_exclude_categories ?? "").split("|").filter(Boolean));

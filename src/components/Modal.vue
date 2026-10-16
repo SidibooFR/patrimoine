@@ -5,7 +5,7 @@ const emit = defineEmits<{ close: [] }>();
 <template>
   <div class="modal-back" @mousedown.self="emit('close')">
     <div class="modal" role="dialog" :aria-label="title">
-      <div class="card-title"><h2 style="margin:0">{{ title }}</h2><button class="small" @click="emit('close')">✕</button></div>
+      <div class="card-title"><h2 style="margin:0">{{ title }}</h2><button class="icon-btn" aria-label="Fermer" title="Fermer" @click="emit('close')">✕</button></div>
       <slot />
       <div class="modal-foot"><slot name="foot" /></div>
     </div>
