@@ -8,6 +8,7 @@ import Chart from "../components/Chart.vue";
 import { CLASS_COLORS, pctTick } from "../lib/charts";
 import type { AllocationReport } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const al = ref<AllocationReport>();
 const deposit = ref<number>(400);
@@ -35,9 +36,9 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Allocation & rééquilibrage</h1><p class="sub">Répartition réelle (dernier relevé de patrimoine{{ al?.lastMonth ? " : " + monthLong(al.lastMonth) : "" }}) comparée à ta cible. Le prochain versement est orienté vers les classes sous leur cible : tu te rééquilibres sans vendre.</p></div>
-  </div>
+  <PageHeader title="Allocation & rééquilibrage">
+    <template #sub>Répartition réelle (dernier relevé de patrimoine{{ al?.lastMonth ? " : " + monthLong(al.lastMonth) : "" }}) comparée à ta cible. Le prochain versement est orienté vers les classes sous leur cible : tu te rééquilibres sans vendre.</template>
+  </PageHeader>
 
   <div v-if="al" class="grid" style="grid-template-columns: 1fr 420px">
     <div class="card">

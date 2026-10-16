@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
 import { guard, notify } from "../lib/toast";
@@ -45,11 +46,9 @@ async function quickAdd(label: string) {
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Règles de catégorisation</h1>
-      <p class="sub">1) Un mot-clé trouvé dans le libellé donne la catégorie (le mot-clé le plus long l'emporte). 2) Sinon, la catégorie proposée par la banque est convertie. 3) Sinon l'opération reste à catégoriser.</p></div>
-    <div class="actions"><button @click="recat">↻ Recatégoriser tout</button></div>
-  </div>
+  <PageHeader title="Règles de catégorisation" sub="1) Un mot-clé trouvé dans le libellé donne la catégorie (le mot-clé le plus long l'emporte). 2) Sinon, la catégorie proposée par la banque est convertie. 3) Sinon l'opération reste à catégoriser.">
+    <button @click="recat">↻ Recatégoriser tout</button>
+  </PageHeader>
 
   <div v-if="unmapped.length" class="card mb-3">
     <h2>Catégories bancaires sans correspondance</h2>

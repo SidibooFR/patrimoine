@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
 import { eur0, pct, sign, month, thisMonth, date } from "../lib/format";
@@ -52,9 +53,7 @@ const chart = computed<any>(() => ({
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Patrimoine</h1><p class="sub">Une fois par mois, enregistre le solde de chaque compte. C'est ce relevé qui alimente l'évolution, la répartition et l'allocation.</p></div>
-  </div>
+  <PageHeader title="Patrimoine" sub="Une fois par mois, enregistre le solde de chaque compte. C'est ce relevé qui alimente l'évolution, la répartition et l'allocation." />
 
   <div v-if="nw" class="grid" style="grid-template-columns: 380px 1fr">
     <div class="card">

@@ -6,6 +6,7 @@ import { guard, notify } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { RefundsReport, RefundRow } from "../../core/refunds";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const rep = ref<RefundsReport>();
 const categories = ref<any[]>([]);
@@ -49,13 +50,10 @@ const VIA: Record<string, string> = { expense: "dépense", category: "catégorie
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Remboursements</h1><p class="sub">Relie chaque remboursement à la dépense qu'il couvre : le budget affiche alors ta vraie dépense nette, au lieu d'un revenu qui n'en est pas un.</p></div>
-    <div class="actions">
-      <div class="seg"><button :class="{ on: show === 'todo' }" @click="show = 'todo'">À rapprocher</button><button :class="{ on: show === 'done' }" @click="show = 'done'">Rapprochés</button><button :class="{ on: show === 'all' }" @click="show = 'all'">Tous</button></div>
-      <button class="primary" :disabled="!sure" @click="applyAll">Lier les {{ sure }} suggestion(s) sûres</button>
-    </div>
-  </div>
+  <PageHeader title="Remboursements" sub="Relie chaque remboursement à la dépense qu'il couvre : le budget affiche alors ta vraie dépense nette, au lieu d'un revenu qui n'en est pas un.">
+    <div class="seg"><button :class="{ on: show === 'todo' }" @click="show = 'todo'">À rapprocher</button><button :class="{ on: show === 'done' }" @click="show = 'done'">Rapprochés</button><button :class="{ on: show === 'all' }" @click="show = 'all'">Tous</button></div>
+    <button class="primary" :disabled="!sure" @click="applyAll">Lier les {{ sure }} suggestion(s) sûres</button>
+  </PageHeader>
 
   <template v-if="rep">
     <div class="grid c4 mb-3">

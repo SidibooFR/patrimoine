@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, reactive, watch, computed } from "vue";
 import { api } from "../lib/api";
 import { eur, date, sign, todayIso, cur } from "../lib/format";
@@ -71,10 +72,9 @@ async function remove(row: any) {
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Relevés</h1><p class="sub">Toutes les opérations : exports bancaires importés et saisies manuelles. Change une catégorie directement dans la liste.</p></div>
-    <div class="actions"><button class="primary" @click="openNew">+ Saisie manuelle</button></div>
-  </div>
+  <PageHeader title="Relevés" sub="Toutes les opérations : exports bancaires importés et saisies manuelles. Change une catégorie directement dans la liste.">
+    <button class="primary" @click="openNew">+ Saisie manuelle</button>
+  </PageHeader>
 
   <div class="toolbar">
     <input v-model="filter.search" placeholder="Rechercher un libellé…" style="width:220px" />

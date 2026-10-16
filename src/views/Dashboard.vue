@@ -8,6 +8,7 @@ import Chart from "../components/Chart.vue";
 import { CLASS_COLORS, PALETTE, eurTick, pctTick, eurTip } from "../lib/charts";
 import type { Dashboard } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const d = ref<Dashboard>();
 onMounted(async () => { d.value = await guard(() => api.dashboard()); });
@@ -38,7 +39,7 @@ const rateChart = computed<any>(() => ({
 
 <template>
   <div v-if="d">
-    <div class="page-head"><div><h1>Tableau de bord</h1><p class="sub">Au {{ date(d.today) }}</p></div></div>
+    <PageHeader title="Tableau de bord" :sub="`Au ${date(d.today)}`" />
     <div class="grid c3">
       <div class="card">
         <h3>Patrimoine</h3>

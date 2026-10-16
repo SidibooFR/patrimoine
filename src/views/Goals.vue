@@ -6,6 +6,7 @@ import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { GoalsReport, GoalRow } from "../../core/goals";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const rep = ref<GoalsReport>();
 const accounts = ref<any[]>([]);
@@ -48,13 +49,10 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Objectifs d'épargne</h1><p class="sub">Un montant, une date : l'application calcule le versement mensuel nécessaire et vérifie que ton rythme d'épargne suit.</p></div>
-    <div class="actions">
-      <button @click="openNew('emergency')">+ Épargne de précaution</button><button @click="openNew('apport')">+ Apport</button><button @click="openNew('voyage')">+ Voyage</button>
-      <button class="primary" @click="openNew()">+ Objectif</button>
-    </div>
-  </div>
+  <PageHeader title="Objectifs d'épargne" sub="Un montant, une date : l'application calcule le versement mensuel nécessaire et vérifie que ton rythme d'épargne suit.">
+    <button @click="openNew('emergency')">+ Épargne de précaution</button><button @click="openNew('apport')">+ Apport</button><button @click="openNew('voyage')">+ Voyage</button>
+    <button class="primary" @click="openNew()">+ Objectif</button>
+  </PageHeader>
 
   <template v-if="rep">
     <div class="grid c4 mb-3">

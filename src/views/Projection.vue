@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, reactive, computed, watch } from "vue";
 import { api } from "../lib/api";
 import { eur0, pct, cur } from "../lib/format";
@@ -45,9 +46,7 @@ const chart = computed<any>(() => ({
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Projection</h1><p class="sub">Simulation à intérêts composés. Les rendements sont des hypothèses, pas des promesses : les marchés connaissent des années négatives.</p></div>
-  </div>
+  <PageHeader title="Projection" sub="Simulation à intérêts composés. Les rendements sont des hypothèses, pas des promesses : les marchés connaissent des années négatives." />
   <div v-if="pr" class="grid" style="grid-template-columns: 300px 1fr">
     <div class="card">
       <h2>Hypothèses</h2>

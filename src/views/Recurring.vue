@@ -6,6 +6,7 @@ import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { RecurringReport, Recurring } from "../../core/recurring";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const rep = ref<RecurringReport>();
 const show = ref<"actifs" | "tous">("actifs");
@@ -30,10 +31,9 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Abonnements &amp; charges fixes</h1><p class="sub">Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.</p></div>
-    <div class="actions"><div class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div></div>
-  </div>
+  <PageHeader title="Abonnements &amp; charges fixes" sub="Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.">
+    <div class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div>
+  </PageHeader>
 
   <template v-if="rep">
     <div class="grid c4 mb-3">

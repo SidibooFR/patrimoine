@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref } from "vue";
 import { api, files } from "../lib/api";
 import { eur, date } from "../lib/format";
@@ -41,10 +42,9 @@ async function setMapAccount(m: any, v: string) { await guard(() => api.saveImpo
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Importer des relevés</h1><p class="sub">Exports BNP Paribas (.xls), Boursobank (.xlsx) et Revolut (.csv). La banque est détectée automatiquement, les doublons ignorés, les opérations catégorisées selon tes règles.</p></div>
-    <div class="actions"><button class="primary" @click="choose">Choisir des fichiers…</button><button v-if="previews.length" @click="clear">Vider</button></div>
-  </div>
+  <PageHeader title="Importer des relevés" sub="Exports BNP Paribas (.xls), Boursobank (.xlsx) et Revolut (.csv). La banque est détectée automatiquement, les doublons ignorés, les opérations catégorisées selon tes règles.">
+    <button class="primary" @click="choose">Choisir des fichiers…</button><button v-if="previews.length" @click="clear">Vider</button>
+  </PageHeader>
 
   <div v-if="!previews.length" class="card">
     <h2>Comment exporter</h2>

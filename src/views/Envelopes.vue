@@ -6,6 +6,7 @@ import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { EnvelopesReport, EnvelopeRow } from "../../core/envelopes";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const rep = ref<EnvelopesReport>();
 const accounts = ref<any[]>([]);
@@ -51,10 +52,9 @@ const threshold = 0.5;
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Livrets &amp; PEA</h1><p class="sub">Plafonds, intérêts perçus et estimés, et où mettre ton épargne pour qu'elle rapporte le plus. Taux officiels au {{ date(ratesAsOf) }}.</p></div>
-    <div class="actions"><button class="primary" @click="openNew">+ Enveloppe</button></div>
-  </div>
+  <PageHeader title="Livrets &amp; PEA" :sub="`Plafonds, intérêts perçus et estimés, et où mettre ton épargne pour qu'elle rapporte le plus. Taux officiels au ${date(ratesAsOf)}.`">
+    <button class="primary" @click="openNew">+ Enveloppe</button>
+  </PageHeader>
 
   <template v-if="rep">
     <div class="grid c4 mb-3">

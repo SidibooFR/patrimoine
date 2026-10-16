@@ -5,6 +5,7 @@ import { eur0, pct, sign } from "../lib/format";
 import { guard } from "../lib/toast";
 import type { BudgetReport } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const year = ref(new Date().getFullYear());
 const b = ref<BudgetReport>();
@@ -30,10 +31,9 @@ const curMonth = new Date().getMonth();
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Budget {{ year }}</h1><p class="sub">Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel prévu dans la colonne jaune pour suivre l'écart.</p></div>
-    <div class="actions"><button @click="year--">‹ {{ year - 1 }}</button><button @click="year++">{{ year + 1 }} ›</button><button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</button></div>
-  </div>
+  <PageHeader :title="`Budget ${year}`" sub="Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel prévu dans la colonne jaune pour suivre l'écart.">
+    <button @click="year--">‹ {{ year - 1 }}</button><button @click="year++">{{ year + 1 }} ›</button><button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</button>
+  </PageHeader>
 
   <div v-if="b" class="grid c4 mb-3">
     <KpiCard :label="`Revenus ${year}`" :value="eur0(b.yearTotals.income)" tone="pos" card />

@@ -10,6 +10,7 @@ import { PALETTE, eurTick, eurTip } from "../lib/charts";
 import type { PortfolioReport } from "../../core/reports";
 import type { PortfolioHistory } from "../../core/history";
 import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const pf = ref<PortfolioReport>();
 const ops = ref<any[]>([]);
@@ -103,14 +104,11 @@ async function exportOps() {
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Portefeuille</h1><p class="sub">ETF, actions et cryptos. Les cours viennent de Yahoo Finance et CoinGecko ; sans connexion, le cours manuel de secours est utilisé.</p></div>
-    <div class="actions">
-      <button :disabled="refreshing" @click="refresh">{{ refreshing ? "Actualisation…" : "↻ Actualiser les cours" }}</button>
-      <button :disabled="backfilling" title="Télécharge les cours quotidiens depuis le premier achat (courbe et performances par période)" @click="backfill">{{ backfilling ? "Téléchargement…" : "⇩ Historique des cours" }}</button>
-      <button @click="newAsset">+ Actif</button><button class="primary" :disabled="!assets.length" @click="newOp()">+ Opération</button>
-    </div>
-  </div>
+  <PageHeader title="Portefeuille" sub="ETF, actions et cryptos. Les cours viennent de Yahoo Finance et CoinGecko ; sans connexion, le cours manuel de secours est utilisé.">
+    <button :disabled="refreshing" @click="refresh">{{ refreshing ? "Actualisation…" : "↻ Actualiser les cours" }}</button>
+    <button :disabled="backfilling" title="Télécharge les cours quotidiens depuis le premier achat (courbe et performances par période)" @click="backfill">{{ backfilling ? "Téléchargement…" : "⇩ Historique des cours" }}</button>
+    <button @click="newAsset">+ Actif</button><button class="primary" :disabled="!assets.length" @click="newOp()">+ Opération</button>
+  </PageHeader>
 
   <div v-if="pf" class="grid c4 mb-3">
     <KpiCard label="Valeur actuelle" :value="eur(pf.totals.value)" :hint="`Investi : ${eur(pf.invested)} · récupéré : ${eur(pf.recovered)}`" card />

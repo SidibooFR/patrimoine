@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, computed } from "vue";
 import { api, files, isElectron } from "../lib/api";
 import { guard, notify } from "../lib/toast";
@@ -47,8 +48,9 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
 </script>
 
 <template>
-  <div class="page-head"><div><h1>Paramètres</h1><p class="sub">Comptes, catégories, réglages, export et connexion à Claude.</p></div>
-    <div class="actions"><button class="primary" @click="exportExcel">⇪ Exporter tout vers Excel</button></div></div>
+  <PageHeader title="Paramètres" sub="Comptes, catégories, réglages, export et connexion à Claude.">
+    <button class="primary" @click="exportExcel">⇪ Exporter tout vers Excel</button>
+  </PageHeader>
 
   <div class="grid c2">
     <div class="card" style="grid-column: 1 / -1">
