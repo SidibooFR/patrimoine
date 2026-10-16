@@ -4,16 +4,15 @@ import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
-import type { EnvelopeRow } from "../../../core/envelopes";
+import type { EnvelopeKindInfo } from "../../../core/envelopes";
 
-const props = defineProps<{ envelope: any; accounts: any[]; rows: EnvelopeRow[]; kinds: { name: string; ceiling: number | null; ceilingOn: string | null; rate: number | null; help: string }[] }>();
+const props = defineProps<{ envelope: any; accounts: any[]; kinds: EnvelopeKindInfo[] }>();
 const emit = defineEmits<{ close: []; saved: []; remove: [] }>();
 
 // Copie locale : la modale est recréée à chaque ouverture (v-if), la prop n'est pas mutée.
 const draft = ref<any>({ ...props.envelope });
 
-// Calculés sur le brouillon (et non sur la prop) pour suivre les changements de type et de compte.
-const freeAccounts = computed(() => props.accounts.filter((a) => !props.rows.some((r) => r.account_id === a.id) || a.id === draft.value.account_id));
+// Calculé sur le brouillon (et non sur la prop) pour suivre les changements de type.
 const modalKind = computed(() => props.kinds.find((x) => x.name === draft.value.kind));
 
 async function save() {
@@ -31,7 +30,7 @@ async function save() {
 <template>
   <Modal :title="draft.id ? 'Modifier l\'enveloppe' : 'Nouvelle enveloppe'" @close="emit('close')">
     <div class="form">
-      <label class="field">Compte<select v-model="draft.account_id"><option v-for="a in freeAccounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
+      <label class="field">Compte<select v-model="draft.account_id"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
       <label class="field">Type<select v-model="draft.kind"><option v-for="k in kinds" :key="k.name">{{ k.name }}</option></select></label>
       <label class="field">Plafond ({{ cur() }})<input v-model="draft.ceiling" type="number" step="any" :placeholder="modalKind?.ceiling ? 'officiel : ' + modalKind.ceiling.toLocaleString('fr-FR') : 'aucun'" /></label>
       <label class="field">Taux annuel net (%)<input v-model="draft.ratePct" type="number" step="0.01" :placeholder="modalKind?.rate !== null && modalKind?.rate !== undefined ? 'officiel : ' + (modalKind.rate * 100).toLocaleString('fr-FR') : 'constaté si vide'" /></label>
