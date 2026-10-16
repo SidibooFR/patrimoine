@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { update, checkUpdate, installUpdate, describe } from "../../lib/update";
 
-defineProps<{ version: string }>();
+defineProps<{ version?: string }>();
 </script>
 
 <template>
