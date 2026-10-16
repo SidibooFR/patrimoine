@@ -2,7 +2,8 @@
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { Chart, type ChartConfiguration, registerables } from "chart.js";
 Chart.register(...registerables);
-Chart.defaults.color = "#67748a";
+Chart.defaults.color = "#5e5e5e";
+Chart.defaults.borderColor = "#e1e3e1";
 
 const props = defineProps<{ config: ChartConfiguration; height?: number }>();
 const canvas = ref<HTMLCanvasElement>();

@@ -49,7 +49,7 @@ const histChart = computed<any>(() => {
       labels: pts.map((p) => new Date(p.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "2-digit" })),
       datasets: [
         { label: "Valeur", data: pts.map((p) => p.value), borderColor: theme.accent, backgroundColor: rgba(theme.accent, .10), fill: true, tension: .2, pointRadius: 0, borderWidth: 2 },
-        { label: "Montant investi", data: pts.map((p) => p.invested), borderColor: "#67748a", borderDash: [5, 4], pointRadius: 0, borderWidth: 1.5, stepped: true },
+        { label: "Montant investi", data: pts.map((p) => p.invested), borderColor: PALETTE[6], borderDash: [5, 4], pointRadius: 0, borderWidth: 1.5, stepped: true },
       ],
     },
     options: { interaction: { mode: "index", intersect: false }, plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } }, x: { ticks: { maxTicksLimit: 8 } } } },

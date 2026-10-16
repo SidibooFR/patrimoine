@@ -5,7 +5,7 @@ import { eur0, pct, cur } from "../format";
 import { theme } from "../appearance";
 import { guard } from "../toast";
 import Chart from "../components/Chart.vue";
-import { eurTick, eurTip } from "../charts";
+import { PALETTE, eurTick, eurTip } from "../charts";
 import type { ProjectionReport } from "../../core/reports";
 import type { GoalsReport } from "../../core/goals";
 
@@ -35,11 +35,11 @@ async function compute() {
 const chart = computed<any>(() => ({
   type: "line",
   data: { labels: pr.value!.rows.map((r) => r.year), datasets: [
-    { label: "Total versé", data: pr.value!.rows.map((r) => r.paid), borderColor: "#7f8c8d", borderDash: [4, 4], pointRadius: 0 },
-    { label: `Prudent ${p.rateLow} %`, data: pr.value!.rows.map((r) => r.low), borderColor: "#1a7f4b", pointRadius: 0 },
+    { label: "Total versé", data: pr.value!.rows.map((r) => r.paid), borderColor: PALETTE[6], borderDash: [4, 4], pointRadius: 0 },
+    { label: `Prudent ${p.rateLow} %`, data: pr.value!.rows.map((r) => r.low), borderColor: PALETTE[1], pointRadius: 0 },
     { label: `Central ${p.rateMid} %`, data: pr.value!.rows.map((r) => r.mid), borderColor: theme.accent, borderWidth: 3, pointRadius: 0 },
-    { label: `Dynamique ${p.rateHigh} %`, data: pr.value!.rows.map((r) => r.high), borderColor: "#c55a11", pointRadius: 0 },
-    { label: "Objectif", data: pr.value!.rows.map(() => p.goal), borderColor: "#c0392b", borderDash: [2, 4], pointRadius: 0, borderWidth: 1 }] },
+    { label: `Dynamique ${p.rateHigh} %`, data: pr.value!.rows.map((r) => r.high), borderColor: PALETTE[2], pointRadius: 0 },
+    { label: "Objectif", data: pr.value!.rows.map(() => p.goal), borderColor: PALETTE[4], borderDash: [2, 4], pointRadius: 0, borderWidth: 1 }] },
   options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } }, interaction: { mode: "index", intersect: false } },
 }));
 </script>
@@ -79,7 +79,7 @@ const chart = computed<any>(() => ({
     <div class="table-wrap" style="max-height:420px">
       <table>
         <thead><tr><th>Année</th><th class="num">Total versé</th><th class="num">Prudent</th><th class="num">Central</th><th class="num">Dynamique</th><th class="num">Central en {{ cur() }} d'aujourd'hui</th><th class="num">Gains (central)</th></tr></thead>
-        <tbody><tr v-for="r in pr.rows" :key="r.year" :style="r.mid >= p.goal ? 'background:#e7f6ee' : ''"><td>{{ r.year }}</td><td class="num">{{ eur0(r.paid) }}</td><td class="num">{{ eur0(r.low) }}</td><td class="num"><b>{{ eur0(r.mid) }}</b></td><td class="num">{{ eur0(r.high) }}</td><td class="num">{{ eur0(r.midReal) }}</td><td class="num pos">{{ eur0(r.gain) }}</td></tr></tbody>
+        <tbody><tr v-for="r in pr.rows" :key="r.year" :style="r.mid >= p.goal ? 'background:var(--ok-soft)' : ''"><td>{{ r.year }}</td><td class="num">{{ eur0(r.paid) }}</td><td class="num">{{ eur0(r.low) }}</td><td class="num"><b>{{ eur0(r.mid) }}</b></td><td class="num">{{ eur0(r.high) }}</td><td class="num">{{ eur0(r.midReal) }}</td><td class="num pos">{{ eur0(r.gain) }}</td></tr></tbody>
       </table>
     </div>
   </div>

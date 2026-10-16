@@ -101,7 +101,7 @@ async function remove(row: any) {
             <td class="muted ellipsis" style="max-width:200px">{{ r.bank_category }}</td>
             <td class="num" :class="sign(r.amount)">{{ eur(r.amount) }}</td>
             <td>
-              <select :value="r.category_id ?? ''" @change="setCategory(r, ($event.target as HTMLSelectElement).value)" :style="r.category_id ? '' : 'background:#fdf1e6;border-color:#f0b27a'">
+              <select :value="r.category_id ?? ''" @change="setCategory(r, ($event.target as HTMLSelectElement).value)" :style="r.category_id ? '' : 'background:var(--warn-soft);border-color:var(--warn)'">
                 <option value="">? Sans catégorie</option>
                 <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
               </select>

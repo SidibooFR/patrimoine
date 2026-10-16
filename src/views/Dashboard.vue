@@ -5,7 +5,7 @@ import { eur, eur0, pct, monthLong, date, sign } from "../format";
 import { theme, rgba } from "../appearance";
 import { guard } from "../toast";
 import Chart from "../components/Chart.vue";
-import { CLASS_COLORS, eurTick, pctTick, eurTip } from "../charts";
+import { CLASS_COLORS, PALETTE, eurTick, pctTick, eurTip } from "../charts";
 import type { Dashboard } from "../../core/reports";
 
 const d = ref<Dashboard>();
@@ -25,12 +25,12 @@ const classChart = computed<any>(() => {
 const budgetChart = computed<any>(() => ({
   type: "bar",
   data: { labels: d.value!.budgetSeries.months.map((m) => new Date(m + "-01T00:00:00").toLocaleDateString("fr-FR", { month: "short" })),
-    datasets: [{ label: "Revenus", data: d.value!.budgetSeries.income, backgroundColor: "#1a7f4b" }, { label: "Dépenses", data: d.value!.budgetSeries.expense, backgroundColor: "#c0392b" }] },
+    datasets: [{ label: "Revenus", data: d.value!.budgetSeries.income, backgroundColor: PALETTE[1] }, { label: "Dépenses", data: d.value!.budgetSeries.expense, backgroundColor: PALETTE[4] }] },
   options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } } },
 }));
 const rateChart = computed<any>(() => ({
   type: "bar",
-  data: { labels: budgetChart.value.data.labels, datasets: [{ label: "Taux d'épargne", data: d.value!.budgetSeries.rate, backgroundColor: d.value!.budgetSeries.rate.map((r) => (r ?? 0) < 0 ? "#c0392b" : theme.accent) }] },
+  data: { labels: budgetChart.value.data.labels, datasets: [{ label: "Taux d'épargne", data: d.value!.budgetSeries.rate, backgroundColor: d.value!.budgetSeries.rate.map((r) => (r ?? 0) < 0 ? PALETTE[4] : theme.accent) }] },
   options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c: any) => pct(c.parsed.y) } } }, scales: { y: { ticks: { callback: pctTick }, min: -1, max: 1 } } },
 }));
 </script>

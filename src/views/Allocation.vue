@@ -41,7 +41,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
   <div v-if="al" class="grid" style="grid-template-columns: 1fr 420px">
     <div class="card">
       <table>
-        <thead><tr><th>Classe d'actif</th><th class="num">Valeur</th><th class="num">% actuel</th><th class="num" style="background:#fffbe6">% cible</th><th class="num">Écart</th><th class="num">Écart {{ cur() }}</th><th>Action</th></tr></thead>
+        <thead><tr><th>Classe d'actif</th><th class="num">Valeur</th><th class="num">% actuel</th><th class="num" style="background:var(--edit)">% cible</th><th class="num">Écart</th><th class="num">Écart {{ cur() }}</th><th>Action</th></tr></thead>
         <tbody>
           <tr v-for="r in al.rows" :key="r.asset_class">
             <td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px" :style="{ background: CLASS_COLORS[r.asset_class] }"></span>{{ r.asset_class }}</td>
@@ -75,7 +75,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
         <h2>Épargne de précaution</h2>
         <div class="kpi"><span class="label">Disponible (liquidités + épargne sécurisée)</span><span class="value small">{{ eur0(al.emergency.available) }}</span></div>
         <div class="kpi" style="margin-top:8px"><span class="label">Objectif : {{ al.emergency.months }} mois × {{ eur0(al.emergency.avgExpense) }} de dépenses moyennes</span><span class="value small">{{ eur0(al.emergency.goal) }}</span></div>
-        <div class="progress" style="margin:10px 0 6px"><span :style="{ width: Math.min(100, al.emergency.goal ? (al.emergency.available / al.emergency.goal) * 100 : 0) + '%', background: al.emergency.available >= al.emergency.goal ? '#1a7f4b' : '#c55a11' }"></span></div>
+        <div class="progress" style="margin:10px 0 6px"><span :style="{ width: Math.min(100, al.emergency.goal ? (al.emergency.available / al.emergency.goal) * 100 : 0) + '%', background: al.emergency.available >= al.emergency.goal ? 'var(--pos)' : 'var(--warn)' }"></span></div>
         <div :class="al.emergency.available >= al.emergency.goal ? 'pos' : 'warn'"><b>{{ al.emergency.status }}</b> · couverture : {{ al.emergency.coverage === null ? "–" : al.emergency.coverage.toFixed(1) + " mois" }}</div>
       </div>
     </div>

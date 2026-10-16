@@ -62,7 +62,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
                   <td style="white-space:nowrap">{{ date(i.last) }}</td>
                   <td style="white-space:nowrap" :class="{ muted: !i.active }">{{ i.active ? date(i.next) : "–" }}</td>
                 </tr>
-                <tr v-if="open === i.key"><td colspan="7" style="background:#f8fafc">
+                <tr v-if="open === i.key"><td colspan="7" style="background:var(--surface-2)">
                   <div style="display:flex;gap:6px;margin-bottom:8px">
                     <button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')">✓ Confirmer</button>
                     <button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')">✕ Ignorer (pas un abonnement)</button>
