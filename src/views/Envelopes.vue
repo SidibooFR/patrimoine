@@ -5,6 +5,7 @@ import { eur, eur0, pct, date, cur } from "../lib/format";
 import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { EnvelopesReport, EnvelopeRow } from "../../core/envelopes";
+import KpiCard from "../components/KpiCard.vue";
 
 const rep = ref<EnvelopesReport>();
 const accounts = ref<any[]>([]);
@@ -57,10 +58,10 @@ const threshold = 0.5;
 
   <template v-if="rep">
     <div class="grid c4 mb-3">
-      <div class="card kpi"><span class="label">Épargne sur livrets</span><span class="value">{{ eur(rep.totals.balance) }}</span><span class="hint">{{ rep.rows.length }} enveloppe(s) suivie(s)</span></div>
-      <div class="card kpi"><span class="label">Place restante (livrets plafonnés)</span><span class="value">{{ eur0(rep.totals.room) }}</span></div>
-      <div class="card kpi"><span class="label">Intérêts estimés {{ rep.year }}</span><span class="value pos">{{ eur(rep.totals.estimateThisYear) }}</span><span class="hint">dont déjà perçus : {{ eur(rep.totals.interestThisYear) }}</span></div>
-      <div class="card kpi"><span class="label">Gain possible par an</span><span class="value" :class="rep.missed > 0 ? 'warn' : 'pos'">{{ rep.missed > 0 ? "+" + eur(rep.missed) : "–" }}</span><span class="hint">en appliquant les transferts conseillés</span></div>
+      <KpiCard label="Épargne sur livrets" :value="eur(rep.totals.balance)" :hint="`${rep.rows.length} enveloppe(s) suivie(s)`" card />
+      <KpiCard label="Place restante (livrets plafonnés)" :value="eur0(rep.totals.room)" card />
+      <KpiCard :label="`Intérêts estimés ${rep.year}`" :value="eur(rep.totals.estimateThisYear)" :hint="`dont déjà perçus : ${eur(rep.totals.interestThisYear)}`" tone="pos" card />
+      <KpiCard label="Gain possible par an" :value="rep.missed > 0 ? '+' + eur(rep.missed) : '–'" hint="en appliquant les transferts conseillés" :tone="rep.missed > 0 ? 'warn' : 'pos'" card />
     </div>
 
     <div class="card mb-3">
@@ -95,10 +96,9 @@ const threshold = 0.5;
         <div v-else class="help">Pas de plafond · solde <b>{{ eur(r.balance) }}</b></div>
 
         <div class="stat-row">
-          <div class="kpi"><span class="label">Taux net</span><span class="value">{{ r.rate === null ? "–" : pct(r.rate, 2) }}</span><span class="hint">{{ r.rateSource ? RATE_SRC[r.rateSource] : r.ceilingOn === "deposits" ? "selon les placements" : "à renseigner" }}</span></div>
-          <div class="kpi"><span class="label">Intérêts perçus {{ rep.year }}</span><span class="value">{{ eur(r.interestThisYear) }}</span><span class="hint">{{ rep.year - 1 }} : {{ eur(r.interestLastYear) }}</span></div>
-          <div class="kpi"><span class="label">Estimés {{ rep.year }}</span><span class="value pos">{{ r.estimateThisYear === null ? "–" : eur(r.estimateThisYear) }}</span>
-            <span class="hint" v-if="r.estimateAtCeiling !== null">au plafond : {{ eur0(r.estimateAtCeiling) }} / an</span></div>
+          <KpiCard label="Taux net" :value="r.rate === null ? '–' : pct(r.rate, 2)" :hint="r.rateSource ? RATE_SRC[r.rateSource] : r.ceilingOn === 'deposits' ? 'selon les placements' : 'à renseigner'" />
+          <KpiCard :label="`Intérêts perçus ${rep.year}`" :value="eur(r.interestThisYear)" :hint="`${rep.year - 1} : ${eur(r.interestLastYear)}`" />
+          <KpiCard :label="`Estimés ${rep.year}`" :value="r.estimateThisYear === null ? '–' : eur(r.estimateThisYear)" :hint="r.estimateAtCeiling !== null ? `au plafond : ${eur0(r.estimateAtCeiling)} / an` : undefined" tone="pos" />
         </div>
         <p v-if="r.fiveYears" class="note m0">Ancienneté fiscale : 5 ans le <b>{{ date(r.fiveYears) }}</b>. Après cette date, les gains ne sont plus soumis à l'impôt sur le revenu (prélèvements sociaux seuls).</p>
         <p class="help m0">{{ r.help }}<span v-if="r.balanceSource"> Solde au {{ date(r.balanceDate) }} ({{ r.balanceSource }}).</span><span v-if="r.monthly_deposit"> Versement programmé : {{ eur(r.monthly_deposit) }} / mois.</span></p>

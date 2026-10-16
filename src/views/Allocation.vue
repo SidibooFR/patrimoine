@@ -7,6 +7,7 @@ import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
 import { CLASS_COLORS, pctTick } from "../lib/charts";
 import type { AllocationReport } from "../../core/reports";
+import KpiCard from "../components/KpiCard.vue";
 
 const al = ref<AllocationReport>();
 const deposit = ref<number>(400);
@@ -73,8 +74,8 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
       </div>
       <div class="card mt-3">
         <h2>Épargne de précaution</h2>
-        <div class="kpi"><span class="label">Disponible (liquidités + épargne sécurisée)</span><span class="value small">{{ eur0(al.emergency.available) }}</span></div>
-        <div class="kpi mt-1"><span class="label">Objectif : {{ al.emergency.months }} mois × {{ eur0(al.emergency.avgExpense) }} de dépenses moyennes</span><span class="value small">{{ eur0(al.emergency.goal) }}</span></div>
+        <KpiCard label="Disponible (liquidités + épargne sécurisée)" :value="eur0(al.emergency.available)" small />
+        <KpiCard class="mt-1" :label="`Objectif : ${al.emergency.months} mois × ${eur0(al.emergency.avgExpense)} de dépenses moyennes`" :value="eur0(al.emergency.goal)" small />
         <div class="progress" style="margin:10px 0 6px"><span :style="{ width: Math.min(100, al.emergency.goal ? (al.emergency.available / al.emergency.goal) * 100 : 0) + '%', background: al.emergency.available >= al.emergency.goal ? 'var(--pos)' : 'var(--warn)' }"></span></div>
         <div :class="al.emergency.available >= al.emergency.goal ? 'pos' : 'warn'"><b>{{ al.emergency.status }}</b> · couverture : {{ al.emergency.coverage === null ? "–" : al.emergency.coverage.toFixed(1) + " mois" }}</div>
       </div>

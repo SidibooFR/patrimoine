@@ -5,6 +5,7 @@ import { eur, eur0, date } from "../lib/format";
 import { guard, notify } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { RefundsReport, RefundRow } from "../../core/refunds";
+import KpiCard from "../components/KpiCard.vue";
 
 const rep = ref<RefundsReport>();
 const categories = ref<any[]>([]);
@@ -58,10 +59,10 @@ const VIA: Record<string, string> = { expense: "dépense", category: "catégorie
 
   <template v-if="rep">
     <div class="grid c4 mb-3">
-      <div class="card kpi"><span class="label">Remboursements reçus</span><span class="value">{{ eur0(rep.totals.amount) }}</span><span class="hint">{{ rep.totals.count }} virement(s)</span></div>
-      <div class="card kpi"><span class="label">Rapprochés</span><span class="value pos">{{ eur0(rep.totals.linkedAmount) }}</span><span class="hint">{{ rep.totals.linked }} · déduits des dépenses</span></div>
-      <div class="card kpi"><span class="label">À rapprocher</span><span class="value" :class="rep.totals.unlinked ? 'warn' : 'pos'">{{ eur0(rep.totals.unlinkedAmount) }}</span><span class="hint">{{ rep.totals.unlinked }} · comptés comme revenus</span></div>
-      <div class="card kpi"><span class="label">Règles payeur</span><span class="value">{{ rep.rules.length }}</span><span class="hint">rapprochement automatique</span></div>
+      <KpiCard label="Remboursements reçus" :value="eur0(rep.totals.amount)" :hint="`${rep.totals.count} virement(s)`" card />
+      <KpiCard label="Rapprochés" :value="eur0(rep.totals.linkedAmount)" :hint="`${rep.totals.linked} · déduits des dépenses`" tone="pos" card />
+      <KpiCard label="À rapprocher" :value="eur0(rep.totals.unlinkedAmount)" :hint="`${rep.totals.unlinked} · comptés comme revenus`" :tone="rep.totals.unlinked ? 'warn' : 'pos'" card />
+      <KpiCard label="Règles payeur" :value="rep.rules.length" hint="rapprochement automatique" card />
     </div>
     <div v-if="!rep.categoryId" class="note warn mb-2">La catégorie « Remboursements » n'existe pas : crée-la dans Paramètres pour que les remboursements soient repérés.</div>
 

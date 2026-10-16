@@ -9,6 +9,7 @@ import Chart from "../components/Chart.vue";
 import { PALETTE, eurTick, eurTip } from "../lib/charts";
 import type { PortfolioReport } from "../../core/reports";
 import type { PortfolioHistory } from "../../core/history";
+import KpiCard from "../components/KpiCard.vue";
 
 const pf = ref<PortfolioReport>();
 const ops = ref<any[]>([]);
@@ -112,11 +113,14 @@ async function exportOps() {
   </div>
 
   <div v-if="pf" class="grid c4 mb-3">
-    <div class="card kpi"><span class="label">Valeur actuelle</span><span class="value">{{ eur(pf.totals.value) }}</span><span class="hint">Investi : {{ eur(pf.invested) }} · récupéré : {{ eur(pf.recovered) }}</span></div>
-    <div class="card kpi"><span class="label">Plus-value latente</span><span class="value" :class="sign(pf.totals.unrealized)">{{ eur(pf.totals.unrealized) }}</span><span class="hint" :class="sign(pf.totals.unrealizedPct)">{{ pct(pf.totals.unrealizedPct) }} du prix de revient</span></div>
-    <div class="card kpi"><span class="label">Gain total</span><span class="value" :class="sign(pf.gain)">{{ eur(pf.gain) }}</span><span class="hint">latent + réalisé ({{ eur(pf.totals.realized) }}) + dividendes ({{ eur(pf.totals.dividends) }}) · perf. {{ pct(pf.performance) }}</span></div>
-    <div class="card kpi"><span class="label">Rendement annualisé (TRI) <span v-if="!pf.irrInfo.reliable" class="tag warn" :title="pf.irrInfo.note ?? ''">peu fiable</span></span><span class="value" :class="sign(pf.irr)">{{ pct(pf.irr) }}</span>
-      <span class="hint">{{ pf.irrInfo.note ? pf.irrInfo.note[0].toUpperCase() + pf.irrInfo.note.slice(1) + "." : "Tient compte des dates de chaque versement." }}</span></div>
+    <KpiCard label="Valeur actuelle" :value="eur(pf.totals.value)" :hint="`Investi : ${eur(pf.invested)} · récupéré : ${eur(pf.recovered)}`" card />
+    <KpiCard label="Plus-value latente" :value="eur(pf.totals.unrealized)" :tone="sign(pf.totals.unrealized)" card>
+      <template #hint><span :class="sign(pf.totals.unrealizedPct)">{{ pct(pf.totals.unrealizedPct) }} du prix de revient</span></template>
+    </KpiCard>
+    <KpiCard label="Gain total" :value="eur(pf.gain)" :hint="`latent + réalisé (${eur(pf.totals.realized)}) + dividendes (${eur(pf.totals.dividends)}) · perf. ${pct(pf.performance)}`" :tone="sign(pf.gain)" card />
+    <KpiCard card :value="pct(pf.irr)" :tone="sign(pf.irr)" :hint="pf.irrInfo.note ? pf.irrInfo.note[0].toUpperCase() + pf.irrInfo.note.slice(1) + '.' : 'Tient compte des dates de chaque versement.'">
+      <template #label>Rendement annualisé (TRI) <span v-if="!pf.irrInfo.reliable" class="tag warn" :title="pf.irrInfo.note ?? ''">peu fiable</span></template>
+    </KpiCard>
   </div>
   <div v-if="lastRefresh" class="note mb-2" :class="lastRefresh.failed.length ? 'warn' : 'ok'">
     Cours actualisés le {{ new Date(lastRefresh.at).toLocaleString("fr-FR") }} : {{ lastRefresh.updated }} actif(s).<span v-if="lastRefresh.failed.length"> Sans cours web : {{ lastRefresh.failed.join(", ") }} — vérifie le symbole ou renseigne un cours manuel.</span>

@@ -5,6 +5,7 @@ import { eur, eur0, pct, date } from "../lib/format";
 import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { RecurringReport, Recurring } from "../../core/recurring";
+import KpiCard from "../components/KpiCard.vue";
 
 const rep = ref<RecurringReport>();
 const show = ref<"actifs" | "tous">("actifs");
@@ -36,10 +37,10 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
 
   <template v-if="rep">
     <div class="grid c4 mb-3">
-      <div class="card kpi"><span class="label">Charges fixes par mois</span><span class="value">{{ eur(rep.totals.monthly) }}</span><span class="hint">{{ rep.totals.count }} prélèvement(s) récurrent(s) en cours</span></div>
-      <div class="card kpi"><span class="label">Sur un an</span><span class="value">{{ eur0(rep.totals.annual) }}</span></div>
-      <div class="card kpi"><span class="label">Hausses de prix récentes</span><span class="value" :class="rep.increases.length ? 'warn' : 'pos'">{{ rep.increases.length || "Aucune" }}</span><span class="hint">sur les 90 derniers jours</span></div>
-      <div class="card kpi"><span class="label">Historique analysé</span><span class="value small">depuis le {{ date(rep.since) }}</span><span class="hint">Plus l'historique est long, plus la détection est sûre (abonnements annuels compris).</span></div>
+      <KpiCard label="Charges fixes par mois" :value="eur(rep.totals.monthly)" :hint="`${rep.totals.count} prélèvement(s) récurrent(s) en cours`" card />
+      <KpiCard label="Sur un an" :value="eur0(rep.totals.annual)" card />
+      <KpiCard label="Hausses de prix récentes" :value="rep.increases.length || 'Aucune'" hint="sur les 90 derniers jours" :tone="rep.increases.length ? 'warn' : 'pos'" card />
+      <KpiCard label="Historique analysé" :value="`depuis le ${date(rep.since)}`" hint="Plus l'historique est long, plus la détection est sûre (abonnements annuels compris)." small card />
     </div>
 
     <div v-for="i in rep.increases" :key="'inc' + i.key" class="note warn" style="margin-bottom:8px">

@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { eur0, pct, sign } from "../lib/format";
 import { guard } from "../lib/toast";
 import type { BudgetReport } from "../../core/reports";
+import KpiCard from "../components/KpiCard.vue";
 
 const year = ref(new Date().getFullYear());
 const b = ref<BudgetReport>();
@@ -35,10 +36,12 @@ const curMonth = new Date().getMonth();
   </div>
 
   <div v-if="b" class="grid c4 mb-3">
-    <div class="card kpi"><span class="label">Revenus {{ year }}</span><span class="value pos">{{ eur0(b.yearTotals.income) }}</span></div>
-    <div class="card kpi"><span class="label">Dépenses {{ year }}</span><span class="value neg">{{ eur0(b.yearTotals.expense) }}</span><span class="hint">{{ eur0(b.yearTotals.avgExpense) }} / mois en moyenne</span></div>
-    <div class="card kpi"><span class="label">Reste (revenus − dépenses)</span><span class="value" :class="sign(b.yearTotals.remaining)">{{ eur0(b.yearTotals.remaining) }}</span></div>
-    <div class="card kpi"><span class="label">Taux d'épargne {{ year }}</span><span class="value" :class="sign(b.yearTotals.rate)">{{ pct(b.yearTotals.rate) }}</span><span v-if="b.uncategorized" class="hint warn">{{ b.uncategorized }} opération(s) sans catégorie non comptées</span></div>
+    <KpiCard :label="`Revenus ${year}`" :value="eur0(b.yearTotals.income)" tone="pos" card />
+    <KpiCard :label="`Dépenses ${year}`" :value="eur0(b.yearTotals.expense)" :hint="`${eur0(b.yearTotals.avgExpense)} / mois en moyenne`" tone="neg" card />
+    <KpiCard label="Reste (revenus − dépenses)" :value="eur0(b.yearTotals.remaining)" :tone="sign(b.yearTotals.remaining)" card />
+    <KpiCard card :label="`Taux d'épargne ${year}`" :value="pct(b.yearTotals.rate)" :tone="sign(b.yearTotals.rate)">
+      <template v-if="b.uncategorized" #hint><span class="warn">{{ b.uncategorized }} opération(s) sans catégorie non comptées</span></template>
+    </KpiCard>
   </div>
 
   <div v-if="b" class="card pad0">
