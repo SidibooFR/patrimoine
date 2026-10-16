@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api, files, isElectron } from "../api";
-import { guard, notify } from "../toast";
-import { appearance, applyAppearance, fromSettings, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES, DEFAULT_ACCENT, DEFAULT_FONT } from "../appearance";
-import { eur } from "../format";
-import { update, checkUpdate, installUpdate, describe } from "../update";
+import { api, files, isElectron } from "../lib/api";
+import { guard, notify } from "../lib/toast";
+import { appearance, applyAppearance, fromSettings, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES, DEFAULT_ACCENT, DEFAULT_FONT } from "../lib/appearance";
+import { eur } from "../lib/format";
+import { update, checkUpdate, installUpdate, describe } from "../lib/update";
 
 const accounts = ref<any[]>([]);
 const categories = ref<any[]>([]);

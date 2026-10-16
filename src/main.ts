@@ -3,7 +3,7 @@ import App from "./App.vue";
 import { router } from "./router";
 import "@fontsource-variable/roboto";
 import "./style.css";
-import { applyCachedAppearance } from "./appearance";
+import { applyCachedAppearance } from "./lib/appearance";
 
 applyCachedAppearance();
 

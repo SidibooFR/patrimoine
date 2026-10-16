@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { routes } from "./router";
-import { toast } from "./toast";
+import { toast } from "./lib/toast";
 import { ref, onMounted } from "vue";
-import { api } from "./api";
-import { applyAppearance, fromSettings } from "./appearance";
-import { update, installUpdate } from "./update";
+import { api } from "./lib/api";
+import { applyAppearance, fromSettings } from "./lib/appearance";
+import { update, installUpdate } from "./lib/update";
 const version = ref("");
 onMounted(async () => {
   try { version.value = (await api.meta()).version; applyAppearance(fromSettings(await api.settings())); } catch { /* hors Electron sans API */ }

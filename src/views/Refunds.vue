@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from "vue";
-import { api } from "../api";
-import { eur, eur0, date } from "../format";
-import { guard, notify } from "../toast";
+import { api } from "../lib/api";
+import { eur, eur0, date } from "../lib/format";
+import { guard, notify } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { RefundsReport, RefundRow } from "../../core/refunds";
 

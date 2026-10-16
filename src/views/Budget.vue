@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
-import { api } from "../api";
-import { eur0, pct, sign } from "../format";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur0, pct, sign } from "../lib/format";
+import { guard } from "../lib/toast";
 import type { BudgetReport } from "../../core/reports";
 
 const year = ref(new Date().getFullYear());

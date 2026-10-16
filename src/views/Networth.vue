@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api } from "../api";
-import { eur0, pct, sign, month, thisMonth, date } from "../format";
-import { guard, notify } from "../toast";
+import { api } from "../lib/api";
+import { eur0, pct, sign, month, thisMonth, date } from "../lib/format";
+import { guard, notify } from "../lib/toast";
 import Chart from "../components/Chart.vue";
-import { CLASS_COLORS, eurTick, eurTip } from "../charts";
+import { CLASS_COLORS, eurTick, eurTip } from "../lib/charts";
 
 const nw = ref<Awaited<ReturnType<typeof api.networth>>>();
 const suggested = ref<Record<number, { balance: number; date: string }>>({});

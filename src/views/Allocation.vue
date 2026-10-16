@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from "vue";
-import { api } from "../api";
-import { eur0, pct, sign, monthLong, cur } from "../format";
-import { theme, rgba } from "../appearance";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur0, pct, sign, monthLong, cur } from "../lib/format";
+import { theme, rgba } from "../lib/appearance";
+import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
-import { CLASS_COLORS, pctTick } from "../charts";
+import { CLASS_COLORS, pctTick } from "../lib/charts";
 import type { AllocationReport } from "../../core/reports";
 
 const al = ref<AllocationReport>();

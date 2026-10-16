@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api, files } from "../api";
-import { eur, eur0, pct, num, sign, date, todayIso, cur } from "../format";
-import { theme, rgba } from "../appearance";
-import { guard, notify } from "../toast";
+import { api, files } from "../lib/api";
+import { eur, eur0, pct, num, sign, date, todayIso, cur } from "../lib/format";
+import { theme, rgba } from "../lib/appearance";
+import { guard, notify } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import Chart from "../components/Chart.vue";
-import { PALETTE, eurTick, eurTip } from "../charts";
+import { PALETTE, eurTick, eurTip } from "../lib/charts";
 import type { PortfolioReport } from "../../core/reports";
 import type { PortfolioHistory } from "../../core/history";
 

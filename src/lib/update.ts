@@ -1,6 +1,6 @@
 /** État des mises à jour de l'application, partagé entre la barre latérale et les paramètres. */
 import { ref } from "vue";
-import type { UpdateState } from "../electron/updater";
+import type { UpdateState } from "../../electron/updater";
 
 const bridge = window.patrimoine?.update;
 export const update = ref<UpdateState>(bridge ? { status: "idle" } : { status: "unsupported", reason: "Mode navigateur" });

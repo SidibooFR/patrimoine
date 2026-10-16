@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive, watch, computed } from "vue";
-import { api } from "../api";
-import { eur, date, sign, todayIso, cur } from "../format";
-import { guard, notify } from "../toast";
+import { api } from "../lib/api";
+import { eur, date, sign, todayIso, cur } from "../lib/format";
+import { guard, notify } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 
 const accounts = ref<any[]>([]);

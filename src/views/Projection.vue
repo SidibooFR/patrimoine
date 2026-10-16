@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed, watch } from "vue";
-import { api } from "../api";
-import { eur0, pct, cur } from "../format";
-import { theme } from "../appearance";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur0, pct, cur } from "../lib/format";
+import { theme } from "../lib/appearance";
+import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
-import { PALETTE, eurTick, eurTip } from "../charts";
+import { PALETTE, eurTick, eurTip } from "../lib/charts";
 import type { ProjectionReport } from "../../core/reports";
 import type { GoalsReport } from "../../core/goals";
 

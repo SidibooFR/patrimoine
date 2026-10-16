@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { api, files } from "../api";
-import { eur, date } from "../format";
-import { guard } from "../toast";
+import { api, files } from "../lib/api";
+import { eur, date } from "../lib/format";
+import { guard } from "../lib/toast";
 
 const previews = ref<{ file: string; preview: any; result?: any; error?: string }[]>([]);
 const busy = ref(false);

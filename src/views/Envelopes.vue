@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api } from "../api";
-import { eur, eur0, pct, date, cur } from "../format";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur, eur0, pct, date, cur } from "../lib/format";
+import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { EnvelopesReport, EnvelopeRow } from "../../core/envelopes";
 

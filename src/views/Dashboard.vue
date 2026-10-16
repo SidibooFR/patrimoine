@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api } from "../api";
-import { eur, eur0, pct, monthLong, date, sign } from "../format";
-import { theme, rgba } from "../appearance";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur, eur0, pct, monthLong, date, sign } from "../lib/format";
+import { theme, rgba } from "../lib/appearance";
+import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
-import { CLASS_COLORS, PALETTE, eurTick, pctTick, eurTip } from "../charts";
+import { CLASS_COLORS, PALETTE, eurTick, pctTick, eurTip } from "../lib/charts";
 import type { Dashboard } from "../../core/reports";
 
 const d = ref<Dashboard>();

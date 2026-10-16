@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api } from "../api";
-import { guard, notify } from "../toast";
+import { api } from "../lib/api";
+import { guard, notify } from "../lib/toast";
 
 const rules = ref<any[]>([]);
 const bankMap = ref<any[]>([]);
