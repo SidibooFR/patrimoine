@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, reactive, computed, watch } from "vue";
-import { api } from "../api";
-import { eur0, pct, cur } from "../format";
-import { theme } from "../appearance";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur0, cur } from "../lib/format";
+import { theme } from "../lib/appearance";
+import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
-import { PALETTE, eurTick, eurTip } from "../charts";
+import { PALETTE, eurTick, eurTip } from "../lib/charts";
 import type { ProjectionReport } from "../../core/reports";
 import type { GoalsReport } from "../../core/goals";
 
@@ -45,9 +46,7 @@ const chart = computed<any>(() => ({
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Projection</h1><p class="sub">Simulation à intérêts composés. Les rendements sont des hypothèses, pas des promesses : les marchés connaissent des années négatives.</p></div>
-  </div>
+  <PageHeader title="Projection" sub="Simulation à intérêts composés. Les rendements sont des hypothèses, pas des promesses : les marchés connaissent des années négatives." />
   <div v-if="pr" class="grid" style="grid-template-columns: 300px 1fr">
     <div class="card">
       <h2>Hypothèses</h2>
@@ -63,7 +62,7 @@ const chart = computed<any>(() => ({
         <label class="field">Objectif de patrimoine ({{ cur() }})<input v-model.number="p.goal" type="number" step="10000" /></label>
         <label class="field">Horizon (années)<input v-model.number="p.years" type="number" min="1" max="50" /></label>
       </div>
-      <div class="note" style="margin-top:14px">
+      <div class="note mt-2">
         <b>Objectif {{ eur0(p.goal) }}</b> atteint en <b>{{ pr.goalYears === null ? "jamais" : pr.goalYears.toFixed(1) + " ans" }}</b><span v-if="pr.goalYear"> (vers {{ pr.goalYear }})</span> dans le scénario central.
       </div>
       <div v-if="goals && activeGoals.length" class="note" :class="p.monthly >= goals.totals.monthlyNeeded ? 'ok' : 'warn'" style="margin-top:10px">
@@ -75,7 +74,7 @@ const chart = computed<any>(() => ({
     </div>
     <div class="card"><Chart :config="chart" :height="380" /></div>
   </div>
-  <div v-if="pr" class="card pad0" style="margin-top:16px">
+  <div v-if="pr" class="card pad0 mt-3">
     <div class="table-wrap" style="max-height:420px">
       <table>
         <thead><tr><th>Année</th><th class="num">Total versé</th><th class="num">Prudent</th><th class="num">Central</th><th class="num">Dynamique</th><th class="num">Central en {{ cur() }} d'aujourd'hui</th><th class="num">Gains (central)</th></tr></thead>

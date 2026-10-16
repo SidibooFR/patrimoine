@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
-import { api } from "../api";
-import { eur, eur0, pct, date } from "../format";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur, eur0, pct, date } from "../lib/format";
+import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
 import type { RecurringReport, Recurring } from "../../core/recurring";
+import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const rep = ref<RecurringReport>();
 const show = ref<"actifs" | "tous">("actifs");
@@ -29,17 +31,16 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Abonnements &amp; charges fixes</h1><p class="sub">Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.</p></div>
-    <div class="actions"><div class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div></div>
-  </div>
+  <PageHeader title="Abonnements & charges fixes" sub="Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.">
+    <div class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div>
+  </PageHeader>
 
   <template v-if="rep">
-    <div class="grid c4" style="margin-bottom:16px">
-      <div class="card kpi"><span class="label">Charges fixes par mois</span><span class="value">{{ eur(rep.totals.monthly) }}</span><span class="hint">{{ rep.totals.count }} prélèvement(s) récurrent(s) en cours</span></div>
-      <div class="card kpi"><span class="label">Sur un an</span><span class="value">{{ eur0(rep.totals.annual) }}</span></div>
-      <div class="card kpi"><span class="label">Hausses de prix récentes</span><span class="value" :class="rep.increases.length ? 'warn' : 'pos'">{{ rep.increases.length || "Aucune" }}</span><span class="hint">sur les 90 derniers jours</span></div>
-      <div class="card kpi"><span class="label">Historique analysé</span><span class="value small">depuis le {{ date(rep.since) }}</span><span class="hint">Plus l'historique est long, plus la détection est sûre (abonnements annuels compris).</span></div>
+    <div class="grid c4 mb-3">
+      <KpiCard label="Charges fixes par mois" :value="eur(rep.totals.monthly)" :hint="`${rep.totals.count} prélèvement(s) récurrent(s) en cours`" card />
+      <KpiCard label="Sur un an" :value="eur0(rep.totals.annual)" card />
+      <KpiCard label="Hausses de prix récentes" :value="rep.increases.length || 'Aucune'" hint="sur les 90 derniers jours" :tone="rep.increases.length ? 'warn' : 'pos'" card />
+      <KpiCard label="Historique analysé" :value="`depuis le ${date(rep.since)}`" hint="Plus l'historique est long, plus la détection est sûre (abonnements annuels compris)." small card />
     </div>
 
     <div v-for="i in rep.increases" :key="'inc' + i.key" class="note warn" style="margin-bottom:8px">
@@ -54,16 +55,16 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
             <tbody>
               <template v-for="i in rows" :key="i.key">
                 <tr class="clickable" :class="{ muted: !i.active || i.status === 'ignored' }" @click="open = open === i.key ? null : i.key">
-                  <td style="max-width:230px"><b style="white-space:nowrap">{{ i.label }}</b> <span v-if="i.status === 'confirmed'" class="tag ok" title="Confirmé">✓</span><span v-if="i.status === 'ignored'" class="tag">ignoré</span><span v-if="!i.active" class="tag warn" title="Plus de prélèvement depuis plus d'une période et demie">arrêté ?</span><div class="help ellipsis" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ i.account }} · {{ i.count }} paiements</div></td>
+                  <td style="max-width:230px"><b class="nowrap">{{ i.label }}</b> <span v-if="i.status === 'confirmed'" class="tag ok" title="Confirmé">✓</span><span v-if="i.status === 'ignored'" class="tag">ignoré</span><span v-if="!i.active" class="tag warn" title="Plus de prélèvement depuis plus d'une période et demie">arrêté ?</span><div class="help ellipsis" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ i.account }} · {{ i.count }} paiements</div></td>
                   <td class="muted ellipsis" style="max-width:120px" :title="i.category ?? ''">{{ i.category ?? "–" }}</td>
-                  <td style="white-space:nowrap">{{ freq(i.frequency) }}</td>
+                  <td class="nowrap">{{ freq(i.frequency) }}</td>
                   <td class="num">{{ eur(i.lastAmount) }}<div v-if="i.change" class="tag" :class="i.change.kind === 'hausse' ? 'neg' : 'ok'" style="margin-top:2px">{{ i.change.kind === "hausse" ? "▲" : "▼" }} {{ pct(Math.abs(i.change.pct), 0) }}</div></td>
                   <td class="num"><b>{{ eur0(i.annual) }}</b></td>
-                  <td style="white-space:nowrap">{{ date(i.last) }}</td>
-                  <td style="white-space:nowrap" :class="{ muted: !i.active }">{{ i.active ? date(i.next) : "–" }}</td>
+                  <td class="nowrap">{{ date(i.last) }}</td>
+                  <td :class="{ muted: !i.active }" class="nowrap">{{ i.active ? date(i.next) : "–" }}</td>
                 </tr>
                 <tr v-if="open === i.key"><td colspan="7" style="background:var(--surface-2)">
-                  <div style="display:flex;gap:6px;margin-bottom:8px">
+                  <div class="row-actions mb-1">
                     <button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')">✓ Confirmer</button>
                     <button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')">✕ Ignorer (pas un abonnement)</button>
                     <button v-if="i.status !== 'auto'" class="small" @click="setStatus(i, 'auto')">↶ Annuler ma décision</button>
@@ -71,7 +72,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
                   </div>
                   <div class="help" style="margin-bottom:4px">Paiements détectés :</div>
                   <span v-for="o in i.occurrences" :key="o.id" class="tag" style="margin:2px 6px 2px 0">{{ date(o.date) }} · {{ eur(o.amount) }}</span>
-                  <div class="help" style="margin-top:6px">Libellé bancaire : {{ i.occurrences[i.occurrences.length - 1].label }}</div>
+                  <div class="help mt-1">Libellé bancaire : {{ i.occurrences[i.occurrences.length - 1].label }}</div>
                 </td></tr>
               </template>
             </tbody>
@@ -86,7 +87,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
           <div class="progress"><span :style="{ width: (c.monthly / maxCat) * 100 + '%' }"></span></div>
           <div class="help">{{ c.count }} · {{ eur0(c.annual) }} / an</div>
         </div>
-        <p class="help" style="margin-top:12px">Clique sur une ligne pour voir les paiements, confirmer, ignorer ou renommer.</p>
+        <p class="help mt-2">Clique sur une ligne pour voir les paiements, confirmer, ignorer ou renommer.</p>
         <p class="help">Catégories exclues de la détection (dépenses variables) : {{ rep.excludedCategories.join(", ") || "aucune" }}. Modifiable dans Paramètres.</p>
       </div>
     </div>

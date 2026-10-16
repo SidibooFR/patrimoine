@@ -1,6 +1,6 @@
 /** Client API côté interface : Electron (IPC) ou serveur de dev Vite (HTTP). */
-import type { Api } from "../core/api";
-import type { UpdateState } from "../electron/updater";
+import type { Api } from "../../core/api";
+import type { UpdateState } from "../../electron/updater";
 
 type Bridge = {
   call: (m: string, a: unknown[]) => Promise<{ ok: boolean; value?: unknown; error?: string }>;

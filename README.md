@@ -137,7 +137,7 @@ core/        cœur métier partagé (db.ts, migrate.ts, importers.ts, categorize
              recurring.ts, goals.ts, refunds.ts, history.ts, prices.ts, export.ts, api.ts)
 electron/    processus principal + preload (pont IPC → core/api.ts), mises à jour automatiques (updater.ts)
 mcp/         serveur MCP stdio (→ core/api.ts)
-src/         interface Vue 3 (views/, components/, api.ts client IPC/HTTP)
+src/         interface Vue 3 (views/, components/, lib/api.ts client IPC/HTTP)
 tests/       vitest + fixtures (exports bancaires réels)
 scripts/     copie du wasm SQLite, exécution de scripts TS, construction d'une base pré-remplie
 ```

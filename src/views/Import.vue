@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref } from "vue";
-import { api, files } from "../api";
-import { eur, date } from "../format";
-import { guard } from "../toast";
+import { api, files } from "../lib/api";
+import { eur, date } from "../lib/format";
+import { guard } from "../lib/toast";
 
 const previews = ref<{ file: string; preview: any; result?: any; error?: string }[]>([]);
 const busy = ref(false);
@@ -41,10 +42,9 @@ async function setMapAccount(m: any, v: string) { await guard(() => api.saveImpo
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Importer des relevés</h1><p class="sub">Exports BNP Paribas (.xls), Boursobank (.xlsx) et Revolut (.csv). La banque est détectée automatiquement, les doublons ignorés, les opérations catégorisées selon tes règles.</p></div>
-    <div class="actions"><button class="primary" @click="choose">Choisir des fichiers…</button><button v-if="previews.length" @click="clear">Vider</button></div>
-  </div>
+  <PageHeader title="Importer des relevés" sub="Exports BNP Paribas (.xls), Boursobank (.xlsx) et Revolut (.csv). La banque est détectée automatiquement, les doublons ignorés, les opérations catégorisées selon tes règles.">
+    <button class="primary" @click="choose">Choisir des fichiers…</button><button v-if="previews.length" @click="clear">Vider</button>
+  </PageHeader>
 
   <div v-if="!previews.length" class="card">
     <h2>Comment exporter</h2>
@@ -53,10 +53,10 @@ async function setMapAccount(m: any, v: string) { await guard(() => api.saveImpo
       <div><b>Boursobank</b><p class="help">Compte → Mouvements → Exporter → <b>Excel (.xlsx)</b>. Un fichier par compte (courant, LEP…) : le compte est reconnu grâce à son libellé.</p></div>
       <div><b>Revolut</b><p class="help">Comptes → Relevé → format <b>CSV</b>, tous comptes. Le compte courant et le compte d'épargne sont séparés automatiquement.</p></div>
     </div>
-    <p class="help" style="margin-top:8px">Tu peux ré-importer un export qui chevauche le précédent : les opérations déjà présentes sont ignorées.</p>
+    <p class="help mt-1">Tu peux ré-importer un export qui chevauche le précédent : les opérations déjà présentes sont ignorées.</p>
   </div>
 
-  <div v-for="p in previews" :key="p.file" class="card" style="margin-bottom:12px">
+  <div v-for="p in previews" :key="p.file" class="card mb-2">
     <div class="card-title">
       <div><b>{{ p.file.split(/[\\/]/).pop() }}</b> <span v-if="p.preview" class="tag">{{ SOURCE_LABEL[p.preview.source] }}</span></div>
       <div v-if="p.result" class="tag ok">Importé</div>

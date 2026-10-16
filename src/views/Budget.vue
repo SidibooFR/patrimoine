@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
-import { api } from "../api";
-import { eur0, pct, sign } from "../format";
-import { guard } from "../toast";
+import { api } from "../lib/api";
+import { eur0, pct, sign } from "../lib/format";
+import { guard } from "../lib/toast";
 import type { BudgetReport } from "../../core/reports";
+import KpiCard from "../components/KpiCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const year = ref(new Date().getFullYear());
 const b = ref<BudgetReport>();
@@ -29,16 +31,17 @@ const curMonth = new Date().getMonth();
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Budget {{ year }}</h1><p class="sub">Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel prévu dans la colonne jaune pour suivre l'écart.</p></div>
-    <div class="actions"><button @click="year--">‹ {{ year - 1 }}</button><button @click="year++">{{ year + 1 }} ›</button><button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</button></div>
-  </div>
+  <PageHeader :title="`Budget ${year}`" sub="Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel prévu dans la colonne jaune pour suivre l'écart.">
+    <button @click="year--">‹ {{ year - 1 }}</button><button @click="year++">{{ year + 1 }} ›</button><button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</button>
+  </PageHeader>
 
-  <div v-if="b" class="grid c4" style="margin-bottom:16px">
-    <div class="card kpi"><span class="label">Revenus {{ year }}</span><span class="value pos">{{ eur0(b.yearTotals.income) }}</span></div>
-    <div class="card kpi"><span class="label">Dépenses {{ year }}</span><span class="value neg">{{ eur0(b.yearTotals.expense) }}</span><span class="hint">{{ eur0(b.yearTotals.avgExpense) }} / mois en moyenne</span></div>
-    <div class="card kpi"><span class="label">Reste (revenus − dépenses)</span><span class="value" :class="sign(b.yearTotals.remaining)">{{ eur0(b.yearTotals.remaining) }}</span></div>
-    <div class="card kpi"><span class="label">Taux d'épargne {{ year }}</span><span class="value" :class="sign(b.yearTotals.rate)">{{ pct(b.yearTotals.rate) }}</span><span v-if="b.uncategorized" class="hint warn">{{ b.uncategorized }} opération(s) sans catégorie non comptées</span></div>
+  <div v-if="b" class="grid c4 mb-3">
+    <KpiCard :label="`Revenus ${year}`" :value="eur0(b.yearTotals.income)" tone="pos" card />
+    <KpiCard :label="`Dépenses ${year}`" :value="eur0(b.yearTotals.expense)" :hint="`${eur0(b.yearTotals.avgExpense)} / mois en moyenne`" tone="neg" card />
+    <KpiCard label="Reste (revenus − dépenses)" :value="eur0(b.yearTotals.remaining)" :tone="sign(b.yearTotals.remaining)" card />
+    <KpiCard card :label="`Taux d'épargne ${year}`" :value="pct(b.yearTotals.rate)" :tone="sign(b.yearTotals.rate)">
+      <template v-if="b.uncategorized" #hint><span class="warn">{{ b.uncategorized }} opération(s) sans catégorie non comptées</span></template>
+    </KpiCard>
   </div>
 
   <div v-if="b" class="card pad0">

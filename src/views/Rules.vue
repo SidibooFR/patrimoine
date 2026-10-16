@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, computed } from "vue";
-import { api } from "../api";
-import { guard, notify } from "../toast";
+import { api } from "../lib/api";
+import { guard, notify } from "../lib/toast";
 
 const rules = ref<any[]>([]);
 const bankMap = ref<any[]>([]);
@@ -45,13 +46,11 @@ async function quickAdd(label: string) {
 </script>
 
 <template>
-  <div class="page-head">
-    <div><h1>Règles de catégorisation</h1>
-      <p class="sub">1) Un mot-clé trouvé dans le libellé donne la catégorie (le mot-clé le plus long l'emporte). 2) Sinon, la catégorie proposée par la banque est convertie. 3) Sinon l'opération reste à catégoriser.</p></div>
-    <div class="actions"><button @click="recat">↻ Recatégoriser tout</button></div>
-  </div>
+  <PageHeader title="Règles de catégorisation" sub="1) Un mot-clé trouvé dans le libellé donne la catégorie (le mot-clé le plus long l'emporte). 2) Sinon, la catégorie proposée par la banque est convertie. 3) Sinon l'opération reste à catégoriser.">
+    <button @click="recat">↻ Recatégoriser tout</button>
+  </PageHeader>
 
-  <div v-if="unmapped.length" class="card" style="margin-bottom:16px">
+  <div v-if="unmapped.length" class="card mb-3">
     <h2>Catégories bancaires sans correspondance</h2>
     <p class="help">Ces catégories apparaissent dans tes exports sur des opérations encore non classées. Associe-les en un clic.</p>
     <table>
@@ -63,16 +62,16 @@ async function quickAdd(label: string) {
 
   <div class="grid c2">
     <div class="card">
-      <div class="card-title"><h2 style="margin:0">Mots-clés ({{ rules.length }})</h2><input v-model="search" placeholder="Filtrer…" /></div>
+      <div class="card-title"><h2>Mots-clés ({{ rules.length }})</h2><input v-model="search" placeholder="Filtrer…" /></div>
       <table>
         <thead><tr><th>Mot-clé</th><th>Catégorie</th><th></th></tr></thead>
         <tbody>
-          <tr><td><input v-model="newRule.keyword" placeholder="Nouveau mot-clé" style="width:100%" @keyup.enter="addRule" /></td>
-            <td><select v-model="newRule.category_id" style="width:100%"><option value="" disabled>Catégorie…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
+          <tr><td><input v-model="newRule.keyword" placeholder="Nouveau mot-clé" @keyup.enter="addRule" class="w-full" /></td>
+            <td><select v-model="newRule.category_id" class="w-full"><option value="" disabled>Catégorie…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
             <td><button class="small primary" @click="addRule">+</button></td></tr>
           <tr v-for="r in filtered" :key="r.id">
-            <td><input :value="r.keyword" class="cell" style="text-align:left;background:#fff" @change="setRuleKw(r, ($event.target as HTMLInputElement).value)" /></td>
-            <td><select :value="r.category_id" style="width:100%" @change="setRuleCat(r, ($event.target as HTMLSelectElement).value)"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
+            <td><input :value="r.keyword" class="cell cell-left" @change="setRuleKw(r, ($event.target as HTMLInputElement).value)" /></td>
+            <td><select :value="r.category_id" @change="setRuleCat(r, ($event.target as HTMLSelectElement).value)" class="w-full"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
             <td><button class="small danger" @click="delRule(r)">✕</button></td>
           </tr>
         </tbody>
@@ -83,12 +82,12 @@ async function quickAdd(label: string) {
       <table>
         <thead><tr><th>Catégorie banque</th><th>Ma catégorie</th><th></th></tr></thead>
         <tbody>
-          <tr><td><input v-model="newMap.bank_label" placeholder="Libellé exact de la banque" style="width:100%" /></td>
-            <td><select v-model="newMap.category_id" style="width:100%"><option value="" disabled>Catégorie…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
+          <tr><td><input v-model="newMap.bank_label" placeholder="Libellé exact de la banque" class="w-full" /></td>
+            <td><select v-model="newMap.category_id" class="w-full"><option value="" disabled>Catégorie…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
             <td><button class="small primary" @click="addMap()">+</button></td></tr>
           <tr v-for="m in bankMap" :key="m.id">
             <td>{{ m.bank_label }}</td>
-            <td><select :value="m.category_id" style="width:100%" @change="setMapCat(m, ($event.target as HTMLSelectElement).value)"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
+            <td><select :value="m.category_id" @change="setMapCat(m, ($event.target as HTMLSelectElement).value)" class="w-full"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
             <td><button class="small danger" @click="delMap(m)">✕</button></td>
           </tr>
         </tbody>

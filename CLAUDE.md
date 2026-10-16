@@ -29,15 +29,15 @@ One business implementation, three façades:
   - `electron/main.ts`: generic IPC handler `ipcMain.handle("api", (method, args))` that calls `api[method](...args)`; `electron/preload.ts` exposes it as `window.patrimoine`.
   - `vite.config.ts` dev plugin: same dispatch over HTTP `POST /__api/<method>`.
   - `mcp/server.ts`: stdio MCP server, each tool registered with `server.registerTool(...)` wrapping an `api.*` call.
-  - `src/api.ts` (renderer client) picks IPC when `window.patrimoine` exists, otherwise HTTP.
+  - `src/lib/api.ts` (renderer client) picks IPC when `window.patrimoine` exists, otherwise HTTP.
 
-  Adding a feature usually means: logic in a `core/*.ts` module → method in `core/api.ts` → (optionally) MCP tool in `mcp/server.ts` → typed call in `src/api.ts` → Vue view. Keep the README's MCP tool list in sync.
+  Adding a feature usually means: logic in a `core/*.ts` module → method in `core/api.ts` → (optionally) MCP tool in `mcp/server.ts` → typed call in `src/lib/api.ts` → Vue view. Keep the README's MCP tool list in sync.
 
 - `core/db.ts` — `Store`: sql.js database kept in memory, written to file after each write. The app and the MCP server share the same file; before each access the store reloads the file if its mtime changed (and nothing is pending locally). There is no locking beyond that.
 - `core/schema.ts` creates missing tables; `core/seed.ts` seeds default accounts/categories/rules; `core/migrate.ts` does idempotent data migrations gated by the `schema_version` setting (bump `SCHEMA_VERSION` and add an `if (v < N)` block).
 - `core/reports.ts` builds all view reports (dashboard, budget, networth, portfolio, allocation, projection…); domain modules: `importers.ts` (BNP .xls, Boursobank .xlsx, Revolut .csv, dedup by fingerprint), `categorize.ts` (keyword rules, longest match wins), `envelopes.ts` (livret ceilings + official rate history, to update each Feb 1/Aug 1), `prices.ts`/`history.ts` (Yahoo Finance / CoinGecko, no API key), `finance.ts` (XIRR, compounding).
-- Settings are a key/value `settings` table; UI appearance prefs are `ui_*` keys applied by `src/appearance.ts` (CSS variables on `:root`, cached in localStorage to avoid a flash).
-- Renderer: `src/router.ts` declares routes with sidebar icon/group; all styling is the single global `src/style.css` (Material 3–inspired tokens as CSS variables — use them instead of hardcoded colors); chart colors come from `src/charts.ts`.
+- Settings are a key/value `settings` table; UI appearance prefs are `ui_*` keys applied by `src/lib/appearance.ts` (CSS variables on `:root`, cached in localStorage to avoid a flash).
+- Renderer: `src/router.ts` declares routes with sidebar icon/group; all styling is the single global `src/style.css` (Material 3–inspired tokens as CSS variables — use them instead of hardcoded colors); chart colors come from `src/lib/charts.ts`.
 - sql.js needs `sql-wasm.wasm` next to each bundle: `scripts/copy-wasm.mjs` copies it into `dist-electron/` and `dist-mcp/`.
 - `electron/updater.ts` — electron-updater against GitHub releases (installed build auto-updates; portable build only notifies).
 
