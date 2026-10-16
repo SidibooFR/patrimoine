@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onUnmounted } from "vue";
 import { api } from "../../lib/api";
 import { eur, date } from "../../lib/format";
-import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
 import type { RefundRow } from "../../../core/refunds";
 
 const props = defineProps<{ row: RefundRow; expenseCats: any[] }>();
-const emit = defineEmits<{ close: []; saved: [] }>();
+const emit = defineEmits<{ close: []; pick: [target: { expense_id?: number; category_id?: number }, remember?: boolean] }>();
 
 // État local : la modale est recréée à chaque ouverture (v-if).
 const picker = ref<{ row: RefundRow; tab: "expense" | "category"; search: string; results: any[]; category_id: number | ""; remember: boolean }>({ row: props.row, tab: "expense", search: "", results: [], category_id: "", remember: false });
@@ -20,13 +19,11 @@ async function searchExpenses() {
 searchExpenses();
 let t: any;
 watch(() => picker.value.search, () => { clearTimeout(t); t = setTimeout(searchExpenses, 250); });
+onUnmounted(() => clearTimeout(t));
 
-async function linkTo(target: { expense_id?: number; category_id?: number }, remember = false) {
-  const ok = await guard(() => api.linkRefund(picker.value.row.id, target, remember), remember ? "Règle créée pour ce payeur" : "Remboursement rapproché");
-  if (ok !== undefined) emit("saved");
-}
-async function pickExpense(e: any) { await linkTo({ expense_id: e.id }); }
-async function pickCategory() { const p = picker.value; if (p.category_id === "") return; await linkTo({ category_id: Number(p.category_id) }, p.remember); }
+// Le rapprochement lui-même est fait par la vue parente (qui ferme la modale avant l'appel).
+function pickExpense(e: any) { emit("pick", { expense_id: e.id }); }
+function pickCategory() { const p = picker.value; if (p.category_id === "") return; emit("pick", { category_id: Number(p.category_id) }, p.remember); }
 </script>
 
 <template>

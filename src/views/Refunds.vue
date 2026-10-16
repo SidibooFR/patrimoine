@@ -35,6 +35,7 @@ async function deleteRule(id: number) { await guard(() => api.deleteRefundRule(i
 // Choix manuel
 const picker = ref<RefundRow | null>(null);
 function openPicker(r: RefundRow) { picker.value = r; }
+async function pick(target: { expense_id?: number; category_id?: number }, remember = false) { const r = picker.value!; picker.value = null; await linkTo(r, target, remember); }
 </script>
 
 <template>
@@ -58,5 +59,5 @@ function openPicker(r: RefundRow) { picker.value = r; }
     </div>
   </template>
 
-  <PickerModal v-if="picker" :row="picker" :expense-cats="expenseCats" @close="picker = null" @saved="picker = null; load()" />
+  <PickerModal v-if="picker" :row="picker" :expense-cats="expenseCats" @close="picker = null" @pick="pick" />
 </template>
