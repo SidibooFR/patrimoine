@@ -1,5 +1,15 @@
 # Journal des versions
 
+## [1.5.0](https://github.com/SidibooFR/patrimoine/compare/v1.4.0...v1.5.0) (2026-10-16)
+
+### Nouveautés
+
+* **ui:** thème épuré inspiré de Material Design 3 ([ed705f3](https://github.com/SidibooFR/patrimoine/commit/ed705f3350b2cc31420f21675dc1c8014364bf65))
+
+### Corrections
+
+* **ui:** bouton de fermeture des fenêtres en haut à droite ([a4122b6](https://github.com/SidibooFR/patrimoine/commit/a4122b6870e704f8d652cf12fa7581261c40bdd3))
+
 ## [1.4.0](https://github.com/SidibooFR/patrimoine/compare/v1.3.0...v1.4.0) (2026-10-14)
 
 ### Nouveautés
