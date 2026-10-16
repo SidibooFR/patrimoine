@@ -56,7 +56,7 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
   </div>
 
   <template v-if="rep">
-    <div class="grid c4" style="margin-bottom:16px">
+    <div class="grid c4 mb-3">
       <div class="card kpi"><span class="label">Déjà épargné</span><span class="value">{{ eur0(rep.totals.current) }}</span><span class="hint">sur {{ eur0(rep.totals.target) }} visés</span></div>
       <div class="card kpi"><span class="label">Reste à épargner</span><span class="value">{{ eur0(rep.totals.remaining) }}</span></div>
       <div class="card kpi"><span class="label">Besoin mensuel total</span><span class="value">{{ eur0(rep.totals.monthlyNeeded) }}</span><span class="hint">pour tenir toutes les échéances</span></div>
@@ -71,7 +71,7 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
     <div class="grid c2">
       <div v-for="g in goals" :key="g.id" class="card goal-card" :class="{ muted: g.archived }">
         <div class="top">
-          <h2 style="margin:0">{{ g.name }}</h2>
+          <h2 class="m0">{{ g.name }}</h2>
           <span class="tag" :class="STATUS_CLASS[g.status]">{{ g.status }}</span>
         </div>
         <div class="top"><span class="amount">{{ eur0(g.current) }}</span><span class="muted">sur {{ eur0(g.target) }}<span v-if="g.targetAuto" title="Calculé : mois de dépenses × dépenses moyennes (Paramètres)"> (calculé)</span></span></div>
@@ -82,12 +82,12 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
           <div class="kpi"><span class="label">À verser par mois</span><span class="value">{{ g.monthlyNeeded === null ? "–" : eur0(g.monthlyNeeded) }}</span><span class="hint" v-if="g.rate">intérêts à {{ pct(g.rate, 2) }} inclus</span></div>
           <div class="kpi"><span class="label">Rythme actuel</span><span class="value" :class="sign(g.pace)">{{ g.pace === null ? "–" : (g.pace > 0 ? "+" : "") + eur0(g.pace) }}</span><span class="hint">{{ g.pace === null ? (g.source === "manual" ? "montant saisi" : "historique trop court") : "par mois (90 derniers jours)" }}</span></div>
         </div>
-        <p class="help" style="margin:0">
+        <p class="help m0">
           Suivi : {{ origin(g) }}.
           <template v-if="g.status !== 'Atteint'"><span v-if="g.projectedDate"> Au rythme actuel : atteint en <b>{{ monthLong(g.projectedDate) }}</b>.</span><span v-else-if="g.pace !== null"> Au rythme actuel, l'objectif n'avance pas.</span></template>
         </p>
         <label v-if="g.source === 'manual'" class="field" style="max-width:220px">Montant épargné ({{ cur() }})<input type="number" step="any" :value="g.manual_amount" @change="setManual(g, ($event.target as HTMLInputElement).value)" /></label>
-        <div style="display:flex;gap:6px"><button class="small" @click="openEdit(g)">✎ Modifier</button><button class="small" @click="archive(g)">{{ g.archived ? "↶ Réactiver" : "▣ Archiver" }}</button><button class="small danger" @click="remove(g)">✕</button></div>
+        <div class="row-actions"><button class="small" @click="openEdit(g)">✎ Modifier</button><button class="small" @click="archive(g)">{{ g.archived ? "↶ Réactiver" : "▣ Archiver" }}</button><button class="small danger" @click="remove(g)">✕</button></div>
       </div>
     </div>
     <div v-if="!goals.length" class="card empty">Aucun objectif. Commence par ton épargne de précaution : l'objectif est calculé à partir de tes dépenses.</div>

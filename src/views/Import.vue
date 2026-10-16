@@ -53,10 +53,10 @@ async function setMapAccount(m: any, v: string) { await guard(() => api.saveImpo
       <div><b>Boursobank</b><p class="help">Compte → Mouvements → Exporter → <b>Excel (.xlsx)</b>. Un fichier par compte (courant, LEP…) : le compte est reconnu grâce à son libellé.</p></div>
       <div><b>Revolut</b><p class="help">Comptes → Relevé → format <b>CSV</b>, tous comptes. Le compte courant et le compte d'épargne sont séparés automatiquement.</p></div>
     </div>
-    <p class="help" style="margin-top:8px">Tu peux ré-importer un export qui chevauche le précédent : les opérations déjà présentes sont ignorées.</p>
+    <p class="help mt-1">Tu peux ré-importer un export qui chevauche le précédent : les opérations déjà présentes sont ignorées.</p>
   </div>
 
-  <div v-for="p in previews" :key="p.file" class="card" style="margin-bottom:12px">
+  <div v-for="p in previews" :key="p.file" class="card mb-2">
     <div class="card-title">
       <div><b>{{ p.file.split(/[\\/]/).pop() }}</b> <span v-if="p.preview" class="tag">{{ SOURCE_LABEL[p.preview.source] }}</span></div>
       <div v-if="p.result" class="tag ok">Importé</div>

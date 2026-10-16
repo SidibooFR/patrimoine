@@ -56,14 +56,14 @@ const threshold = 0.5;
   </div>
 
   <template v-if="rep">
-    <div class="grid c4" style="margin-bottom:16px">
+    <div class="grid c4 mb-3">
       <div class="card kpi"><span class="label">Épargne sur livrets</span><span class="value">{{ eur(rep.totals.balance) }}</span><span class="hint">{{ rep.rows.length }} enveloppe(s) suivie(s)</span></div>
       <div class="card kpi"><span class="label">Place restante (livrets plafonnés)</span><span class="value">{{ eur0(rep.totals.room) }}</span></div>
       <div class="card kpi"><span class="label">Intérêts estimés {{ rep.year }}</span><span class="value pos">{{ eur(rep.totals.estimateThisYear) }}</span><span class="hint">dont déjà perçus : {{ eur(rep.totals.interestThisYear) }}</span></div>
       <div class="card kpi"><span class="label">Gain possible par an</span><span class="value" :class="rep.missed > 0 ? 'warn' : 'pos'">{{ rep.missed > 0 ? "+" + eur(rep.missed) : "–" }}</span><span class="hint">en appliquant les transferts conseillés</span></div>
     </div>
 
-    <div class="card" style="margin-bottom:16px">
+    <div class="card mb-3">
       <h2>Transferts conseillés</h2>
       <div v-if="rep.moves.length" class="grid" style="gap:8px">
         <div v-for="m in rep.moves" :key="m.from_account_id + '-' + m.to_account_id" class="move">
@@ -100,16 +100,16 @@ const threshold = 0.5;
           <div class="kpi"><span class="label">Estimés {{ rep.year }}</span><span class="value pos">{{ r.estimateThisYear === null ? "–" : eur(r.estimateThisYear) }}</span>
             <span class="hint" v-if="r.estimateAtCeiling !== null">au plafond : {{ eur0(r.estimateAtCeiling) }} / an</span></div>
         </div>
-        <p v-if="r.fiveYears" class="note" style="margin:0">Ancienneté fiscale : 5 ans le <b>{{ date(r.fiveYears) }}</b>. Après cette date, les gains ne sont plus soumis à l'impôt sur le revenu (prélèvements sociaux seuls).</p>
-        <p class="help" style="margin:0">{{ r.help }}<span v-if="r.balanceSource"> Solde au {{ date(r.balanceDate) }} ({{ r.balanceSource }}).</span><span v-if="r.monthly_deposit"> Versement programmé : {{ eur(r.monthly_deposit) }} / mois.</span></p>
+        <p v-if="r.fiveYears" class="note m0">Ancienneté fiscale : 5 ans le <b>{{ date(r.fiveYears) }}</b>. Après cette date, les gains ne sont plus soumis à l'impôt sur le revenu (prélèvements sociaux seuls).</p>
+        <p class="help m0">{{ r.help }}<span v-if="r.balanceSource"> Solde au {{ date(r.balanceDate) }} ({{ r.balanceSource }}).</span><span v-if="r.monthly_deposit"> Versement programmé : {{ eur(r.monthly_deposit) }} / mois.</span></p>
       </div>
     </div>
     <div v-if="!rep.rows.length" class="card empty">Aucune enveloppe. Ajoute ton LEP, ton Livret A ou ton PEA pour suivre leurs plafonds et leurs intérêts.</div>
 
-    <div v-if="!rep.hasPea" class="note" style="margin-top:16px">
+    <div v-if="!rep.hasPea" class="note mt-3">
       Tu n'as pas de PEA déclaré. Ouvrir un PEA, même avec un petit versement, lance son compteur de 5 ans : après cette durée, les gains des ETF éligibles ne paient que les prélèvements sociaux, contre la flat tax sur un compte-titres. Une fois ouvert, ajoute un compte de type PEA dans Paramètres, puis déclare-le ici.
     </div>
-    <p class="help" style="margin-top:12px">Intérêts des livrets réglementés estimés selon la règle des quinzaines (un versement compte à partir du 1er ou du 16 suivant, un retrait cesse de compter dès le début de sa quinzaine) aux taux officiels successifs, en supposant le solde constant jusqu'au 31 décembre, versement programmé compris. Les intérêts des livrets sont versés en fin d'année ; ceux d'un compte rémunéré au fil de l'eau.</p>
+    <p class="help mt-2">Intérêts des livrets réglementés estimés selon la règle des quinzaines (un versement compte à partir du 1er ou du 16 suivant, un retrait cesse de compter dès le début de sa quinzaine) aux taux officiels successifs, en supposant le solde constant jusqu'au 31 décembre, versement programmé compris. Les intérêts des livrets sont versés en fin d'année ; ceux d'un compte rémunéré au fil de l'eau.</p>
   </template>
 
   <Modal v-if="modal" :title="modal.id ? 'Modifier l\'enveloppe' : 'Nouvelle enveloppe'" @close="modal = null">

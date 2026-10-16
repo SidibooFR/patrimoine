@@ -43,11 +43,11 @@ const rateChart = computed<any>(() => ({
         <h3>Patrimoine</h3>
         <div class="kpi"><span class="label">Patrimoine total</span><span class="value">{{ eur0(d.networth.total) }}</span>
           <span class="hint">Dernier relevé : {{ monthLong(d.networth.lastMonth) }}</span></div>
-        <div class="grid c2" style="margin-top:12px">
+        <div class="grid c2 mt-2">
           <div class="kpi"><span class="label">Dernier mois</span><span class="value small" :class="sign(d.networth.variation)">{{ eur0(d.networth.variation) }}</span></div>
           <div class="kpi"><span class="label">Depuis le début</span><span class="value small" :class="sign(d.networth.sinceStart)">{{ eur0(d.networth.sinceStart) }}</span></div>
         </div>
-        <div class="kpi" style="margin-top:12px"><span class="label">Épargne de précaution</span><span class="value small" :class="d.networth.emergencyStatus.startsWith('Objectif') ? 'pos' : 'warn'">{{ d.networth.emergencyStatus }}</span></div>
+        <div class="kpi mt-2"><span class="label">Épargne de précaution</span><span class="value small" :class="d.networth.emergencyStatus.startsWith('Objectif') ? 'pos' : 'warn'">{{ d.networth.emergencyStatus }}</span></div>
       </div>
       <div class="card">
         <h3>Budget · {{ monthLong(d.month.month) }}</h3>
@@ -57,25 +57,25 @@ const rateChart = computed<any>(() => ({
           <div class="kpi"><span class="label">Épargne placée</span><span class="value small">{{ eur0(d.month.savings) }}</span></div>
           <div class="kpi"><span class="label">Taux d'épargne</span><span class="value small" :class="sign(d.month.rate)">{{ pct(d.month.rate) }}</span></div>
         </div>
-        <div class="kpi" style="margin-top:12px"><span class="label">Taux d'épargne moyen sur l'année</span><span class="value small" :class="sign(d.month.yearRate)">{{ pct(d.month.yearRate) }}</span></div>
+        <div class="kpi mt-2"><span class="label">Taux d'épargne moyen sur l'année</span><span class="value small" :class="sign(d.month.yearRate)">{{ pct(d.month.yearRate) }}</span></div>
       </div>
       <div class="card">
         <h3>Investissements</h3>
         <div class="kpi"><span class="label">Valeur du portefeuille</span><span class="value">{{ eur0(d.portfolio.value) }}</span><span class="hint">Investi : {{ eur0(d.portfolio.invested) }}</span></div>
-        <div class="grid c2" style="margin-top:12px">
+        <div class="grid c2 mt-2">
           <div class="kpi"><span class="label">Plus-value latente</span><span class="value small" :class="sign(d.portfolio.unrealized)">{{ eur(d.portfolio.unrealized) }}</span></div>
           <div class="kpi"><span class="label">Performance</span><span class="value small" :class="sign(d.portfolio.performance)">{{ pct(d.portfolio.performance) }}</span></div>
         </div>
-        <div class="kpi" style="margin-top:12px"><span class="label">Rendement annualisé (TRI) <span v-if="!d.portfolio.irrReliable" class="tag warn" :title="d.portfolio.irrNote ?? ''">peu fiable</span></span><span class="value small" :class="sign(d.portfolio.irr)">{{ pct(d.portfolio.irr) }}</span></div>
+        <div class="kpi mt-2"><span class="label">Rendement annualisé (TRI) <span v-if="!d.portfolio.irrReliable" class="tag warn" :title="d.portfolio.irrNote ?? ''">peu fiable</span></span><span class="value small" :class="sign(d.portfolio.irr)">{{ pct(d.portfolio.irr) }}</span></div>
       </div>
     </div>
 
-    <div class="grid c3" style="margin-top:16px">
+    <div class="grid c3 mt-3">
       <router-link to="/abonnements" class="card link-card">
         <h3>Abonnements &amp; charges fixes</h3>
         <div class="kpi"><span class="value">{{ eur(d.recurring.monthly) }}<small class="muted" style="font-size:13px;font-weight:400"> / mois</small></span>
           <span class="hint">{{ d.recurring.count }} prélèvement(s) · {{ eur0(d.recurring.annual) }} par an</span></div>
-        <div v-for="i in d.recurring.increases" :key="i.label" class="tag neg" style="margin-top:8px">▲ {{ i.label }} +{{ pct(i.pct, 0) }}</div>
+        <div v-for="i in d.recurring.increases" :key="i.label" class="tag neg mt-1">▲ {{ i.label }} +{{ pct(i.pct, 0) }}</div>
       </router-link>
       <router-link to="/enveloppes" class="card link-card">
         <h3>Livrets &amp; PEA</h3>
@@ -92,12 +92,12 @@ const rateChart = computed<any>(() => ({
       </router-link>
     </div>
 
-    <div class="card" style="margin-top:16px">
+    <div class="card mt-3">
       <h3>Points d'attention</h3>
       <ul class="alerts"><li v-for="a in d.alerts" :key="a.text" :class="a.level">{{ a.level === "ok" ? "✓" : "⚠" }} {{ a.text }}</li></ul>
     </div>
 
-    <div class="grid c2" style="margin-top:16px">
+    <div class="grid c2 mt-3">
       <div class="card"><h3>Évolution du patrimoine</h3><Chart :config="nwChart" /></div>
       <div class="card"><h3>Répartition actuelle</h3><Chart :config="classChart" /></div>
       <div class="card"><h3>Revenus vs dépenses</h3><Chart :config="budgetChart" /></div>

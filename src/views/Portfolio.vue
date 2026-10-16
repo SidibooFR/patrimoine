@@ -111,14 +111,14 @@ async function exportOps() {
     </div>
   </div>
 
-  <div v-if="pf" class="grid c4" style="margin-bottom:16px">
+  <div v-if="pf" class="grid c4 mb-3">
     <div class="card kpi"><span class="label">Valeur actuelle</span><span class="value">{{ eur(pf.totals.value) }}</span><span class="hint">Investi : {{ eur(pf.invested) }} · récupéré : {{ eur(pf.recovered) }}</span></div>
     <div class="card kpi"><span class="label">Plus-value latente</span><span class="value" :class="sign(pf.totals.unrealized)">{{ eur(pf.totals.unrealized) }}</span><span class="hint" :class="sign(pf.totals.unrealizedPct)">{{ pct(pf.totals.unrealizedPct) }} du prix de revient</span></div>
     <div class="card kpi"><span class="label">Gain total</span><span class="value" :class="sign(pf.gain)">{{ eur(pf.gain) }}</span><span class="hint">latent + réalisé ({{ eur(pf.totals.realized) }}) + dividendes ({{ eur(pf.totals.dividends) }}) · perf. {{ pct(pf.performance) }}</span></div>
     <div class="card kpi"><span class="label">Rendement annualisé (TRI) <span v-if="!pf.irrInfo.reliable" class="tag warn" :title="pf.irrInfo.note ?? ''">peu fiable</span></span><span class="value" :class="sign(pf.irr)">{{ pct(pf.irr) }}</span>
       <span class="hint">{{ pf.irrInfo.note ? pf.irrInfo.note[0].toUpperCase() + pf.irrInfo.note.slice(1) + "." : "Tient compte des dates de chaque versement." }}</span></div>
   </div>
-  <div v-if="lastRefresh" class="note" :class="lastRefresh.failed.length ? 'warn' : 'ok'" style="margin-bottom:12px">
+  <div v-if="lastRefresh" class="note mb-2" :class="lastRefresh.failed.length ? 'warn' : 'ok'">
     Cours actualisés le {{ new Date(lastRefresh.at).toLocaleString("fr-FR") }} : {{ lastRefresh.updated }} actif(s).<span v-if="lastRefresh.failed.length"> Sans cours web : {{ lastRefresh.failed.join(", ") }} — vérifie le symbole ou renseigne un cours manuel.</span>
   </div>
 
@@ -129,15 +129,15 @@ async function exportOps() {
           <thead><tr><th>Actif</th><th>Compte</th><th class="num">Quantité</th><th class="num">PRU</th><th class="num">Cours</th><th>Source</th><th class="num">Valeur</th><th class="num">Plus-value</th><th class="num">%</th><th class="num">Poids</th><th></th></tr></thead>
           <tbody>
             <tr v-for="p in pf.positions" :key="p.asset_id" :class="{ muted: p.qty === 0 }">
-              <td style="white-space:nowrap"><b>{{ p.name }}</b><div class="help">{{ p.symbol || "sans symbole" }} · {{ p.asset_class }}</div></td>
-              <td class="muted" style="white-space:nowrap">{{ p.account }}</td>
+              <td class="nowrap"><b>{{ p.name }}</b><div class="help">{{ p.symbol || "sans symbole" }} · {{ p.asset_class }}</div></td>
+              <td class="muted nowrap">{{ p.account }}</td>
               <td class="num">{{ num(p.qty) }}</td><td class="num">{{ p.pru === null ? "–" : eur(p.pru, p.pru < 1 ? 6 : 2) }}</td>
               <td class="num">{{ p.price === null ? "–" : eur(p.price, p.price < 1 ? 6 : 2) }}</td>
               <td><span class="tag" :class="p.priceSource === 'Manuel' ? 'warn' : p.priceSource ? 'ok' : 'neg'" :title="p.priceUpdatedAt ? 'Mis à jour le ' + new Date(p.priceUpdatedAt).toLocaleString('fr-FR') : ''">{{ p.priceSource || "⚠ aucun" }}</span></td>
               <td class="num"><b>{{ eur(p.value) }}</b></td>
               <td class="num" :class="sign(p.unrealized)">{{ eur(p.unrealized) }}</td><td class="num" :class="sign(p.unrealizedPct)">{{ pct(p.unrealizedPct) }}</td>
               <td class="num">{{ pct(p.weight) }}</td>
-              <td style="white-space:nowrap"><button class="small" @click="newOp(p.asset_id)">+ op</button> <button class="small" @click="editAsset(assets.find((a) => a.id === p.asset_id))">✎</button> <button class="small danger" @click="deleteAsset(assets.find((a) => a.id === p.asset_id))">✕</button></td>
+              <td class="nowrap"><button class="small" @click="newOp(p.asset_id)">+ op</button> <button class="small" @click="editAsset(assets.find((a) => a.id === p.asset_id))">✎</button> <button class="small danger" @click="deleteAsset(assets.find((a) => a.id === p.asset_id))">✕</button></td>
             </tr>
           </tbody>
         </table>
@@ -146,9 +146,9 @@ async function exportOps() {
     </div>
   </div>
 
-  <div v-if="hist && hist.points.length" class="grid" style="grid-template-columns: minmax(0, 1fr) 320px; margin-top:16px">
+  <div v-if="hist && hist.points.length" class="grid side mt-3">
     <div class="card">
-      <div class="card-title"><h2 style="margin:0">Évolution depuis le {{ date(hist.start) }}</h2>
+      <div class="card-title"><h2>Évolution depuis le {{ date(hist.start) }}</h2>
         <span class="help">{{ hist.historyPoints }} cours historiques · {{ pct(hist.coverage, 0) }} de la valeur sur cours réels</span></div>
       <Chart :config="histChart" :height="400" />
     </div>
@@ -164,16 +164,16 @@ async function exportOps() {
           </tr>
         </tbody>
       </table>
-      <p class="help" style="margin-top:8px">Performance pondérée par le temps : elle mesure tes placements sans être faussée par le moment de tes versements.</p>
+      <p class="help mt-1">Performance pondérée par le temps : elle mesure tes placements sans être faussée par le moment de tes versements.</p>
       <p v-if="hist.periods.some((p) => !p.reliable && p.reason?.includes('historique'))" class="note warn" style="margin:8px 0 0;font-size:12px">Cours historiques manquants : clique sur « Historique des cours » pour des performances par période exactes.<span v-if="hist.periods.some((p) => p.twr !== null && !p.reliable)"> * estimation.</span></p>
       <p v-if="hist.approximateOps" class="note" style="margin:8px 0 0;font-size:12px">{{ hist.approximateOps }} achat(s) à date approximative : la performance de ces positions avant cette date est comptée le jour de l'achat. Corrige les dates (double-clic sur l'opération) pour un TRI juste.</p>
     </div>
   </div>
 
-  <div class="grid" style="grid-template-columns: minmax(0, 1fr) 320px; margin-top:16px">
+  <div class="grid side mt-3">
   <div class="card pad0">
-    <div class="toolbar" style="padding:12px 14px 0"><h2 style="margin:0">Opérations</h2>
-      <select v-model="opsFilter" style="margin-left:auto"><option value="">Tous les actifs</option><option v-for="a in assets" :key="a.id" :value="a.id">{{ a.name }}</option></select>
+    <div class="toolbar" style="padding:12px 14px 0"><h2 class="m0">Opérations</h2>
+      <select v-model="opsFilter" class="ml-auto"><option value="">Tous les actifs</option><option v-for="a in assets" :key="a.id" :value="a.id">{{ a.name }}</option></select>
       <button class="small" @click="exportOps">Export Excel</button></div>
     <div class="table-wrap" style="max-height:420px">
       <table>
@@ -193,7 +193,7 @@ async function exportOps() {
     <div v-if="pf" class="card">
       <h3>Répartition</h3>
       <Chart :config="weightChart" :height="220" />
-      <table style="margin-top:10px"><tbody><tr v-for="[c, v] in byClass" :key="c"><td>{{ c }}</td><td class="num">{{ eur0(v) }}</td><td class="num muted">{{ pct(pf.totals.value ? v / pf.totals.value : null) }}</td></tr></tbody></table>
+      <table class="mt-1"><tbody><tr v-for="[c, v] in byClass" :key="c"><td>{{ c }}</td><td class="num">{{ eur0(v) }}</td><td class="num muted">{{ pct(pf.totals.value ? v / pf.totals.value : null) }}</td></tr></tbody></table>
     </div>
   </div>
 

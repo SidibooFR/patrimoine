@@ -83,7 +83,7 @@ async function remove(row: any) {
     <select v-model="filter.category"><option value="">Toutes les catégories</option><option value="none">⚠ Sans catégorie</option><option v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.name }}</option></select>
     <select v-model="filter.kind"><option value="">Tous types</option><option>Revenu</option><option>Dépense</option><option>Épargne</option><option>Transfert</option></select>
     <select v-model="filter.source"><option value="">Toutes sources</option><option value="manuel">Manuel</option><option value="bnp">BNP</option><option value="boursobank">Boursobank</option><option value="revolut">Revolut</option></select>
-    <span class="muted" style="margin-left:auto">{{ result.total }} opération(s) · total <b :class="sign(result.sum)">{{ eur(result.sum) }}</b></span>
+    <span class="muted ml-auto">{{ result.total }} opération(s) · total <b :class="sign(result.sum)">{{ eur(result.sum) }}</b></span>
   </div>
 
   <div class="card pad0">
@@ -107,7 +107,7 @@ async function remove(row: any) {
               </select>
               <span v-if="r.category_manual" class="muted" title="Catégorie fixée à la main"> ✎</span>
             </td>
-            <td style="white-space:nowrap">
+            <td class="nowrap">
               <button class="small" title="Créer une règle à partir de ce libellé" @click="ruleFrom(r)">+ règle</button>
               <button v-if="r.source === 'manuel'" class="small danger" @click="remove(r)">✕</button>
             </td>

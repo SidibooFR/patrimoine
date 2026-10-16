@@ -58,7 +58,7 @@ const chart = computed<any>(() => ({
 
   <div v-if="nw" class="grid" style="grid-template-columns: 380px 1fr">
     <div class="card">
-      <div class="card-title"><h2 style="margin:0">Relevé du mois</h2><input v-model="editMonth" type="month" @change="fillDraft" /></div>
+      <div class="card-title"><h2>Relevé du mois</h2><input v-model="editMonth" type="month" @change="fillDraft" /></div>
       <table>
         <tbody>
           <tr v-for="a in nw.accounts" :key="a.id">
@@ -68,7 +68,7 @@ const chart = computed<any>(() => ({
           <tr class="total"><td>Total</td><td class="num">{{ eur0(draftTotal) }}</td></tr>
         </tbody>
       </table>
-      <div class="toolbar" style="margin-top:12px">
+      <div class="toolbar mt-2">
         <button class="primary" @click="save">Enregistrer</button>
         <button @click="useSuggested" title="Reprend le dernier solde connu de chaque compte importé">Soldes des relevés</button>
         <button @click="copyPrevious">Copier le mois précédent</button>
@@ -78,7 +78,7 @@ const chart = computed<any>(() => ({
     <div class="card"><h3>Répartition par classe d'actif</h3><Chart :config="chart" :height="360" /></div>
   </div>
 
-  <div v-if="nw" class="card pad0" style="margin-top:16px">
+  <div v-if="nw" class="card pad0 mt-3">
     <div class="table-wrap">
       <table>
         <thead><tr><th>Mois</th><th v-for="a in nw.accounts" :key="a.id" class="num">{{ a.name }}</th><th class="num">Total</th><th class="num">Variation</th><th class="num">%</th><th v-for="c in classes" :key="c" class="num">{{ c }}</th></tr></thead>

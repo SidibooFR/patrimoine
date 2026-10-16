@@ -52,18 +52,18 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
 
   <div class="grid c2">
     <div class="card" style="grid-column: 1 / -1">
-      <div class="card-title"><h2 style="margin:0">Comptes</h2><label class="help"><input v-model="showArchived" type="checkbox" /> archivés</label></div>
+      <div class="card-title"><h2>Comptes</h2><label class="help"><input v-model="showArchived" type="checkbox" /> archivés</label></div>
       <table>
         <thead><tr><th>Nom</th><th>Établissement</th><th>Type</th><th>Classe d'actif</th><th></th></tr></thead>
         <tbody>
           <tr v-for="a in accountsShown" :key="a.id" :class="{ muted: a.archived }">
-            <td style="min-width:260px"><input class="cell" style="text-align:left;background:#fff" :value="a.name" @change="saveAcc(a, { name: ($event.target as HTMLInputElement).value })" /></td>
-            <td style="min-width:160px"><input class="cell" style="text-align:left;background:#fff" :value="a.institution" @change="saveAcc(a, { institution: ($event.target as HTMLInputElement).value })" /></td>
+            <td style="min-width:260px"><input class="cell cell-left" :value="a.name" @change="saveAcc(a, { name: ($event.target as HTMLInputElement).value })" /></td>
+            <td style="min-width:160px"><input class="cell cell-left" :value="a.institution" @change="saveAcc(a, { institution: ($event.target as HTMLInputElement).value })" /></td>
             <td><select :value="a.type" @change="saveAcc(a, { type: ($event.target as HTMLSelectElement).value })"><option v-for="t in meta.accountTypes" :key="t">{{ t }}</option></select></td>
             <td><select :value="a.asset_class" @change="saveAcc(a, { asset_class: ($event.target as HTMLSelectElement).value })"><option v-for="c in meta.assetClasses" :key="c">{{ c }}</option></select></td>
-            <td style="white-space:nowrap"><button class="small" :title="a.archived ? 'Réactiver' : 'Archiver'" @click="saveAcc(a, { archived: a.archived ? 0 : 1 })">{{ a.archived ? "↶" : "▣" }}</button> <button class="small danger" @click="delAcc(a)">✕</button></td>
+            <td class="nowrap"><button class="small" :title="a.archived ? 'Réactiver' : 'Archiver'" @click="saveAcc(a, { archived: a.archived ? 0 : 1 })">{{ a.archived ? "↶" : "▣" }}</button> <button class="small danger" @click="delAcc(a)">✕</button></td>
           </tr>
-          <tr><td><input v-model="newAcc.name" placeholder="Nouveau compte" style="width:100%" @keyup.enter="addAcc" /></td><td><input v-model="newAcc.institution" placeholder="Banque" style="width:100%" /></td>
+          <tr><td><input v-model="newAcc.name" placeholder="Nouveau compte" @keyup.enter="addAcc" class="w-full" /></td><td><input v-model="newAcc.institution" placeholder="Banque" class="w-full" /></td>
             <td><select v-model="newAcc.type"><option v-for="t in meta.accountTypes" :key="t">{{ t }}</option></select></td>
             <td><select v-model="newAcc.asset_class"><option v-for="c in meta.assetClasses" :key="c">{{ c }}</option></select></td>
             <td><button class="small primary" @click="addAcc">+</button></td></tr>
@@ -78,11 +78,11 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
         <thead><tr><th>Nom</th><th>Type</th><th></th></tr></thead>
         <tbody>
           <tr v-for="c in categories" :key="c.id">
-            <td><input class="cell" style="text-align:left;background:#fff" :value="c.name" @change="saveCat(c, { name: ($event.target as HTMLInputElement).value })" /></td>
+            <td><input class="cell cell-left" :value="c.name" @change="saveCat(c, { name: ($event.target as HTMLInputElement).value })" /></td>
             <td><select :value="c.kind" @change="saveCat(c, { kind: ($event.target as HTMLSelectElement).value })"><option v-for="k in meta.categoryKinds" :key="k">{{ k }}</option></select></td>
             <td><button class="small danger" @click="delCat(c)">✕</button></td>
           </tr>
-          <tr><td><input v-model="newCat.name" placeholder="Nouvelle catégorie" style="width:100%" @keyup.enter="addCat" /></td><td><select v-model="newCat.kind"><option v-for="k in meta.categoryKinds" :key="k">{{ k }}</option></select></td><td><button class="small primary" @click="addCat">+</button></td></tr>
+          <tr><td><input v-model="newCat.name" placeholder="Nouvelle catégorie" @keyup.enter="addCat" class="w-full" /></td><td><select v-model="newCat.kind"><option v-for="k in meta.categoryKinds" :key="k">{{ k }}</option></select></td><td><button class="small primary" @click="addCat">+</button></td></tr>
         </tbody>
       </table>
       <p class="help">Revenu / Dépense entrent dans le taux d'épargne. Épargne = argent placé (compté à part). Transfert = virement entre tes comptes, ignoré.</p>
@@ -100,11 +100,11 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
           <select multiple size="5" @change="setExcluded($event.target as HTMLSelectElement)"><option v-for="c in categories.filter((x) => x.kind === 'Dépense')" :key="c.id" :value="c.name" :selected="excluded.includes(c.name)">{{ c.name }}</option></select>
           <span class="help">Dépenses variables (courses, restaurants…) qui reviennent souvent sans être des abonnements. Ctrl+clic pour en choisir plusieurs.</span></label>
       </div>
-      <p class="help" style="margin-top:12px">Base de données : <code>{{ paths.db }}</code><br />Sauvegarde = copier ce fichier. Pour repartir de zéro, supprime-le (l'application le recrée avec les valeurs par défaut).</p>
+      <p class="help mt-2">Base de données : <code>{{ paths.db }}</code><br />Sauvegarde = copier ce fichier. Pour repartir de zéro, supprime-le (l'application le recrée avec les valeurs par défaut).</p>
     </div>
 
     <div class="card">
-      <div class="card-title"><h2 style="margin:0">Apparence</h2><button class="small" @click="resetLook">Réinitialiser</button></div>
+      <div class="card-title"><h2>Apparence</h2><button class="small" @click="resetLook">Réinitialiser</button></div>
       <div class="form">
         <div class="field full">Couleur principale
           <div class="swatches">
@@ -125,7 +125,7 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
       <p class="help">Claude Desktop peut lire et modifier tes données via le serveur MCP fourni (42 outils : tableau de bord, relevés, import, règles, remboursements, budget, abonnements, objectifs, patrimoine, livrets et PEA, portefeuille et historique des cours, allocation, projection, export). Ajoute ceci dans <code>claude_desktop_config.json</code> (Paramètres → Développeur → Modifier la configuration), puis redémarre Claude Desktop. Node.js doit être installé.</p>
       <pre>{{ mcpConfig }}</pre>
       <button @click="copyConfig">Copier la configuration</button>
-      <p class="help" style="margin-top:10px">L'application et Claude partagent le même fichier de base : les modifications faites par l'un sont visibles par l'autre au prochain rafraîchissement de page (<kbd>Ctrl</kbd>+<kbd>R</kbd>).</p>
+      <p class="help mt-1">L'application et Claude partagent le même fichier de base : les modifications faites par l'un sont visibles par l'autre au prochain rafraîchissement de page (<kbd>Ctrl</kbd>+<kbd>R</kbd>).</p>
     </div>
 
     <div class="card">
@@ -136,7 +136,7 @@ async function copyConfig() { await navigator.clipboard.writeText(mcpConfig.valu
         <button v-if="update.status === 'downloaded'" class="primary" @click="installUpdate">Redémarrer et installer</button>
         <button v-if="update.status === 'portable'" class="primary" @click="installUpdate">Ouvrir la page de téléchargement</button>
       </div>
-      <p class="help" style="margin-top:10px">L'application vérifie au démarrage puis toutes les 6 heures s'il existe une nouvelle version sur GitHub et la télécharge en arrière-plan. Elle s'installe en redémarrant, ou automatiquement à la prochaine fermeture. Tes données ne sont pas touchées.</p>
+      <p class="help mt-1">L'application vérifie au démarrage puis toutes les 6 heures s'il existe une nouvelle version sur GitHub et la télécharge en arrière-plan. Elle s'installe en redémarrant, ou automatiquement à la prochaine fermeture. Tes données ne sont pas touchées.</p>
     </div>
   </div>
 </template>

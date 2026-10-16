@@ -55,7 +55,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
             <td class="num" :class="Math.abs(al.targetSum - 1) > 1e-4 ? 'neg' : ''">{{ pct(al.targetSum, 0) }}</td><td colspan="3"><span v-if="Math.abs(al.targetSum - 1) > 1e-4" class="neg">La cible doit faire 100 %</span></td></tr>
         </tbody>
       </table>
-      <p class="help" style="margin-top:8px">Tolérance d'écart : ±{{ pct(al.tolerance, 0) }} (modifiable dans Paramètres).</p>
+      <p class="help mt-1">Tolérance d'écart : ±{{ pct(al.tolerance, 0) }} (modifiable dans Paramètres).</p>
       <Chart :config="chart" :height="240" />
     </div>
 
@@ -63,7 +63,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
       <div class="card">
         <h2>Où placer mon prochain versement ?</h2>
         <label class="field">Montant à placer ce mois-ci ({{ cur() }})<input v-model.number="deposit" type="number" step="50" min="0" /></label>
-        <table style="margin-top:10px">
+        <table class="mt-1">
           <thead><tr><th>Classe</th><th class="num">À placer</th></tr></thead>
           <tbody>
             <tr v-for="r in al.rows.filter((x) => x.deposit > 0)" :key="r.asset_class"><td>{{ r.asset_class }}</td><td class="num"><b>{{ eur0(r.deposit) }}</b></td></tr>
@@ -71,10 +71,10 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
           </tbody>
         </table>
       </div>
-      <div class="card" style="margin-top:16px">
+      <div class="card mt-3">
         <h2>Épargne de précaution</h2>
         <div class="kpi"><span class="label">Disponible (liquidités + épargne sécurisée)</span><span class="value small">{{ eur0(al.emergency.available) }}</span></div>
-        <div class="kpi" style="margin-top:8px"><span class="label">Objectif : {{ al.emergency.months }} mois × {{ eur0(al.emergency.avgExpense) }} de dépenses moyennes</span><span class="value small">{{ eur0(al.emergency.goal) }}</span></div>
+        <div class="kpi mt-1"><span class="label">Objectif : {{ al.emergency.months }} mois × {{ eur0(al.emergency.avgExpense) }} de dépenses moyennes</span><span class="value small">{{ eur0(al.emergency.goal) }}</span></div>
         <div class="progress" style="margin:10px 0 6px"><span :style="{ width: Math.min(100, al.emergency.goal ? (al.emergency.available / al.emergency.goal) * 100 : 0) + '%', background: al.emergency.available >= al.emergency.goal ? 'var(--pos)' : 'var(--warn)' }"></span></div>
         <div :class="al.emergency.available >= al.emergency.goal ? 'pos' : 'warn'"><b>{{ al.emergency.status }}</b> · couverture : {{ al.emergency.coverage === null ? "–" : al.emergency.coverage.toFixed(1) + " mois" }}</div>
       </div>

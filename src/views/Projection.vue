@@ -63,7 +63,7 @@ const chart = computed<any>(() => ({
         <label class="field">Objectif de patrimoine ({{ cur() }})<input v-model.number="p.goal" type="number" step="10000" /></label>
         <label class="field">Horizon (années)<input v-model.number="p.years" type="number" min="1" max="50" /></label>
       </div>
-      <div class="note" style="margin-top:14px">
+      <div class="note mt-2">
         <b>Objectif {{ eur0(p.goal) }}</b> atteint en <b>{{ pr.goalYears === null ? "jamais" : pr.goalYears.toFixed(1) + " ans" }}</b><span v-if="pr.goalYear"> (vers {{ pr.goalYear }})</span> dans le scénario central.
       </div>
       <div v-if="goals && activeGoals.length" class="note" :class="p.monthly >= goals.totals.monthlyNeeded ? 'ok' : 'warn'" style="margin-top:10px">
@@ -75,7 +75,7 @@ const chart = computed<any>(() => ({
     </div>
     <div class="card"><Chart :config="chart" :height="380" /></div>
   </div>
-  <div v-if="pr" class="card pad0" style="margin-top:16px">
+  <div v-if="pr" class="card pad0 mt-3">
     <div class="table-wrap" style="max-height:420px">
       <table>
         <thead><tr><th>Année</th><th class="num">Total versé</th><th class="num">Prudent</th><th class="num">Central</th><th class="num">Dynamique</th><th class="num">Central en {{ cur() }} d'aujourd'hui</th><th class="num">Gains (central)</th></tr></thead>

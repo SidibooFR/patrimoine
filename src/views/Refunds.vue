@@ -57,13 +57,13 @@ const VIA: Record<string, string> = { expense: "dépense", category: "catégorie
   </div>
 
   <template v-if="rep">
-    <div class="grid c4" style="margin-bottom:16px">
+    <div class="grid c4 mb-3">
       <div class="card kpi"><span class="label">Remboursements reçus</span><span class="value">{{ eur0(rep.totals.amount) }}</span><span class="hint">{{ rep.totals.count }} virement(s)</span></div>
       <div class="card kpi"><span class="label">Rapprochés</span><span class="value pos">{{ eur0(rep.totals.linkedAmount) }}</span><span class="hint">{{ rep.totals.linked }} · déduits des dépenses</span></div>
       <div class="card kpi"><span class="label">À rapprocher</span><span class="value" :class="rep.totals.unlinked ? 'warn' : 'pos'">{{ eur0(rep.totals.unlinkedAmount) }}</span><span class="hint">{{ rep.totals.unlinked }} · comptés comme revenus</span></div>
       <div class="card kpi"><span class="label">Règles payeur</span><span class="value">{{ rep.rules.length }}</span><span class="hint">rapprochement automatique</span></div>
     </div>
-    <div v-if="!rep.categoryId" class="note warn" style="margin-bottom:12px">La catégorie « Remboursements » n'existe pas : crée-la dans Paramètres pour que les remboursements soient repérés.</div>
+    <div v-if="!rep.categoryId" class="note warn mb-2">La catégorie « Remboursements » n'existe pas : crée-la dans Paramètres pour que les remboursements soient repérés.</div>
 
     <div class="grid" style="grid-template-columns: minmax(0, 1fr) 300px">
       <div class="card pad0">
@@ -105,14 +105,14 @@ const VIA: Record<string, string> = { expense: "dépense", category: "catégorie
         <table v-if="rep.rules.length"><tbody>
           <tr v-for="x in rep.rules" :key="x.id"><td style="text-transform:capitalize">{{ x.keyword }}</td><td class="muted">{{ x.category }}</td><td class="num muted">{{ x.matches }}</td><td><button class="small danger" @click="deleteRule(x.id)">✕</button></td></tr>
         </tbody></table>
-        <div v-else class="help" style="margin-top:8px">Aucune règle.</div>
-        <p class="help" style="margin-top:14px">Une dépense rapprochée est réduite le mois de la dépense ; une catégorie, le mois du remboursement. Les remboursements non rapprochés restent dans les revenus.</p>
+        <div v-else class="help mt-1">Aucune règle.</div>
+        <p class="help mt-2">Une dépense rapprochée est réduite le mois de la dépense ; une catégorie, le mois du remboursement. Les remboursements non rapprochés restent dans les revenus.</p>
       </div>
     </div>
   </template>
 
   <Modal v-if="picker" :title="`Rapprocher ${eur(picker.row.amount)} de ${picker.row.payer}`" @close="picker = null">
-    <div class="seg" style="margin-bottom:12px"><button :class="{ on: picker.tab === 'expense' }" @click="picker.tab = 'expense'">Une dépense précise</button><button :class="{ on: picker.tab === 'category' }" @click="picker.tab = 'category'">Une catégorie</button></div>
+    <div class="seg mb-2"><button :class="{ on: picker.tab === 'expense' }" @click="picker.tab = 'expense'">Une dépense précise</button><button :class="{ on: picker.tab === 'category' }" @click="picker.tab = 'category'">Une catégorie</button></div>
     <template v-if="picker.tab === 'expense'">
       <input v-model="picker.search" placeholder="Rechercher une dépense…" style="width:100%;margin-bottom:8px" />
       <div class="table-wrap" style="max-height:340px">
