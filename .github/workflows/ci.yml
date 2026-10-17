@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   verify:
-    name: Tests, types et build
+    name: Types, lint, tests et build
     runs-on: ubuntu-latest
     env:
       ELECTRON_SKIP_BINARY_DOWNLOAD: "1"   # inutile pour les tests et le build web
@@ -24,6 +24,8 @@ jobs:
       - run: npm ci
       - name: Vérification des types
         run: npm run typecheck
+      - name: Lint
+        run: npm run lint
       - name: Tests
         run: npm test
       - name: Build (interface, Electron, serveur MCP)
