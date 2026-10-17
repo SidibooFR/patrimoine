@@ -1,8 +1,12 @@
+<script lang="ts">
+import type { Category } from "../../../core/schema";
+export type NewCategory = Pick<Category, "name" | "kind">;
+</script>
 <script setup lang="ts">
 import { ref } from "vue";
 
-defineProps<{ categories: any[]; categoryKinds: string[] }>();
-const emit = defineEmits<{ save: [category: any, patch: any]; add: [category: any]; remove: [category: any] }>();
+defineProps<{ categories: Category[]; categoryKinds: readonly string[] }>();
+const emit = defineEmits<{ save: [category: Category, patch: Partial<Category>]; add: [category: NewCategory]; remove: [category: Category] }>();
 
 const newCat = ref({ name: "", kind: "Dépense" });
 function addCat() { if (!newCat.value.name) return; emit("add", { ...newCat.value }); newCat.value.name = ""; }

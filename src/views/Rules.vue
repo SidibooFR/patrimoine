@@ -3,11 +3,12 @@ import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
 import { guard, notify } from "../lib/toast";
+import type { BankCategoryMapRow, Category, RuleRow } from "../../core/schema";
 
-const rules = ref<any[]>([]);
-const bankMap = ref<any[]>([]);
-const unmapped = ref<any[]>([]);
-const categories = ref<any[]>([]);
+const rules = ref<RuleRow[]>([]);
+const bankMap = ref<BankCategoryMapRow[]>([]);
+const unmapped = ref<Awaited<ReturnType<typeof api.unmappedBankCategories>>>([]);
+const categories = ref<Category[]>([]);
 const search = ref("");
 const newRule = ref({ keyword: "", category_id: "" as number | "" });
 const newMap = ref({ bank_label: "", category_id: "" as number | "" });
@@ -24,9 +25,9 @@ async function addRule() {
   await guard(() => api.saveRule({ keyword: newRule.value.keyword, category_id: Number(newRule.value.category_id) }));
   newRule.value.keyword = ""; await recat();
 }
-async function setRuleCat(r: any, v: string) { await guard(() => api.saveRule({ id: r.id, keyword: r.keyword, category_id: Number(v) })); await recat(); }
-async function setRuleKw(r: any, v: string) { if (v.trim() && v !== r.keyword) { await guard(() => api.saveRule({ id: r.id, keyword: v, category_id: r.category_id })); await recat(); } }
-async function delRule(r: any) { await guard(() => api.deleteRule(r.id)); await recat(); }
+async function setRuleCat(r: RuleRow, v: string) { await guard(() => api.saveRule({ id: r.id, keyword: r.keyword, category_id: Number(v) })); await recat(); }
+async function setRuleKw(r: RuleRow, v: string) { if (v.trim() && v !== r.keyword) { await guard(() => api.saveRule({ id: r.id, keyword: v, category_id: r.category_id })); await recat(); } }
+async function delRule(r: RuleRow) { await guard(() => api.deleteRule(r.id)); await recat(); }
 async function addMap(label?: string) {
   const bank_label = label ?? newMap.value.bank_label;
   const cat = label ? Number(window.prompt("Id de catégorie ?")) : Number(newMap.value.category_id);
@@ -34,8 +35,8 @@ async function addMap(label?: string) {
   await guard(() => api.saveBankCategoryMap({ bank_label, category_id: cat }));
   newMap.value.bank_label = ""; await recat();
 }
-async function setMapCat(m: any, v: string) { await guard(() => api.saveBankCategoryMap({ id: m.id, bank_label: m.bank_label, category_id: Number(v) })); await recat(); }
-async function delMap(m: any) { await guard(() => api.deleteBankCategoryMap(m.id)); await recat(); }
+async function setMapCat(m: BankCategoryMapRow, v: string) { await guard(() => api.saveBankCategoryMap({ id: m.id, bank_label: m.bank_label, category_id: Number(v) })); await recat(); }
+async function delMap(m: BankCategoryMapRow) { await guard(() => api.deleteBankCategoryMap(m.id)); await recat(); }
 const quickMap = ref<Record<string, number | "">>({});
 async function quickAdd(label: string) {
   const c = quickMap.value[label];

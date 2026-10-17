@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-export const toast = reactive({ text: "", err: false, visible: false, _t: 0 as any });
+export const toast = reactive({ text: "", err: false, visible: false, _t: undefined as ReturnType<typeof setTimeout> | undefined });
 export function notify(text: string, err = false) {
   toast.text = text; toast.err = err; toast.visible = true;
   clearTimeout(toast._t);

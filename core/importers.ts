@@ -141,7 +141,7 @@ function parseCsvLine(line: string): string[] {
 
 /** Revolut : relevé .csv « Type,Produit,Date de début,Date de fin,Description,Montant,Frais,Devise,État,Solde ». */
 export function parseRevolut(file: string): ParsedTx[] {
-  const text = fs.readFileSync(file, "utf8").replace(/^﻿/, "");
+  const text = fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "");
   const lines = text.split(/\r?\n/).filter((l) => l.trim());
   const header = parseCsvLine(lines[0]).map((h) => h.trim().toLowerCase());
   const idx = (names: string[]) => header.findIndex((h) => names.includes(h));

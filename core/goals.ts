@@ -5,6 +5,7 @@
  */
 import type { Store } from "./db.js";
 import { currentBalances } from "./balances.js";
+import type { Goal } from "./schema.js";
 import { round2, today, addMonths } from "./finance.js";
 
 export const GOAL_SOURCES = ["manual", "account", "class", "emergency"] as const;
@@ -43,7 +44,7 @@ export function goalsReport(store: Store, ctx: { emergencyGoal: number; emergenc
   const balances = currentBalances(store);
   const accounts = store.all<{ id: number; name: string; asset_class: string }>("SELECT id, name, asset_class FROM accounts WHERE archived=0");
   const accName = new Map(accounts.map((a) => [a.id, a.name]));
-  const goals = store.all<any>("SELECT * FROM goals ORDER BY archived, sort, id");
+  const goals = store.all<Goal>("SELECT * FROM goals ORDER BY archived, sort, id");
   const from90 = new Date(Date.parse(t) - 90 * 86_400_000).toISOString().slice(0, 10);
 
   // Rythme : flux net mensuel moyen sur 90 jours vers un ensemble de comptes (hors virements entre eux)

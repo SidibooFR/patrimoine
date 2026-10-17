@@ -15,7 +15,7 @@ function devApi(): Plugin {
       const { Store } = await import("./core/db.js");
       const { createApi } = await import("./core/api.js");
       const store = await Store.open(process.env.PATRIMOINE_DB ?? path.join(os.tmpdir(), "patrimoine-dev.sqlite"));
-      const api: any = createApi(store);
+      const api = createApi(store) as Record<string, (...args: unknown[]) => unknown>;
       server.middlewares.use(async (req, res, next) => {
         if (!req.url?.startsWith("/__api/")) return next();
         const method = req.url.slice(7).split("?")[0];

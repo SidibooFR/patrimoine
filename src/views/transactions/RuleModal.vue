@@ -3,8 +3,9 @@ import { ref } from "vue";
 import { api } from "../../lib/api";
 import { guard, notify } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import type { Category } from "../../../core/schema";
 
-const props = defineProps<{ rule: { keyword: string; category_id: number | ""; label: string }; categories: any[] }>();
+const props = defineProps<{ rule: { keyword: string; category_id: number | ""; label: string }; categories: Category[] }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 
 // Copie locale : la modale est recréée à chaque ouverture (v-if), la prop n'est pas mutée.

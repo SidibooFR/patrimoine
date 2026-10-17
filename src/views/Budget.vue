@@ -3,7 +3,7 @@ import { onMounted, ref, watch, computed } from "vue";
 import { api } from "../lib/api";
 import { eur0, pct, sign } from "../lib/format";
 import { guard } from "../lib/toast";
-import type { BudgetReport } from "../../core/reports";
+import type { BudgetReport, BudgetRow } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
 
@@ -15,7 +15,7 @@ async function load() { b.value = await guard(() => api.budget(year.value)); }
 onMounted(load);
 watch(year, load);
 
-async function setBudget(row: any, v: string) {
+async function setBudget(row: BudgetRow, v: string) {
   const n = v.trim() === "" ? null : Number(v);
   await guard(() => api.setBudget(row.category_id, year.value, n));
   await load();

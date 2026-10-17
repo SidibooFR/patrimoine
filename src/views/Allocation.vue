@@ -5,8 +5,9 @@ import { eur0, pct, sign, monthLong, cur } from "../lib/format";
 import { theme, rgba } from "../lib/appearance";
 import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
+import type { ChartConfiguration } from "chart.js";
 import { CLASS_COLORS, pctTick } from "../lib/charts";
-import type { AllocationReport } from "../../core/reports";
+import type { AllocationReport, AllocationRow } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
 
@@ -18,19 +19,19 @@ async function load() {
   if (first && al.value) { deposit.value = al.value.nextDeposit; first = false; }
 }
 onMounted(load);
-let t: any;
+let t: ReturnType<typeof setTimeout> | undefined;
 watch(deposit, () => { clearTimeout(t); t = setTimeout(async () => { await api.setSetting("next_deposit", String(deposit.value)); await load(); }, 300); });
 
-async function setTarget(row: any, v: string) {
+async function setTarget(row: AllocationRow, v: string) {
   await guard(() => api.setTarget(row.asset_class, Number(v) / 100));
   await load();
 }
-const chart = computed<any>(() => ({
+const chart = computed<ChartConfiguration<"bar">>(() => ({
   type: "bar",
   data: { labels: al.value!.rows.map((r) => r.asset_class), datasets: [
     { label: "Actuel", data: al.value!.rows.map((r) => r.pct ?? 0), backgroundColor: al.value!.rows.map((r) => CLASS_COLORS[r.asset_class] ?? "#999") },
     { label: "Cible", data: al.value!.rows.map((r) => r.target), backgroundColor: rgba(theme.navy, .25), borderColor: theme.navy, borderWidth: 1 }] },
-  options: { plugins: { tooltip: { callbacks: { label: (c: any) => `${c.dataset.label} : ${pct(c.parsed.y)}` } } }, scales: { y: { ticks: { callback: pctTick }, max: 1 } } },
+  options: { plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label} : ${pct(c.parsed.y)}` } } }, scales: { y: { ticks: { callback: pctTick }, max: 1 } } },
 }));
 const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "Alléger" ? "" : a === "OK" ? "ok" : "");
 </script>

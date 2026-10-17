@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { eur0, pct, sign, month, thisMonth, date } from "../lib/format";
 import { guard, notify } from "../lib/toast";
 import Chart from "../components/Chart.vue";
+import type { ChartConfiguration } from "chart.js";
 import { CLASS_COLORS, eurTick, eurTip } from "../lib/charts";
 
 const nw = ref<Awaited<ReturnType<typeof api.networth>>>();
@@ -44,7 +45,7 @@ const draftTotal = computed(() => Object.values(draft.value).reduce((s, v) => s 
 const rowsDesc = computed(() => [...(nw.value?.rows ?? [])].reverse());
 const classes = computed(() => Object.keys(nw.value?.rows[0]?.byClass ?? {}));
 
-const chart = computed<any>(() => ({
+const chart = computed<ChartConfiguration<"bar">>(() => ({
   type: "bar",
   data: { labels: nw.value!.rows.map((r) => month(r.month)),
     datasets: classes.value.map((c) => ({ label: c, data: nw.value!.rows.map((r) => (r.total === null ? null : r.byClass[c])), backgroundColor: CLASS_COLORS[c] ?? "#999", stack: "a" })) },

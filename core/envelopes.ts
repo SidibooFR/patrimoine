@@ -11,6 +11,7 @@ import type { Store } from "./db.js";
 import { currentBalances, dailyBalances, type CurrentBalance } from "./balances.js";
 import { round2, today } from "./finance.js";
 import { normalize } from "./categorize.js";
+import type { Envelope } from "./schema.js";
 
 export const RATES_AS_OF = "2026-08-01";
 
@@ -137,7 +138,7 @@ export function envelopesReport(store: Store, opts: { underuseThreshold?: number
   const t = today();
   const year = Number(t.slice(0, 4));
   const balances = currentBalances(store);
-  const envs = store.all<any>(`SELECT e.*, a.name AS account FROM envelopes e JOIN accounts a ON a.id=e.account_id WHERE a.archived=0 ORDER BY a.sort, a.id`);
+  const envs = store.all<Envelope & { account: string }>(`SELECT e.*, a.name AS account FROM envelopes e JOIN accounts a ON a.id=e.account_id WHERE a.archived=0 ORDER BY a.sort, a.id`);
   const rows: EnvelopeRow[] = [];
   for (const e of envs) {
     const k = ENVELOPE_KINDS[e.kind] ?? ENVELOPE_KINDS["Autre"];

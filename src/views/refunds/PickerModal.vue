@@ -4,12 +4,13 @@ import { api } from "../../lib/api";
 import { eur, date } from "../../lib/format";
 import Modal from "../../components/Modal.vue";
 import type { RefundRow } from "../../../core/refunds";
+import type { Category, TransactionRow } from "../../../core/schema";
 
-const props = defineProps<{ row: RefundRow; expenseCats: any[] }>();
+const props = defineProps<{ row: RefundRow; expenseCats: Category[] }>();
 const emit = defineEmits<{ close: []; pick: [target: { expense_id?: number; category_id?: number }, remember?: boolean] }>();
 
 // État local : la modale est recréée à chaque ouverture (v-if).
-const picker = ref<{ row: RefundRow; tab: "expense" | "category"; search: string; results: any[]; category_id: number | ""; remember: boolean }>({ row: props.row, tab: "expense", search: "", results: [], category_id: "", remember: false });
+const picker = ref<{ row: RefundRow; tab: "expense" | "category"; search: string; results: TransactionRow[]; category_id: number | ""; remember: boolean }>({ row: props.row, tab: "expense", search: "", results: [], category_id: "", remember: false });
 const shift = (d: string, n: number) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 async function searchExpenses() {
   const p = picker.value;
@@ -17,12 +18,12 @@ async function searchExpenses() {
   p.results = r.rows;
 }
 searchExpenses();
-let t: any;
+let t: ReturnType<typeof setTimeout> | undefined;
 watch(() => picker.value.search, () => { clearTimeout(t); t = setTimeout(searchExpenses, 250); });
 onUnmounted(() => clearTimeout(t));
 
 // Le rapprochement lui-même est fait par la vue parente (qui ferme la modale avant l'appel).
-function pickExpense(e: any) { emit("pick", { expense_id: e.id }); }
+function pickExpense(e: TransactionRow) { emit("pick", { expense_id: e.id }); }
 function pickCategory() { const p = picker.value; if (p.category_id === "") return; emit("pick", { category_id: Number(p.category_id) }, p.remember); }
 </script>
 

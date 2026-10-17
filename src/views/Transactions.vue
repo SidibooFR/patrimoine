@@ -6,16 +6,19 @@ import { eur, date, sign, todayIso } from "../lib/format";
 import { guard } from "../lib/toast";
 import RuleModal from "./transactions/RuleModal.vue";
 import TransactionModal from "./transactions/TransactionModal.vue";
+import type { TransactionDraft } from "./transactions/TransactionModal.vue";
+import type { TxFilter } from "../../core/api";
+import type { Account, Category, TransactionRow } from "../../core/schema";
 
-const accounts = ref<any[]>([]);
-const categories = ref<any[]>([]);
+const accounts = ref<Account[]>([]);
+const categories = ref<Category[]>([]);
 const filter = reactive<{ from: string; to: string; account_id: number | ""; category: string; kind: string; search: string; source: string }>({ from: "", to: "", account_id: "", category: "", kind: "", search: "", source: "" });
-const result = ref<{ total: number; sum: number; rows: any[] }>({ total: 0, sum: 0, rows: [] });
+const result = ref<{ total: number; sum: number; rows: TransactionRow[] }>({ total: 0, sum: 0, rows: [] });
 const page = ref(0);
 const PAGE = 200;
 
 async function load() {
-  const f: any = { limit: PAGE, offset: page.value * PAGE };
+  const f: TxFilter = { limit: PAGE, offset: page.value * PAGE };
   if (filter.from) f.from = filter.from; if (filter.to) f.to = filter.to;
   if (filter.account_id) f.account_id = filter.account_id;
   if (filter.category === "none") f.uncategorized = true; else if (filter.category) f.category_id = Number(filter.category);
@@ -27,26 +30,26 @@ onMounted(async () => {
   [accounts.value, categories.value] = await Promise.all([api.listAccounts(), api.listCategories()]);
   await load();
 });
-let t: any;
+let t: ReturnType<typeof setTimeout> | undefined;
 watch(filter, () => { page.value = 0; clearTimeout(t); t = setTimeout(load, 250); });
 watch(page, load);
 const pages = computed(() => Math.ceil(result.value.total / PAGE));
 
 // Édition inline de la catégorie
-async function setCategory(row: any, v: string) {
+async function setCategory(row: TransactionRow, v: string) {
   const category_id = v === "" ? null : Number(v);
   await guard(() => api.updateTransaction(row.id, { category_id }));
   const c = categories.value.find((x) => x.id === category_id);
   row.category_id = category_id; row.category = c?.name ?? null; row.kind = c?.kind ?? null; row.category_manual = 1;
 }
 const ruleModal = ref<null | { keyword: string; category_id: number | ""; label: string }>(null);
-function ruleFrom(row: any) { ruleModal.value = { keyword: row.label, category_id: row.category_id ?? "", label: row.label }; }
+function ruleFrom(row: TransactionRow) { ruleModal.value = { keyword: row.label, category_id: row.category_id ?? "", label: row.label }; }
 
 // Ajout / édition manuelle
-const modal = ref<null | any>(null);
+const modal = ref<TransactionDraft | null>(null);
 function openNew() { modal.value = { date: todayIso(), account_id: accounts.value[0]?.id, label: "", amount: null, category_id: "", note: "", direction: "-" }; }
-function openEdit(row: any) { if (row.source !== "manuel") return; modal.value = { ...row, amount: Math.abs(row.amount), direction: row.amount < 0 ? "-" : "+", category_id: row.category_id ?? "" }; }
-async function remove(row: any) {
+function openEdit(row: TransactionRow) { if (row.source !== "manuel") return; modal.value = { ...row, amount: Math.abs(row.amount), direction: row.amount < 0 ? "-" : "+", category_id: row.category_id ?? "" }; }
+async function remove(row: TransactionRow) {
   if (!window.confirm(`Supprimer « ${row.label} » (${eur(row.amount)}) ?`)) return;
   await guard(() => api.deleteTransaction(row.id), "Opération supprimée");
   await load();

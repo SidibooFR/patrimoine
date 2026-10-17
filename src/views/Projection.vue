@@ -6,6 +6,7 @@ import { eur0, cur } from "../lib/format";
 import { theme } from "../lib/appearance";
 import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
+import type { ChartConfiguration } from "chart.js";
 import { PALETTE, eurTick, eurTip } from "../lib/charts";
 import type { ProjectionReport } from "../../core/reports";
 import type { GoalsReport } from "../../core/goals";
@@ -26,14 +27,14 @@ onMounted(async () => {
   goals.value = await api.goals();
 });
 const activeGoals = computed(() => (goals.value?.goals ?? []).filter((g) => !g.archived && g.status !== "Atteint"));
-let t: any;
+let t: ReturnType<typeof setTimeout> | undefined;
 watch(p, () => { clearTimeout(t); t = setTimeout(compute, 250); });
 async function compute() {
   const initial = p.useNetworth ? nwTotal.value : p.initial;
   pr.value = await guard(() => api.projection({ initial, monthly: p.monthly, rateLow: p.rateLow / 100, rateMid: p.rateMid / 100, rateHigh: p.rateHigh / 100, inflation: p.inflation / 100, goal: p.goal, years: p.years }));
   for (const [k, v] of [["projection_monthly", p.monthly], ["projection_rate_low", p.rateLow / 100], ["projection_rate_mid", p.rateMid / 100], ["projection_rate_high", p.rateHigh / 100], ["projection_inflation", p.inflation / 100], ["projection_goal", p.goal]] as const) api.setSetting(k, String(v));
 }
-const chart = computed<any>(() => ({
+const chart = computed<ChartConfiguration<"line">>(() => ({
   type: "line",
   data: { labels: pr.value!.rows.map((r) => r.year), datasets: [
     { label: "Total versé", data: pr.value!.rows.map((r) => r.paid), borderColor: PALETTE[6], borderDash: [4, 4], pointRadius: 0 },

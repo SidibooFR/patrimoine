@@ -2,17 +2,18 @@
 import { computed } from "vue";
 import { eur0, pct } from "../../lib/format";
 import Chart from "../../components/Chart.vue";
+import type { ChartConfiguration } from "chart.js";
 import { PALETTE } from "../../lib/charts";
 import type { PortfolioReport } from "../../../core/reports";
 
 const props = defineProps<{ pf: PortfolioReport }>();
 
-const weightChart = computed<any>(() => {
+const weightChart = computed<ChartConfiguration<"doughnut">>(() => {
   const pos = props.pf.positions.filter((p) => p.value > 0).sort((a, b) => b.value - a.value);
   const top = pos.slice(0, 8); const rest = pos.slice(8).reduce((s, p) => s + p.value, 0);
   const labels = [...top.map((p) => p.name), ...(rest ? ["Autres"] : [])];
   return { type: "doughnut", data: { labels, datasets: [{ data: [...top.map((p) => p.value), ...(rest ? [rest] : [])], backgroundColor: labels.map((_, i) => PALETTE[i % PALETTE.length]) }] },
-    options: { plugins: { legend: { position: "right" }, tooltip: { callbacks: { label: (c: any) => `${c.label} : ${eur0(c.parsed)}` } } }, cutout: "60%" } };
+    options: { plugins: { legend: { position: "right" }, tooltip: { callbacks: { label: (c) => `${c.label} : ${eur0(c.parsed)}` } } }, cutout: "60%" } };
 });
 const byClass = computed(() => {
   const m = new Map<string, number>();
