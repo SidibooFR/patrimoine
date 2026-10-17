@@ -10,10 +10,13 @@ import PreferencesCard from "./settings/PreferencesCard.vue";
 import AppearanceCard from "./settings/AppearanceCard.vue";
 import McpCard from "./settings/McpCard.vue";
 import UpdatesCard from "./settings/UpdatesCard.vue";
+import type { NewAccount } from "./settings/AccountsCard.vue";
+import type { NewCategory } from "./settings/CategoriesCard.vue";
+import type { Account, Category } from "../../core/schema";
 
-const accounts = ref<any[]>([]);
-const categories = ref<any[]>([]);
-const meta = ref<any>({ assetClasses: [], accountTypes: [], categoryKinds: [] });
+const accounts = ref<Account[]>([]);
+const categories = ref<Category[]>([]);
+const meta = ref<{ assetClasses: readonly string[]; accountTypes: readonly string[]; categoryKinds: readonly string[]; version: string }>({ assetClasses: [], accountTypes: [], categoryKinds: [], version: "" });
 const settings = ref<Record<string, string>>({});
 const paths = ref<{ db: string; documents: string; mcpServer: string }>({ db: "", documents: "", mcpServer: "" });
 
@@ -22,12 +25,12 @@ async function load() {
 }
 onMounted(load);
 
-async function saveAcc(a: any, patch: any) { await guard(() => api.saveAccount({ ...a, ...patch })); await load(); }
-async function addAcc(acc: any) { await guard(() => api.saveAccount(acc), "Compte ajouté"); await load(); }
-async function delAcc(a: any) { if (!window.confirm(`Supprimer le compte « ${a.name} » ?`)) return; await guard(() => api.deleteAccount(a.id), "Compte supprimé"); await load(); }
-async function saveCat(c: any, patch: any) { await guard(() => api.saveCategory({ ...c, ...patch })); await load(); }
-async function addCat(cat: any) { await guard(() => api.saveCategory(cat), "Catégorie ajoutée"); await load(); }
-async function delCat(c: any) { if (!window.confirm(`Supprimer « ${c.name} » ? Les opérations de cette catégorie redeviendront « sans catégorie ».`)) return; await guard(() => api.deleteCategory(c.id)); await load(); }
+async function saveAcc(a: Account, patch: Partial<Account>) { await guard(() => api.saveAccount({ ...a, ...patch })); await load(); }
+async function addAcc(acc: NewAccount) { await guard(() => api.saveAccount(acc), "Compte ajouté"); await load(); }
+async function delAcc(a: Account) { if (!window.confirm(`Supprimer le compte « ${a.name} » ?`)) return; await guard(() => api.deleteAccount(a.id), "Compte supprimé"); await load(); }
+async function saveCat(c: Category, patch: Partial<Category>) { await guard(() => api.saveCategory({ ...c, ...patch })); await load(); }
+async function addCat(cat: NewCategory) { await guard(() => api.saveCategory(cat), "Catégorie ajoutée"); await load(); }
+async function delCat(c: Category) { if (!window.confirm(`Supprimer « ${c.name} » ? Les opérations de cette catégorie redeviendront « sans catégorie ».`)) return; await guard(() => api.deleteCategory(c.id)); await load(); }
 async function setSetting(k: string, v: string) { settings.value = (await guard(() => api.setSetting(k, v))) ?? settings.value; }
 async function setLook(k: string, v: string) { await setSetting(k, v); applyAppearance(fromSettings(settings.value)); }
 async function resetLook() {

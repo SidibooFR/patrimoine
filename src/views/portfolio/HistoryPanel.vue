@@ -3,12 +3,13 @@ import { computed } from "vue";
 import { eur0, pct, date, sign } from "../../lib/format";
 import { theme, rgba } from "../../lib/appearance";
 import Chart from "../../components/Chart.vue";
+import type { ChartConfiguration } from "chart.js";
 import { PALETTE, eurTick, eurTip } from "../../lib/charts";
 import type { PortfolioHistory } from "../../../core/history";
 
 const props = defineProps<{ hist: PortfolioHistory }>();
 
-const histChart = computed<any>(() => {
+const histChart = computed<ChartConfiguration<"line">>(() => {
   const pts = props.hist.points;
   return {
     type: "line",

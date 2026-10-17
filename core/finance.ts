@@ -14,13 +14,14 @@ export function xirr(flows: CashFlow[]): number | null {
   const npv = (r: number) => f.reduce((s, x) => s + x.amount / Math.pow(1 + r, days(t0, x.date) / 365), 0);
   // Bissection robuste sur [-0.9999, 10] puis affinage Newton
   let lo = -0.9999, hi = 10;
-  let flo = npv(lo), fhi = npv(hi);
+  let flo = npv(lo);
+  const fhi = npv(hi);
   if (Number.isNaN(flo) || Number.isNaN(fhi) || flo * fhi > 0) return null;
   for (let i = 0; i < 200; i++) {
     const mid = (lo + hi) / 2;
     const fm = npv(mid);
     if (Math.abs(fm) < 1e-7 || hi - lo < 1e-9) return mid;
-    if (flo * fm < 0) { hi = mid; fhi = fm; } else { lo = mid; flo = fm; }
+    if (flo * fm < 0) hi = mid; else { lo = mid; flo = fm; }
   }
   return (lo + hi) / 2;
 }

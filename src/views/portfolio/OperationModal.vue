@@ -1,15 +1,21 @@
+<script lang="ts">
+import type { OperationKind } from "../../../core/schema";
+/** Brouillon du formulaire (null = champ vide). */
+export interface OperationDraft { id?: number; date: string; asset_id: number; kind: OperationKind; quantity: number | null; unit_price: number | null; fees: number; note: string }
+</script>
 <script setup lang="ts">
 import { ref } from "vue";
 import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import type { AssetRow } from "../../../core/schema";
 
-const props = defineProps<{ op: any; assets: any[] }>();
+const props = defineProps<{ op: OperationDraft; assets: AssetRow[] }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 
 // Copie locale : la modale est recréée à chaque ouverture (v-if), la prop n'est pas mutée.
-const draft = ref<any>({ ...props.op });
+const draft = ref<OperationDraft>({ ...props.op });
 
 async function saveOp() {
   const m = draft.value;

@@ -9,10 +9,11 @@ import PageHeader from "../components/PageHeader.vue";
 import MovesCard from "./envelopes/MovesCard.vue";
 import EnvelopeCard from "./envelopes/EnvelopeCard.vue";
 import EnvelopeModal from "./envelopes/EnvelopeModal.vue";
-import type { EnvelopeKindInfo } from "./envelopes/EnvelopeModal.vue";
+import type { EnvelopeDraft, EnvelopeKindInfo } from "./envelopes/EnvelopeModal.vue";
+import type { Account } from "../../core/schema";
 
 const rep = ref<EnvelopesReport>();
-const accounts = ref<any[]>([]);
+const accounts = ref<Account[]>([]);
 const kinds = ref<EnvelopeKindInfo[]>([]);
 const ratesAsOf = ref("");
 
@@ -25,7 +26,7 @@ onMounted(load);
 const kindOf = (k: string) => kinds.value.find((x) => x.name === k);
 
 // Édition
-const modal = ref<any>(null);
+const modal = ref<EnvelopeDraft | null>(null);
 const freeAccounts = computed(() => accounts.value.filter((a) => !rep.value?.rows.some((r) => r.account_id === a.id) || a.id === modal.value?.account_id));
 function openNew() {
   const a = freeAccounts.value.find((x) => x.type === "Livret" || x.type === "PEA") ?? freeAccounts.value[0];
@@ -36,7 +37,7 @@ function openEdit(r: EnvelopeRow) {
 }
 async function remove() {
   if (!window.confirm("Retirer cette enveloppe ? Le compte et ses opérations sont conservés.")) return;
-  await guard(() => api.deleteEnvelope(modal.value.id), "Enveloppe retirée");
+  await guard(() => api.deleteEnvelope(modal.value!.id!), "Enveloppe retirée");
   modal.value = null; await load();
 }
 </script>

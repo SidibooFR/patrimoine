@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import type { Category } from "../../../core/schema";
 
-const props = defineProps<{ settings: Record<string, string>; categories: any[]; dbPath: string }>();
+const props = defineProps<{ settings: Record<string, string>; categories: Category[]; dbPath: string }>();
 const emit = defineEmits<{ set: [key: string, value: string] }>();
 
 const excluded = computed(() => (props.settings.recurring_exclude_categories ?? "").split("|").filter(Boolean));

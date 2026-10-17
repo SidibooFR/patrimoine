@@ -3,13 +3,14 @@ import { ref, computed } from "vue";
 import { api, files } from "../../lib/api";
 import { eur, num, sign, date } from "../../lib/format";
 import { guard } from "../../lib/toast";
+import type { AssetRow, OperationRow } from "../../../core/schema";
 
-const props = defineProps<{ ops: any[]; assets: any[] }>();
-defineEmits<{ edit: [op: any]; remove: [op: any] }>();
+const props = defineProps<{ ops: OperationRow[]; assets: AssetRow[] }>();
+defineEmits<{ edit: [op: OperationRow]; remove: [op: OperationRow] }>();
 
 const opsFilter = ref<number | "">("");
 const opsShown = computed(() => props.ops.filter((o) => opsFilter.value === "" || o.asset_id === opsFilter.value));
-const opTotal = (o: any) => (o.kind === "Achat" ? -(o.quantity * o.unit_price + o.fees) : o.kind === "Frais" ? -o.fees : o.quantity * o.unit_price - o.fees);
+const opTotal = (o: OperationRow) => (o.kind === "Achat" ? -(o.quantity * o.unit_price + o.fees) : o.kind === "Frais" ? -o.fees : o.quantity * o.unit_price - o.fees);
 async function exportOps() {
   const f = await files.save({ title: "Exporter", defaultPath: "patrimoine.xlsx", filters: [{ name: "Excel", extensions: ["xlsx"] }] });
   if (f) await guard(() => api.exportExcel(f), "Export créé");

@@ -9,9 +9,10 @@ import PageHeader from "../components/PageHeader.vue";
 import RefundsTable from "./refunds/RefundsTable.vue";
 import PayerRulesCard from "./refunds/PayerRulesCard.vue";
 import PickerModal from "./refunds/PickerModal.vue";
+import type { Category } from "../../core/schema";
 
 const rep = ref<RefundsReport>();
-const categories = ref<any[]>([]);
+const categories = ref<Category[]>([]);
 const show = ref<"todo" | "done" | "all">("todo");
 async function load() {
   [rep.value, categories.value] = await Promise.all([api.refunds(), api.listCategories()]);

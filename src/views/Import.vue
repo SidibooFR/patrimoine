@@ -4,11 +4,13 @@ import { onMounted, ref } from "vue";
 import { api, files } from "../lib/api";
 import { eur, date } from "../lib/format";
 import { guard } from "../lib/toast";
+import type { Account, ImportAccountMapRow } from "../../core/schema";
+import type { ImportResult } from "../../core/importers";
 
-const previews = ref<{ file: string; preview: any; result?: any; error?: string }[]>([]);
+const previews = ref<{ file: string; preview: Awaited<ReturnType<typeof api.previewImport>> | null; result?: ImportResult; error?: string }[]>([]);
 const busy = ref(false);
-const maps = ref<any[]>([]);
-const accounts = ref<any[]>([]);
+const maps = ref<ImportAccountMapRow[]>([]);
+const accounts = ref<Account[]>([]);
 const newMap = ref({ source: "boursobank", key: "", account_id: "" as number | "" });
 
 const SOURCE_LABEL: Record<string, string> = { bnp: "BNP Paribas", boursobank: "Boursobank", revolut: "Revolut" };
@@ -38,7 +40,7 @@ async function addMap() {
   newMap.value.key = ""; await loadMaps();
 }
 async function delMap(id: number) { await guard(() => api.deleteImportAccountMap(id)); await loadMaps(); }
-async function setMapAccount(m: any, v: string) { await guard(() => api.saveImportAccountMap({ id: m.id, source: m.source, key: m.key, account_id: Number(v) })); await loadMaps(); }
+async function setMapAccount(m: ImportAccountMapRow, v: string) { await guard(() => api.saveImportAccountMap({ id: m.id, source: m.source, key: m.key, account_id: Number(v) })); await loadMaps(); }
 </script>
 
 <template>

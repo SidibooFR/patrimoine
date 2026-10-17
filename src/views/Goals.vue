@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
-import { eur0, pct, date, sign, monthLong, cur } from "../lib/format";
+import { eur0, pct, sign, monthLong, cur } from "../lib/format";
 import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
-import type { GoalsReport, GoalRow } from "../../core/goals";
+import type { GoalsReport, GoalRow, GoalSource } from "../../core/goals";
+import type { Account } from "../../core/schema";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
 
 const rep = ref<GoalsReport>();
-const accounts = ref<any[]>([]);
+const accounts = ref<Account[]>([]);
 const classes = ref<readonly string[]>([]);
 const showArchived = ref(false);
 async function load() {
@@ -19,13 +20,18 @@ async function load() {
 onMounted(load);
 
 const goals = computed(() => (rep.value?.goals ?? []).filter((g) => showArchived.value || !g.archived));
-const SOURCES: Record<string, string> = { manual: "Montant que je saisis", account: "Solde d'un compte", class: "Total d'une classe d'actif", emergency: "Épargne de précaution (liquidités + épargne sécurisée)" };
+const SOURCES: Record<GoalSource, string> = { manual: "Montant que je saisis", account: "Solde d'un compte", class: "Total d'une classe d'actif", emergency: "Épargne de précaution (liquidités + épargne sécurisée)" };
 const STATUS_CLASS: Record<string, string> = { "Atteint": "ok", "En avance": "ok", "Dans les temps": "ok", "En retard": "neg", "À financer": "warn", "Sans échéance": "" };
 
 const inYear = (n: number) => { const d = new Date(); d.setFullYear(d.getFullYear() + n); return d.toISOString().slice(0, 10); };
-const modal = ref<any>(null);
+/** Brouillon du formulaire ("" = champ vide). */
+interface GoalDraft {
+  id?: number; name: string; source: GoalSource; target: number | ""; target_date: string; account_id: number | "";
+  asset_class: string; manual_amount: number; archived?: number;
+}
+const modal = ref<GoalDraft | null>(null);
 function openNew(preset?: "emergency" | "apport" | "voyage") {
-  const base = { name: "", source: "manual", target: "", target_date: inYear(1), account_id: "", asset_class: "Épargne sécurisée", manual_amount: 0 };
+  const base: GoalDraft = { name: "", source: "manual", target: "", target_date: inYear(1), account_id: "", asset_class: "Épargne sécurisée", manual_amount: 0 };
   if (preset === "emergency") Object.assign(base, { name: "Épargne de précaution", source: "emergency", target: "" });
   if (preset === "apport") Object.assign(base, { name: "Apport immobilier", source: "class", asset_class: "Épargne sécurisée", target: 20000, target_date: inYear(5) });
   if (preset === "voyage") Object.assign(base, { name: "Voyage", source: "manual", target: 1500, target_date: inYear(1) });
@@ -35,7 +41,7 @@ function openEdit(g: GoalRow) {
   modal.value = { id: g.id, name: g.name, source: g.source, target: g.targetAuto ? "" : g.target, target_date: g.target_date ?? "", account_id: g.account_id ?? "", asset_class: g.asset_class ?? "Épargne sécurisée", manual_amount: g.manual_amount, archived: g.archived };
 }
 async function save() {
-  const m = modal.value;
+  const m = modal.value!;
   const ok = await guard(() => api.saveGoal({
     id: m.id, name: m.name, source: m.source, target: m.target === "" ? null : Number(m.target), target_date: m.target_date || null,
     account_id: m.account_id === "" ? null : Number(m.account_id), asset_class: m.asset_class, manual_amount: Number(m.manual_amount) || 0, archived: m.archived ?? 0,

@@ -1,22 +1,30 @@
+<script lang="ts">
+/** Brouillon du formulaire : montant en valeur absolue + sens ; "" / null = champ vide. */
+export interface TransactionDraft {
+  id?: number; date: string; account_id: number; label: string; amount: number | null; category_id: number | ""; note: string; direction: "-" | "+";
+}
+</script>
 <script setup lang="ts">
 import { ref } from "vue";
 import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import type { Account, Category } from "../../../core/schema";
 
-const props = defineProps<{ tx: any; accounts: any[]; categories: any[] }>();
+const props = defineProps<{ tx: TransactionDraft; accounts: Account[]; categories: Category[] }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 
 // Copie locale : la modale est recréée à chaque ouverture (v-if), la prop n'est pas mutée.
-const draft = ref<any>({ ...props.tx });
+const draft = ref<TransactionDraft>({ ...props.tx });
 
 async function save() {
   const m = draft.value;
   const amount = (m.direction === "-" ? -1 : 1) * Math.abs(Number(m.amount));
   const cat = m.category_id === "" ? null : Number(m.category_id);
-  const ok = m.id
-    ? await guard(() => api.updateTransaction(m.id, { date: m.date, account_id: m.account_id, label: m.label, amount, category_id: cat, note: m.note }), "Opération modifiée")
+  const id = m.id;
+  const ok = id
+    ? await guard(() => api.updateTransaction(id, { date: m.date, account_id: m.account_id, label: m.label, amount, category_id: cat, note: m.note }), "Opération modifiée")
     : await guard(() => api.addTransaction({ date: m.date, account_id: m.account_id, label: m.label, amount, category_id: cat, note: m.note }), "Opération ajoutée");
   if (ok !== undefined) emit("saved");
 }

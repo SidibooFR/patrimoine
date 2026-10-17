@@ -13,6 +13,11 @@ import type { Store } from "./db.js";
 import { round2, today } from "./finance.js";
 
 const UA = "Mozilla/5.0 (compatible; Patrimoine/1.0)";
+
+/** Réponse (partielle) de l'API chart de Yahoo Finance. */
+export interface YahooChart {
+  chart?: { result?: { meta?: { regularMarketPrice?: number; currency?: string }; timestamp?: number[]; indicators?: { quote?: { close?: (number | null)[] }[] } }[] };
+}
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 const addDays = (d: string, n: number) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
@@ -38,7 +43,7 @@ export async function fetchYahooHistory(symbol: string, from: string, to: string
   try {
     const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
     if (!res.ok) return null;
-    const j: any = await res.json();
+    const j = (await res.json()) as YahooChart;
     const r = j?.chart?.result?.[0];
     const ts: number[] = r?.timestamp ?? [];
     const close: (number | null)[] = r?.indicators?.quote?.[0]?.close ?? [];
@@ -58,9 +63,9 @@ export async function fetchCoinGeckoHistory(id: string, days: number, currency =
     const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
     if (res.status === 429) return "rate-limited";
     if (!res.ok) return null;
-    const j: any = await res.json();
+    const j = (await res.json()) as { prices?: [number, number][] };
     const byDay = new Map<string, number>();
-    for (const [ms, p] of (j?.prices ?? []) as [number, number][]) if (p > 0) byDay.set(isoDay(ms), p);
+    for (const [ms, p] of j?.prices ?? []) if (p > 0) byDay.set(isoDay(ms), p);
     return [...byDay.entries()];
   } catch {
     return null;

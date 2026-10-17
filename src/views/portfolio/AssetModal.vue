@@ -1,15 +1,20 @@
+<script lang="ts">
+/** Brouillon du formulaire ("" = champ vide). */
+export interface AssetDraft { id?: number; name: string; symbol: string; account_id: number | ""; asset_class: string; manual_price: number | "" | null }
+</script>
 <script setup lang="ts">
 import { ref } from "vue";
 import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import type { Account } from "../../../core/schema";
 
-const props = defineProps<{ asset: any; accounts: any[]; classes: readonly string[] }>();
+const props = defineProps<{ asset: AssetDraft; accounts: Account[]; classes: readonly string[] }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 
 // Copie locale : la modale est recréée à chaque ouverture (v-if), la prop n'est pas mutée.
-const draft = ref<any>({ ...props.asset });
+const draft = ref<AssetDraft>({ ...props.asset });
 
 async function saveAsset() {
   const m = draft.value;

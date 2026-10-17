@@ -3,7 +3,7 @@
  * Aucune clé d'API nécessaire. En cas d'échec, le cours manuel est conservé.
  */
 import type { Store } from "./db.js";
-import { currencyOf, recordPrice } from "./history.js";
+import { currencyOf, recordPrice, type YahooChart } from "./history.js";
 
 const UA = "Mozilla/5.0 (compatible; Patrimoine/1.0)";
 
@@ -12,11 +12,11 @@ export async function fetchYahooPrice(symbol: string): Promise<{ price: number; 
   try {
     const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
     if (!res.ok) return null;
-    const j: any = await res.json();
+    const j = (await res.json()) as YahooChart;
     const meta = j?.chart?.result?.[0]?.meta;
     const p = meta?.regularMarketPrice;
     if (typeof p !== "number") return null;
-    return { price: p, currency: String(meta.currency ?? "") };
+    return { price: p, currency: String(meta?.currency ?? "") };
   } catch {
     return null;
   }
@@ -29,7 +29,7 @@ export async function fetchCoinGeckoPrices(ids: string[], currency = "EUR"): Pro
   try {
     const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
     if (!res.ok) return {};
-    const j: any = await res.json();
+    const j = (await res.json()) as Record<string, Record<string, number> | undefined>;
     const out: Record<string, number> = {};
     for (const id of ids) if (typeof j?.[id]?.[vs] === "number") out[id] = j[id][vs];
     return out;

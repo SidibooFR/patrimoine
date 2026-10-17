@@ -13,11 +13,14 @@ import OperationsTable from "./portfolio/OperationsTable.vue";
 import AllocationPanel from "./portfolio/AllocationPanel.vue";
 import AssetModal from "./portfolio/AssetModal.vue";
 import OperationModal from "./portfolio/OperationModal.vue";
+import type { AssetDraft } from "./portfolio/AssetModal.vue";
+import type { OperationDraft } from "./portfolio/OperationModal.vue";
+import type { Account, AssetRow, OperationRow } from "../../core/schema";
 
 const pf = ref<PortfolioReport>();
-const ops = ref<any[]>([]);
-const assets = ref<any[]>([]);
-const accounts = ref<any[]>([]);
+const ops = ref<OperationRow[]>([]);
+const assets = ref<AssetRow[]>([]);
+const accounts = ref<Account[]>([]);
 const classes = ref<readonly string[]>([]);
 const refreshing = ref(false);
 const lastRefresh = ref<{ updated: number; failed: string[]; at: string } | null>(null);
@@ -45,19 +48,23 @@ async function backfill() {
 }
 
 // Actifs
-const assetModal = ref<any>(null);
+const assetModal = ref<AssetDraft | null>(null);
 function newAsset() { assetModal.value = { name: "", symbol: "", account_id: accounts.value.find((a) => a.asset_class === "Actions & ETF")?.id ?? "", asset_class: "Actions & ETF", manual_price: null }; }
-function editAsset(a: any) { assetModal.value = { ...a, account_id: a.account_id ?? "" }; }
-async function deleteAsset(a: any) {
-  if (!window.confirm(`Supprimer « ${a.name} » et toutes ses opérations ?`)) return;
+function editAsset(id: number) {
+  const a = assets.value.find((x) => x.id === id);
+  if (a) assetModal.value = { ...a, account_id: a.account_id ?? "" };
+}
+async function deleteAsset(id: number) {
+  const a = assets.value.find((x) => x.id === id);
+  if (!a || !window.confirm(`Supprimer « ${a.name} » et toutes ses opérations ?`)) return;
   await guard(() => api.deleteAsset(a.id), "Actif supprimé"); await load();
 }
 
 // Opérations
-const opModal = ref<any>(null);
+const opModal = ref<OperationDraft | null>(null);
 function newOp(asset_id?: number) { opModal.value = { date: todayIso(), asset_id: asset_id ?? assets.value[0]?.id, kind: "Achat", quantity: null, unit_price: null, fees: 0, note: "" }; }
-function editOp(o: any) { opModal.value = { ...o }; }
-async function deleteOp(o: any) { if (!window.confirm("Supprimer cette opération ?")) return; await guard(() => api.deleteOperation(o.id)); await load(); }
+function editOp(o: OperationRow) { opModal.value = { ...o }; }
+async function deleteOp(o: OperationRow) { if (!window.confirm("Supprimer cette opération ?")) return; await guard(() => api.deleteOperation(o.id)); await load(); }
 </script>
 
 <template>
@@ -82,7 +89,7 @@ async function deleteOp(o: any) { if (!window.confirm("Supprimer cette opératio
   </div>
 
   <div v-if="pf">
-    <PositionsTable :positions="pf.positions" @new-op="newOp" @edit="editAsset(assets.find((a) => a.id === $event))" @remove="deleteAsset(assets.find((a) => a.id === $event))" />
+    <PositionsTable :positions="pf.positions" @new-op="newOp" @edit="editAsset" @remove="deleteAsset" />
   </div>
 
   <div v-if="hist && hist.points.length" class="grid side mt-3">

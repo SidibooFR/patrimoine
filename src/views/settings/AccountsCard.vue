@@ -1,8 +1,12 @@
+<script lang="ts">
+import type { Account } from "../../../core/schema";
+export type NewAccount = Pick<Account, "name" | "institution" | "type" | "asset_class">;
+</script>
 <script setup lang="ts">
 import { ref, computed } from "vue";
 
-const props = defineProps<{ accounts: any[]; accountTypes: string[]; assetClasses: string[] }>();
-const emit = defineEmits<{ save: [account: any, patch: any]; add: [account: any]; remove: [account: any] }>();
+const props = defineProps<{ accounts: Account[]; accountTypes: readonly string[]; assetClasses: readonly string[] }>();
+const emit = defineEmits<{ save: [account: Account, patch: Partial<Account>]; add: [account: NewAccount]; remove: [account: Account] }>();
 
 const newAcc = ref({ name: "", institution: "", type: "Courant", asset_class: "Liquidités" });
 const showArchived = ref(false);

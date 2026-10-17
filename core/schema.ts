@@ -165,3 +165,39 @@ CREATE TABLE IF NOT EXISTS price_history (
   PRIMARY KEY (asset_id, date)
 );
 `;
+
+// Lignes des tables (booléens SQLite = 0 | 1, dates = texte AAAA-MM-JJ)
+export interface Account { id: number; name: string; institution: string; type: string; asset_class: string; sort: number; archived: number }
+export interface Category { id: number; name: string; kind: string; sort: number }
+export interface Transaction {
+  id: number; date: string; account_id: number; label: string; raw_label: string; bank_category: string; amount: number;
+  category_id: number | null; category_manual: number; source: string; balance: number | null; fingerprint: string | null; note: string; created_at: string;
+}
+export interface Rule { id: number; keyword: string; category_id: number }
+export interface BankCategoryMap { id: number; bank_label: string; category_id: number }
+export interface ImportAccountMap { id: number; source: string; key: string; account_id: number }
+export interface Asset {
+  id: number; name: string; symbol: string; account_id: number | null; asset_class: string;
+  manual_price: number | null; price: number | null; price_source: string; price_updated_at: string | null;
+}
+export type OperationKind = "Achat" | "Vente" | "Dividende" | "Frais";
+export interface Operation { id: number; date: string; asset_id: number; kind: OperationKind; quantity: number; unit_price: number; fees: number; note: string }
+export interface Envelope {
+  id: number; account_id: number; kind: string; ceiling: number | null; rate: number | null; opened_on: string | null;
+  initial_deposits: number; monthly_deposit: number; note: string;
+}
+export interface Goal {
+  id: number; name: string; target: number | null; target_date: string | null; source: "manual" | "account" | "class" | "emergency";
+  account_id: number | null; asset_class: string | null; manual_amount: number; sort: number; archived: number; created_at: string;
+}
+
+// Lignes enrichies renvoyées par l'API (jointures)
+export interface TransactionRow extends Transaction {
+  account: string; category: string | null; kind: string | null;
+  refund_expense_id: number | null; refund_category_id: number | null; refunded: number;
+}
+export interface RuleRow extends Rule { category: string }
+export interface BankCategoryMapRow extends BankCategoryMap { category: string }
+export interface ImportAccountMapRow extends ImportAccountMap { account: string }
+export interface AssetRow extends Asset { account: string }
+export interface OperationRow extends Operation { asset: string }

@@ -27,7 +27,7 @@ export async function exportWorkbook(store: Store, api: Api, file: string): Prom
   const d = api.dashboard();
   const dash = wb.addWorksheet("Tableau de bord");
   dash.columns = [{ width: 42 }, { width: 18 }];
-  const kv = (k: string, v: unknown, fmt?: string) => { const r = dash.addRow([k, v as any]); if (fmt) r.getCell(2).numFmt = fmt; };
+  const kv = (k: string, v: unknown, fmt?: string) => { const r = dash.addRow([k, v as ExcelJS.CellValue]); if (fmt) r.getCell(2).numFmt = fmt; };
   kv("Date", d.today);
   kv("Patrimoine total", d.networth.total, EUR); kv("Dernier relevé", d.networth.lastMonth); kv("Variation dernier mois", d.networth.variation, EUR);
   kv("Épargne de précaution", d.networth.emergencyStatus);
@@ -165,7 +165,7 @@ export async function exportWorkbook(store: Store, api: Api, file: string): Prom
   hw.addRow([]); hw.addRow(["Performance (TWR)"]).font = { bold: true };
   for (const p of ph.periods) { const row = hw.addRow([p.label, p.twr, p.gain, p.reliable ? "" : p.reason ?? ""]); row.getCell(2).numFmt = PCT; row.getCell(3).numFmt = EUR; }
   const cw0 = sheet(wb, "Historique des cours", [{ header: "Actif", key: "asset", width: 30 }, { header: "Date", key: "date", width: 12 }, { header: "Cours", key: "price", fmt: UNIT }, { header: "Source", key: "source", width: 16 }]);
-  for (const r of store.all<any>("SELECT a.name AS asset, h.date, h.price, h.source FROM price_history h JOIN assets a ON a.id=h.asset_id ORDER BY a.name, h.date")) cw0.addRow(r);
+  for (const r of store.all<{ asset: string; date: string; price: number; source: string }>("SELECT a.name AS asset, h.date, h.price, h.source FROM price_history h JOIN assets a ON a.id=h.asset_id ORDER BY a.name, h.date")) cw0.addRow(r);
 
   // Référentiels
   const cw = sheet(wb, "Comptes", [{ header: "Compte", key: "name", width: 30 }, { header: "Établissement", key: "institution" }, { header: "Type", key: "type" }, { header: "Classe", key: "asset_class", width: 18 }]);

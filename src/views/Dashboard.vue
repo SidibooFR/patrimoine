@@ -5,6 +5,7 @@ import { eur, eur0, pct, monthLong, date, sign } from "../lib/format";
 import { theme, rgba } from "../lib/appearance";
 import { guard } from "../lib/toast";
 import Chart from "../components/Chart.vue";
+import type { ChartConfiguration } from "chart.js";
 import { CLASS_COLORS, PALETTE, eurTick, pctTick, eurTip } from "../lib/charts";
 import type { Dashboard } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
@@ -13,27 +14,27 @@ import PageHeader from "../components/PageHeader.vue";
 const d = ref<Dashboard>();
 onMounted(async () => { d.value = await guard(() => api.dashboard()); });
 
-const nwChart = computed<any>(() => ({
+const nwChart = computed<ChartConfiguration<"line">>(() => ({
   type: "line",
   data: { labels: d.value!.series.months.map((m) => new Date(m + "T00:00:00").toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })),
     datasets: [{ label: "Patrimoine", data: d.value!.series.total, borderColor: theme.navy, backgroundColor: rgba(theme.navy, .12), fill: true, tension: .25, spanGaps: true, pointRadius: 4 }] },
   options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } } },
 }));
-const classChart = computed<any>(() => {
+const classChart = computed<ChartConfiguration<"doughnut">>(() => {
   const entries = Object.entries(d.value!.byClass).filter(([, v]) => v > 0);
   return { type: "doughnut", data: { labels: entries.map((e) => e[0]), datasets: [{ data: entries.map((e) => e[1]), backgroundColor: entries.map((e) => CLASS_COLORS[e[0]] ?? "#999") }] },
-    options: { plugins: { legend: { position: "right" }, tooltip: { callbacks: { label: (c: any) => `${c.label} : ${eur0(c.parsed)}` } } }, cutout: "62%" } };
+    options: { plugins: { legend: { position: "right" }, tooltip: { callbacks: { label: (c) => `${c.label} : ${eur0(c.parsed)}` } } }, cutout: "62%" } };
 });
-const budgetChart = computed<any>(() => ({
+const budgetChart = computed<ChartConfiguration<"bar">>(() => ({
   type: "bar",
   data: { labels: d.value!.budgetSeries.months.map((m) => new Date(m + "-01T00:00:00").toLocaleDateString("fr-FR", { month: "short" })),
     datasets: [{ label: "Revenus", data: d.value!.budgetSeries.income, backgroundColor: PALETTE[1] }, { label: "Dépenses", data: d.value!.budgetSeries.expense, backgroundColor: PALETTE[4] }] },
   options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } } },
 }));
-const rateChart = computed<any>(() => ({
+const rateChart = computed<ChartConfiguration<"bar">>(() => ({
   type: "bar",
   data: { labels: budgetChart.value.data.labels, datasets: [{ label: "Taux d'épargne", data: d.value!.budgetSeries.rate, backgroundColor: d.value!.budgetSeries.rate.map((r) => (r ?? 0) < 0 ? PALETTE[4] : theme.accent) }] },
-  options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c: any) => pct(c.parsed.y) } } }, scales: { y: { ticks: { callback: pctTick }, min: -1, max: 1 } } },
+  options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => pct(c.parsed.y) } } }, scales: { y: { ticks: { callback: pctTick }, min: -1, max: 1 } } },
 }));
 </script>
 

@@ -1,6 +1,11 @@
 <script lang="ts">
 /** Type d'enveloppe tel qu'exposé par api.meta. */
 export interface EnvelopeKindInfo { name: string; ceiling: number | null; ceilingOn: string | null; rate: number | null; help: string }
+/** Brouillon du formulaire ("" = champ vide). */
+export interface EnvelopeDraft {
+  id?: number; account_id: number | ""; kind: string; ceiling: number | "" | null; ratePct: number | "" | null; opened_on: string;
+  initial_deposits: number; monthly_deposit: number; note: string;
+}
 </script>
 
 <script setup lang="ts">
@@ -9,12 +14,13 @@ import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import type { Account } from "../../../core/schema";
 
-const props = defineProps<{ envelope: any; accounts: any[]; kinds: EnvelopeKindInfo[] }>();
+const props = defineProps<{ envelope: EnvelopeDraft; accounts: Account[]; kinds: EnvelopeKindInfo[] }>();
 const emit = defineEmits<{ close: []; saved: []; remove: [] }>();
 
 // Copie locale : la modale est recréée à chaque ouverture (v-if), la prop n'est pas mutée.
-const draft = ref<any>({ ...props.envelope });
+const draft = ref<EnvelopeDraft>({ ...props.envelope });
 
 // Calculé sur le brouillon (et non sur la prop) pour suivre les changements de type.
 const modalKind = computed(() => props.kinds.find((x) => x.name === draft.value.kind));

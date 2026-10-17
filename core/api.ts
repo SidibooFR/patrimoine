@@ -4,6 +4,8 @@
  */
 import { VERSION } from "./version.js";
 import type { Store } from "./db.js";
+import type { SqlValue } from "sql.js";
+import type { Account, AssetRow, BankCategoryMapRow, Category, ImportAccountMapRow, OperationRow, RuleRow, Transaction, TransactionRow } from "./schema.js";
 import { buildCategorizer, recategorizeAll } from "./categorize.js";
 import { importFile, parseFile, type Source } from "./importers.js";
 import { refreshPrices } from "./prices.js";
@@ -45,7 +47,7 @@ export function createApi(store: Store) {
 
     // ------------------------------------------------------------ comptes
     listAccounts(includeArchived = false) {
-      return store.all<{ id: number; name: string; institution: string; type: string; asset_class: string; sort: number; archived: number }>(
+      return store.all<Account>(
         `SELECT * FROM accounts ${includeArchived ? "" : "WHERE archived=0"} ORDER BY sort, id`);
     },
     saveAccount(a: { id?: number; name: string; institution?: string; type?: string; asset_class?: string; archived?: number }) {
@@ -68,11 +70,11 @@ export function createApi(store: Store) {
 
     // ------------------------------------------------------------ catégories
     listCategories() {
-      return store.all<{ id: number; name: string; kind: string; sort: number }>("SELECT * FROM categories ORDER BY sort, id");
+      return store.all<Category>("SELECT * FROM categories ORDER BY sort, id");
     },
     saveCategory(c: { id?: number; name: string; kind: string }) {
       if (!c.name?.trim()) throw new Error("Le nom de la catégorie est obligatoire");
-      if (!CATEGORY_KINDS.includes(c.kind as any)) throw new Error(`Type inconnu : ${c.kind}`);
+      if (!(CATEGORY_KINDS as readonly string[]).includes(c.kind)) throw new Error(`Type inconnu : ${c.kind}`);
       if (c.id) { store.run("UPDATE categories SET name=?, kind=? WHERE id=?", [c.name.trim(), c.kind, c.id]); return c.id; }
       const sort = store.scalar<number>("SELECT COALESCE(MAX(sort),0)+1 FROM categories");
       return store.run("INSERT INTO categories(name,kind,sort) VALUES(?,?,?)", [c.name.trim(), c.kind, sort]);
@@ -85,7 +87,7 @@ export function createApi(store: Store) {
     // ------------------------------------------------------------ opérations (relevés)
     listTransactions(f: TxFilter = {}) {
       const where: string[] = [];
-      const p: any[] = [];
+      const p: SqlValue[] = [];
       if (f.from) { where.push("t.date >= ?"); p.push(f.from); }
       if (f.to) { where.push("t.date <= ?"); p.push(f.to); }
       if (f.account_id) { where.push("t.account_id = ?"); p.push(f.account_id); }
@@ -97,7 +99,7 @@ export function createApi(store: Store) {
       const w = where.length ? "WHERE " + where.join(" AND ") : "";
       const total = store.scalar<number>(`SELECT COUNT(*) FROM transactions t LEFT JOIN categories c ON c.id=t.category_id ${w}`, p);
       const sum = store.scalar<number>(`SELECT COALESCE(SUM(t.amount),0) FROM transactions t LEFT JOIN categories c ON c.id=t.category_id ${w}`, p);
-      const rows = store.all<any>(
+      const rows = store.all<TransactionRow>(
         `SELECT t.*, a.name AS account, c.name AS category, c.kind,
            (SELECT expense_id FROM refund_links WHERE refund_id=t.id) AS refund_expense_id,
            (SELECT category_id FROM refund_links WHERE refund_id=t.id) AS refund_category_id,
@@ -110,13 +112,13 @@ export function createApi(store: Store) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(t.date)) throw new Error("Date attendue au format AAAA-MM-JJ");
       if (!Number.isFinite(t.amount)) throw new Error("Montant invalide");
       let cat = t.category_id ?? null;
-      let manual = cat !== null ? 1 : 0;
+      const manual = cat !== null ? 1 : 0;
       if (cat === null) cat = buildCategorizer(store)({ label: t.label });
       return store.run("INSERT INTO transactions(date,account_id,label,raw_label,amount,category_id,category_manual,source,note) VALUES(?,?,?,?,?,?,?,'manuel',?)",
         [t.date, t.account_id, t.label.trim(), t.label.trim(), t.amount, cat, manual, t.note ?? ""]);
     },
     updateTransaction(id: number, patch: { date?: string; account_id?: number; label?: string; amount?: number; category_id?: number | null; note?: string }) {
-      const cur = store.get<any>("SELECT * FROM transactions WHERE id=?", [id]);
+      const cur = store.get<Transaction>("SELECT * FROM transactions WHERE id=?", [id]);
       if (!cur) throw new Error(`Opération ${id} introuvable`);
       const catChanged = patch.category_id !== undefined && patch.category_id !== cur.category_id;
       store.run("UPDATE transactions SET date=?, account_id=?, label=?, amount=?, category_id=?, category_manual=?, note=? WHERE id=?", [
@@ -133,7 +135,7 @@ export function createApi(store: Store) {
     },
     importFile(file: string, source?: Source | null) { return importFile(store, file, source); },
     listImportAccountMap() {
-      return store.all<any>("SELECT m.*, a.name AS account FROM import_account_map m JOIN accounts a ON a.id=m.account_id ORDER BY m.source, m.key");
+      return store.all<ImportAccountMapRow>("SELECT m.*, a.name AS account FROM import_account_map m JOIN accounts a ON a.id=m.account_id ORDER BY m.source, m.key");
     },
     saveImportAccountMap(m: { id?: number; source: string; key: string; account_id: number }) {
       if (m.id) { store.run("UPDATE import_account_map SET source=?, key=?, account_id=? WHERE id=?", [m.source, m.key, m.account_id, m.id]); return m.id; }
@@ -143,7 +145,7 @@ export function createApi(store: Store) {
 
     // ------------------------------------------------------------ règles
     listRules() {
-      return store.all<any>("SELECT r.*, c.name AS category FROM rules r JOIN categories c ON c.id=r.category_id ORDER BY lower(r.keyword)");
+      return store.all<RuleRow>("SELECT r.*, c.name AS category FROM rules r JOIN categories c ON c.id=r.category_id ORDER BY lower(r.keyword)");
     },
     saveRule(r: { id?: number; keyword: string; category_id: number }) {
       if (!r.keyword?.trim()) throw new Error("Le mot-clé est obligatoire");
@@ -152,7 +154,7 @@ export function createApi(store: Store) {
     },
     deleteRule(id: number) { store.run("DELETE FROM rules WHERE id=?", [id]); return true; },
     listBankCategoryMap() {
-      return store.all<any>("SELECT m.*, c.name AS category FROM bank_category_map m JOIN categories c ON c.id=m.category_id ORDER BY lower(m.bank_label)");
+      return store.all<BankCategoryMapRow>("SELECT m.*, c.name AS category FROM bank_category_map m JOIN categories c ON c.id=m.category_id ORDER BY lower(m.bank_label)");
     },
     saveBankCategoryMap(m: { id?: number; bank_label: string; category_id: number }) {
       if (m.id) { store.run("UPDATE bank_category_map SET bank_label=?, category_id=? WHERE id=?", [m.bank_label.trim(), m.category_id, m.id]); return m.id; }
@@ -196,7 +198,7 @@ export function createApi(store: Store) {
 
     // ------------------------------------------------------------ portefeuille
     listAssets() {
-      return store.all<any>("SELECT a.*, COALESCE(ac.name,'') AS account FROM assets a LEFT JOIN accounts ac ON ac.id=a.account_id ORDER BY a.asset_class, a.name");
+      return store.all<AssetRow>("SELECT a.*, COALESCE(ac.name,'') AS account FROM assets a LEFT JOIN accounts ac ON ac.id=a.account_id ORDER BY a.asset_class, a.name");
     },
     saveAsset(a: { id?: number; name: string; symbol?: string; account_id?: number | null; asset_class?: string; manual_price?: number | null }) {
       if (!a.name?.trim()) throw new Error("Le nom de l'actif est obligatoire");
@@ -215,7 +217,7 @@ export function createApi(store: Store) {
     },
     deleteAsset(id: number) { store.run("DELETE FROM assets WHERE id=?", [id]); return true; },
     listOperations(asset_id?: number) {
-      return store.all<any>(`SELECT o.*, a.name AS asset FROM operations o JOIN assets a ON a.id=o.asset_id ${asset_id ? "WHERE o.asset_id=?" : ""} ORDER BY o.date DESC, o.id DESC`, asset_id ? [asset_id] : []);
+      return store.all<OperationRow>(`SELECT o.*, a.name AS asset FROM operations o JOIN assets a ON a.id=o.asset_id ${asset_id ? "WHERE o.asset_id=?" : ""} ORDER BY o.date DESC, o.id DESC`, asset_id ? [asset_id] : []);
     },
     saveOperation(o: { id?: number; date: string; asset_id: number; kind: string; quantity: number; unit_price: number; fees?: number; note?: string }) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(o.date)) throw new Error("Date attendue au format AAAA-MM-JJ");

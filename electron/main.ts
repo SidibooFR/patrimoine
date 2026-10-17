@@ -29,7 +29,7 @@ app.whenReady().then(async () => {
   api = createApi(store);
 
   ipcMain.handle("api", async (_e, method: string, args: unknown[]) => {
-    const fn = (api as any)[method];
+    const fn = (api as Record<string, unknown>)[method];
     if (typeof fn !== "function") throw new Error(`Méthode inconnue : ${method}`);
     try {
       return { ok: true, value: await fn.apply(api, args ?? []) };

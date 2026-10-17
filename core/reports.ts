@@ -1,6 +1,7 @@
 /** Calculs de synthèse : budget, patrimoine, portefeuille, allocation, projection, tableau de bord. */
 import type { Store } from "./db.js";
 import { ASSET_CLASSES } from "./seed.js";
+import type { AssetRow, Operation } from "./schema.js";
 import { xirr, futureValue, monthsToGoal, round2, monthStart, addMonths, today } from "./finance.js";
 import { refundAllocations } from "./refunds.js";
 import { envelopesReport, type EnvelopesReport } from "./envelopes.js";
@@ -153,8 +154,8 @@ export interface PortfolioReport {
 }
 
 export function portfolioReport(store: Store): PortfolioReport {
-  const assets = store.all<any>(`SELECT a.*, COALESCE(ac.name,'') AS account FROM assets a LEFT JOIN accounts ac ON ac.id=a.account_id ORDER BY a.asset_class, a.name`);
-  const ops = store.all<any>("SELECT * FROM operations ORDER BY date, id");
+  const assets = store.all<AssetRow>(`SELECT a.*, COALESCE(ac.name,'') AS account FROM assets a LEFT JOIN accounts ac ON ac.id=a.account_id ORDER BY a.asset_class, a.name`);
+  const ops = store.all<Operation>("SELECT * FROM operations ORDER BY date, id");
   const positions: Position[] = [];
   const flows: { date: string; amount: number }[] = [];
   for (const a of assets) {
