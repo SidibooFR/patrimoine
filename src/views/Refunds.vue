@@ -42,7 +42,7 @@ async function pick(target: { expense_id?: number; category_id?: number }, remem
 <template>
   <PageHeader title="Remboursements" sub="Relie chaque remboursement à la dépense qu'il couvre : le budget affiche alors ta vraie dépense nette, au lieu d'un revenu qui n'en est pas un.">
     <div class="seg"><button :class="{ on: show === 'todo' }" @click="show = 'todo'">À rapprocher</button><button :class="{ on: show === 'done' }" @click="show = 'done'">Rapprochés</button><button :class="{ on: show === 'all' }" @click="show = 'all'">Tous</button></div>
-    <button class="primary" :disabled="!sure" @click="applyAll">Lier les {{ sure }} suggestion(s) sûres</button>
+    <md-filled-button :disabled="!sure" @click="applyAll">Lier les {{ sure }} suggestion(s) sûres</md-filled-button>
   </PageHeader>
 
   <template v-if="rep">

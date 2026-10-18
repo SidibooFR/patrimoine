@@ -91,7 +91,7 @@ const rateChart = computed<ChartConfiguration<"bar">>(() => ({
         <h3>Objectifs</h3>
         <div v-for="g in d.goals.slice(0, 3)" :key="g.id" style="margin-bottom:8px">
           <div style="display:flex;justify-content:space-between;font-size:13px"><span>{{ g.name }}</span><span class="muted">{{ eur0(g.current) }} / {{ eur0(g.target) }}</span></div>
-          <div class="progress"><span :class="g.status === 'Atteint' ? 'done' : g.status === 'En retard' ? 'late' : ''" :style="{ width: Math.max(1, g.progress * 100) + '%' }"></span></div>
+          <md-linear-progress :class="g.status === 'Atteint' ? 'done' : g.status === 'En retard' ? 'late' : ''" :value="Math.min(1, Math.max(0.01, g.progress))"></md-linear-progress>
         </div>
         <div v-if="!d.goals.length" class="help">Aucun objectif : fixe-toi un montant et une date.</div>
       </router-link>

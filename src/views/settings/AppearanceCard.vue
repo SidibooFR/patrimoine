@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { appearance, ACCENT_PRESETS, FONTS, SCALES, CURRENCIES } from "../../lib/appearance";
 import { eur } from "../../lib/format";
+import SelectField from "../../components/SelectField.vue";
 
 const emit = defineEmits<{ setLook: [key: string, value: string]; reset: [] }>();
 </script>
 
 <template>
   <div class="card">
-    <div class="card-title"><h2>Apparence</h2><button class="small" @click="emit('reset')">Réinitialiser</button></div>
+    <div class="card-title"><h2>Apparence</h2><md-outlined-button class="small" @click="emit('reset')">Réinitialiser</md-outlined-button></div>
     <div class="form">
       <div class="field full">Couleur principale
         <div class="swatches">
@@ -16,10 +17,10 @@ const emit = defineEmits<{ setLook: [key: string, value: string]; reset: [] }>()
             <input type="color" :value="appearance.accent" @change="emit('setLook', 'ui_accent', ($event.target as HTMLInputElement).value)" />✎</label>
         </div>
       </div>
-      <label class="field">Police<select :value="appearance.font" @change="emit('setLook', 'ui_font', ($event.target as HTMLSelectElement).value)"><option v-for="f in FONTS" :key="f.id" :value="f.id" :style="{ fontFamily: f.stack }">{{ f.name }}</option></select></label>
-      <label class="field">Taille du texte<select :value="appearance.scale" @change="emit('setLook', 'ui_scale', ($event.target as HTMLSelectElement).value)"><option v-for="z in SCALES" :key="z.value" :value="z.value">{{ z.name }} ({{ Math.round(z.value * 100) }} %)</option></select></label>
-      <label class="field full">Devise<select :value="appearance.currency" @change="emit('setLook', 'currency', ($event.target as HTMLSelectElement).value)"><option v-for="c in CURRENCIES" :key="c.code" :value="c.code">{{ c.code }} – {{ c.name }}</option></select>
-        <span class="help">Aperçu : {{ eur(1234.5) }}. Les montants ne sont pas convertis : choisis la devise dans laquelle sont tenus tes comptes. Les cours bourse et crypto sont récupérés dans cette devise.</span></label>
+      <SelectField :model-value="appearance.font" label="Police" @update:model-value="(v) => emit('setLook', 'ui_font', String(v))"><md-select-option v-for="f in FONTS" :key="f.id" :value="f.id"><div slot="headline" :style="{ fontFamily: f.stack }">{{ f.name }}</div></md-select-option></SelectField>
+      <SelectField :model-value="appearance.scale" label="Taille du texte" @update:model-value="(v) => emit('setLook', 'ui_scale', String(v))"><md-select-option v-for="z in SCALES" :key="z.value" :value="z.value"><div slot="headline">{{ z.name }} ({{ Math.round(z.value * 100) }} %)</div></md-select-option></SelectField>
+      <div class="field full"><SelectField :model-value="appearance.currency" label="Devise" @update:model-value="(v) => emit('setLook', 'currency', String(v))"><md-select-option v-for="c in CURRENCIES" :key="c.code" :value="c.code"><div slot="headline">{{ c.code }} – {{ c.name }}</div></md-select-option></SelectField>
+        <span class="help">Aperçu : {{ eur(1234.5) }}. Les montants ne sont pas convertis : choisis la devise dans laquelle sont tenus tes comptes. Les cours bourse et crypto sont récupérés dans cette devise.</span></div>
     </div>
   </div>
 </template>

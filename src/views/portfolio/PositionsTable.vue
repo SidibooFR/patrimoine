@@ -21,7 +21,7 @@ defineEmits<{ newOp: [assetId: number]; edit: [assetId: number]; remove: [assetI
             <td class="num"><b>{{ eur(p.value) }}</b></td>
             <td class="num" :class="sign(p.unrealized)">{{ eur(p.unrealized) }}</td><td class="num" :class="sign(p.unrealizedPct)">{{ pct(p.unrealizedPct) }}</td>
             <td class="num">{{ pct(p.weight) }}</td>
-            <td class="nowrap"><button class="small" @click="$emit('newOp', p.asset_id)">+ op</button> <button class="small" @click="$emit('edit', p.asset_id)">✎</button> <button class="small danger" @click="$emit('remove', p.asset_id)">✕</button></td>
+            <td class="nowrap"><md-outlined-button class="small" @click="$emit('newOp', p.asset_id)">+ op</md-outlined-button> <md-icon-button class="small" aria-label="Modifier l'actif" title="Modifier l'actif" @click="$emit('edit', p.asset_id)">✎</md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer l'actif" title="Supprimer l'actif" @click="$emit('remove', p.asset_id)">✕</md-icon-button></td>
           </tr>
         </tbody>
       </table>

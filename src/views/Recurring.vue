@@ -69,10 +69,10 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
                 </tr>
                 <tr v-if="open === i.key"><td colspan="7" style="background:var(--surface-2)">
                   <div class="row-actions mb-1">
-                    <button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')">✓ Confirmer</button>
-                    <button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')">✕ Ignorer (pas un abonnement)</button>
-                    <button v-if="i.status !== 'auto'" class="small" @click="setStatus(i, 'auto')">↶ Annuler ma décision</button>
-                    <button class="small" @click="rename = { item: i, label: i.label }">✎ Renommer</button>
+                    <md-outlined-button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')">✓ Confirmer</md-outlined-button>
+                    <md-outlined-button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')">✕ Ignorer (pas un abonnement)</md-outlined-button>
+                    <md-outlined-button v-if="i.status !== 'auto'" class="small" @click="setStatus(i, 'auto')">↶ Annuler ma décision</md-outlined-button>
+                    <md-outlined-button class="small" @click="rename = { item: i, label: i.label }">✎ Renommer</md-outlined-button>
                   </div>
                   <div class="help" style="margin-bottom:4px">Paiements détectés :</div>
                   <span v-for="o in i.occurrences" :key="o.id" class="tag" style="margin:2px 6px 2px 0">{{ date(o.date) }} · {{ eur(o.amount) }}</span>
@@ -88,7 +88,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
         <h3>Par catégorie (par mois)</h3>
         <div v-for="c in rep.byCategory" :key="c.category" style="margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;font-size:13px"><span>{{ c.category }}</span><b>{{ eur(c.monthly) }}</b></div>
-          <div class="progress"><span :style="{ width: (c.monthly / maxCat) * 100 + '%' }"></span></div>
+          <md-linear-progress :value="c.monthly / maxCat"></md-linear-progress>
           <div class="help">{{ c.count }} · {{ eur0(c.annual) }} / an</div>
         </div>
         <p class="help mt-2">Clique sur une ligne pour voir les paiements, confirmer, ignorer ou renommer.</p>
@@ -98,7 +98,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
   </template>
 
   <Modal v-if="rename" title="Renommer la charge récurrente" @close="rename = null">
-    <label class="field">Nom affiché<input v-model="rename.label" :placeholder="rename.item.autoLabel" @keyup.enter="saveRename" /></label>
-    <template #foot><button @click="rename = null">Annuler</button><button class="primary" @click="saveRename">Enregistrer</button></template>
+    <md-outlined-text-field v-model="rename.label" label="Nom affiché" :placeholder="rename.item.autoLabel" @keyup.enter="saveRename"></md-outlined-text-field>
+    <template #foot><md-text-button @click="rename = null">Annuler</md-text-button><md-filled-button @click="saveRename">Enregistrer</md-filled-button></template>
   </Modal>
 </template>

@@ -48,7 +48,7 @@ async function exportExcel() {
 
 <template>
   <PageHeader title="Paramètres" sub="Comptes, catégories, réglages, export et connexion à Claude.">
-    <button class="primary" @click="exportExcel">⇪ Exporter tout vers Excel</button>
+    <md-filled-button @click="exportExcel">⇪ Exporter tout vers Excel</md-filled-button>
   </PageHeader>
 
   <div class="grid c2">

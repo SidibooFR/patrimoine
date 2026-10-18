@@ -48,7 +48,7 @@ async function openDay(d: string, ev: MouseEvent) {
 <template>
   <div class="card">
     <div class="card-title">
-      <div class="row-actions"><button class="icon-btn" aria-label="Mois précédent" @click="shift(-1)">‹</button><h3 class="cal-month">{{ monthLong(ym) }}</h3><button class="icon-btn" aria-label="Mois suivant" @click="shift(1)">›</button></div>
+      <div class="row-actions"><md-icon-button aria-label="Mois précédent" title="Mois précédent" @click="shift(-1)">‹</md-icon-button><h3 class="cal-month">{{ monthLong(ym) }}</h3><md-icon-button aria-label="Mois suivant" title="Mois suivant" @click="shift(1)">›</md-icon-button></div>
       <span class="help">Total du mois : <b>{{ eur(total) }}</b></span>
     </div>
     <div class="cal">

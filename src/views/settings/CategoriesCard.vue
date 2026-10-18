@@ -21,9 +21,9 @@ function addCat() { if (!newCat.value.name) return; emit("add", { ...newCat.valu
         <tr v-for="c in categories" :key="c.id">
           <td><input class="cell cell-left" :value="c.name" @change="emit('save', c, { name: ($event.target as HTMLInputElement).value })" /></td>
           <td><select :value="c.kind" @change="emit('save', c, { kind: ($event.target as HTMLSelectElement).value })"><option v-for="k in categoryKinds" :key="k">{{ k }}</option></select></td>
-          <td><button class="small danger" @click="emit('remove', c)">✕</button></td>
+          <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="emit('remove', c)">✕</md-icon-button></td>
         </tr>
-        <tr><td><input v-model="newCat.name" placeholder="Nouvelle catégorie" @keyup.enter="addCat" class="w-full" /></td><td><select v-model="newCat.kind"><option v-for="k in categoryKinds" :key="k">{{ k }}</option></select></td><td><button class="small primary" @click="addCat">+</button></td></tr>
+        <tr><td><input v-model="newCat.name" placeholder="Nouvelle catégorie" @keyup.enter="addCat" class="w-full" /></td><td><select v-model="newCat.kind"><option v-for="k in categoryKinds" :key="k">{{ k }}</option></select></td><td><md-icon-button class="small" aria-label="Ajouter" title="Ajouter" @click="addCat">+</md-icon-button></td></tr>
       </tbody>
     </table>
     <p class="help">Revenu / Dépense entrent dans le taux d'épargne. Épargne = argent placé (compté à part). Transfert = virement entre tes comptes, ignoré.</p>

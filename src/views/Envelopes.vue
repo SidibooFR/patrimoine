@@ -44,7 +44,7 @@ async function remove() {
 
 <template>
   <PageHeader title="Livrets & PEA" :sub="`Plafonds, intérêts perçus et estimés, et où mettre ton épargne pour qu'elle rapporte le plus. Taux officiels au ${date(ratesAsOf)}.`">
-    <button class="primary" @click="openNew">+ Enveloppe</button>
+    <md-filled-button @click="openNew">+ Enveloppe</md-filled-button>
   </PageHeader>
 
   <template v-if="rep">

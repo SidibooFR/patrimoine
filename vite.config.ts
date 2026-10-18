@@ -38,7 +38,8 @@ function devApi(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [vue(), devApi()],
+  // Les balises md-* sont les composants web de @material/web, pas des composants Vue.
+  plugins: [vue({ template: { compilerOptions: { isCustomElement: (tag) => tag.startsWith("md-") } } }), devApi()],
   base: "./",
   build: { outDir: "dist", emptyOutDir: true },
   server: { port: 5173, strictPort: true },

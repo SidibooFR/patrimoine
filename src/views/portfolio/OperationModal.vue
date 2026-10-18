@@ -9,6 +9,7 @@ import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import SelectField from "../../components/SelectField.vue";
 import type { AssetRow } from "../../../core/schema";
 
 const props = defineProps<{ op: OperationDraft; assets: AssetRow[] }>();
@@ -27,15 +28,15 @@ async function saveOp() {
 <template>
   <Modal :title="draft.id ? 'Modifier l\'opération' : 'Nouvelle opération'" @close="emit('close')">
     <div class="form">
-      <label class="field">Date<input v-model="draft.date" type="date" /></label>
-      <label class="field">Actif<select v-model="draft.asset_id"><option v-for="a in assets" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label class="field">Type<select v-model="draft.kind"><option>Achat</option><option>Vente</option><option>Dividende</option><option>Frais</option></select></label>
-      <label class="field">Quantité<input v-model="draft.quantity" type="number" step="any" :placeholder="draft.kind === 'Dividende' ? '1' : ''" /></label>
-      <label class="field">Prix unitaire ({{ cur() }})<input v-model="draft.unit_price" type="number" step="any" :placeholder="draft.kind === 'Dividende' ? 'montant reçu' : ''" /></label>
-      <label class="field">Frais ({{ cur() }})<input v-model="draft.fees" type="number" step="any" /></label>
-      <label class="field full">Note<input v-model="draft.note" /></label>
+      <md-outlined-text-field v-model="draft.date" label="Date" type="date"></md-outlined-text-field>
+      <SelectField v-model="draft.asset_id" label="Actif"><md-select-option v-for="a in assets" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
+      <SelectField v-model="draft.kind" label="Type"><md-select-option value="Achat"><div slot="headline">Achat</div></md-select-option><md-select-option value="Vente"><div slot="headline">Vente</div></md-select-option><md-select-option value="Dividende"><div slot="headline">Dividende</div></md-select-option><md-select-option value="Frais"><div slot="headline">Frais</div></md-select-option></SelectField>
+      <md-outlined-text-field v-model="draft.quantity" label="Quantité" type="number" step="any" :placeholder="draft.kind === 'Dividende' ? '1' : ''"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.unit_price" :label="`Prix unitaire (${cur()})`" type="number" step="any" :placeholder="draft.kind === 'Dividende' ? 'montant reçu' : ''"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.fees" :label="`Frais (${cur()})`" type="number" step="any"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.note" class="full" label="Note"></md-outlined-text-field>
     </div>
     <p class="help">Dividende : quantité 1 et prix unitaire = montant reçu. Frais seuls : type « Frais » avec le montant dans Frais.</p>
-    <template #foot><button @click="emit('close')">Annuler</button><button class="primary" :disabled="!draft.asset_id || !draft.date" @click="saveOp">Enregistrer</button></template>
+    <template #foot><md-text-button @click="emit('close')">Annuler</md-text-button><md-filled-button :disabled="!draft.asset_id || !draft.date" @click="saveOp">Enregistrer</md-filled-button></template>
   </Modal>
 </template>

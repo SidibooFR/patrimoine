@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { eur0, pct, sign, monthLong, cur } from "../lib/format";
 import { guard } from "../lib/toast";
 import Modal from "../components/Modal.vue";
+import SelectField from "../components/SelectField.vue";
 import type { GoalsReport, GoalRow, GoalSource } from "../../core/goals";
 import type { Account } from "../../core/schema";
 import KpiCard from "../components/KpiCard.vue";
@@ -56,8 +57,8 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
 
 <template>
   <PageHeader title="Objectifs d'épargne" sub="Un montant, une date : l'application calcule le versement mensuel nécessaire et vérifie que ton rythme d'épargne suit.">
-    <button @click="openNew('emergency')">+ Épargne de précaution</button><button @click="openNew('apport')">+ Apport</button><button @click="openNew('voyage')">+ Voyage</button>
-    <button class="primary" @click="openNew()">+ Objectif</button>
+    <md-outlined-button @click="openNew('emergency')">+ Épargne de précaution</md-outlined-button><md-outlined-button @click="openNew('apport')">+ Apport</md-outlined-button><md-outlined-button @click="openNew('voyage')">+ Voyage</md-outlined-button>
+    <md-filled-button @click="openNew()">+ Objectif</md-filled-button>
   </PageHeader>
 
   <template v-if="rep">
@@ -72,7 +73,7 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
       <template v-else>Tes objectifs demandent {{ eur0(rep.totals.monthlyNeeded) }} par mois, mais ton épargne moyenne cette année est de {{ eur0(rep.capacity) }} par mois. Il manque {{ eur0(-rep.margin) }} par mois : repousse une échéance, réduis un montant, ou trouve cette somme dans tes charges fixes (onglet Abonnements).</template>
     </div>
 
-    <div class="toolbar"><label class="help"><input v-model="showArchived" type="checkbox" /> afficher les objectifs archivés</label></div>
+    <div class="toolbar"><label class="check help"><md-checkbox :checked="showArchived" @change="showArchived = ($event.target as HTMLInputElement).checked"></md-checkbox>afficher les objectifs archivés</label></div>
     <div class="grid c2">
       <div v-for="g in goals" :key="g.id" class="card goal-card" :class="{ muted: g.archived }">
         <div class="top">
@@ -80,7 +81,7 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
           <span class="tag" :class="STATUS_CLASS[g.status]">{{ g.status }}</span>
         </div>
         <div class="top"><span class="amount">{{ eur0(g.current) }}</span><span class="muted">sur {{ eur0(g.target) }}<span v-if="g.targetAuto" title="Calculé : mois de dépenses × dépenses moyennes (Paramètres)"> (calculé)</span></span></div>
-        <div class="progress big"><span :class="g.status === 'Atteint' ? 'done' : g.status === 'En retard' ? 'late' : ''" :style="{ width: Math.max(1, g.progress * 100) + '%' }"></span></div>
+        <md-linear-progress class="big" :class="g.status === 'Atteint' ? 'done' : g.status === 'En retard' ? 'late' : ''" :value="Math.min(1, Math.max(0.01, g.progress))"></md-linear-progress>
         <div class="gauge-legend"><span>{{ pct(g.progress, 0) }}</span><span>reste {{ eur0(g.remaining) }}</span></div>
         <div class="stat-row">
           <KpiCard label="Échéance" :value="g.target_date ? monthLong(g.target_date) : 'aucune'" :hint="g.monthsLeft !== null ? `dans ${Math.round(g.monthsLeft)} mois` : undefined" />
@@ -91,8 +92,8 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
           Suivi : {{ origin(g) }}.
           <template v-if="g.status !== 'Atteint'"><span v-if="g.projectedDate"> Au rythme actuel : atteint en <b>{{ monthLong(g.projectedDate) }}</b>.</span><span v-else-if="g.pace !== null"> Au rythme actuel, l'objectif n'avance pas.</span></template>
         </p>
-        <label v-if="g.source === 'manual'" class="field" style="max-width:220px">Montant épargné ({{ cur() }})<input type="number" step="any" :value="g.manual_amount" @change="setManual(g, ($event.target as HTMLInputElement).value)" /></label>
-        <div class="row-actions"><button class="small" @click="openEdit(g)">✎ Modifier</button><button class="small" @click="archive(g)">{{ g.archived ? "↶ Réactiver" : "▣ Archiver" }}</button><button class="small danger" @click="remove(g)">✕</button></div>
+        <md-outlined-text-field v-if="g.source === 'manual'" style="max-width:220px" :label="`Montant épargné (${cur()})`" type="number" step="any" :value="g.manual_amount" @change="setManual(g, ($event.target as HTMLInputElement).value)"></md-outlined-text-field>
+        <div class="row-actions"><md-outlined-button class="small" @click="openEdit(g)">✎ Modifier</md-outlined-button><md-outlined-button class="small" @click="archive(g)">{{ g.archived ? "↶ Réactiver" : "▣ Archiver" }}</md-outlined-button><md-icon-button class="small danger" aria-label="Supprimer l'objectif" title="Supprimer l'objectif" @click="remove(g)">✕</md-icon-button></div>
       </div>
     </div>
     <div v-if="!goals.length" class="card empty">Aucun objectif. Commence par ton épargne de précaution : l'objectif est calculé à partir de tes dépenses.</div>
@@ -100,15 +101,15 @@ const origin = (g: GoalRow) => g.source === "account" ? g.account : g.source ===
 
   <Modal v-if="modal" :title="modal.id ? 'Modifier l\'objectif' : 'Nouvel objectif'" @close="modal = null">
     <div class="form">
-      <label class="field full">Nom<input v-model="modal.name" placeholder="ex. Apport immobilier" /></label>
-      <label class="field full">Comment mesurer l'avancement ?<select v-model="modal.source"><option v-for="(l, k) in SOURCES" :key="k" :value="k">{{ l }}</option></select></label>
-      <label v-if="modal.source === 'account'" class="field">Compte<select v-model="modal.account_id"><option value="" disabled>Choisir…</option><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label v-if="modal.source === 'class'" class="field">Classe d'actif<select v-model="modal.asset_class"><option v-for="c in classes" :key="c">{{ c }}</option></select></label>
-      <label v-if="modal.source === 'manual'" class="field">Déjà épargné ({{ cur() }})<input v-model="modal.manual_amount" type="number" step="any" /></label>
-      <label class="field">Montant visé ({{ cur() }})<input v-model="modal.target" type="number" step="any" :placeholder="modal.source === 'emergency' ? 'calculé si vide' : ''" /></label>
-      <label class="field">Échéance<input v-model="modal.target_date" type="date" /></label>
+      <md-outlined-text-field v-model="modal.name" class="full" label="Nom" placeholder="ex. Apport immobilier"></md-outlined-text-field>
+      <SelectField v-model="modal.source" class="full" label="Comment mesurer l'avancement ?"><md-select-option v-for="(l, k) in SOURCES" :key="k" :value="k"><div slot="headline">{{ l }}</div></md-select-option></SelectField>
+      <SelectField v-if="modal.source === 'account'" v-model="modal.account_id" label="Compte"><md-select-option v-for="a in accounts" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
+      <SelectField v-if="modal.source === 'class'" v-model="modal.asset_class" label="Classe d'actif"><md-select-option v-for="c in classes" :key="c" :value="c"><div slot="headline">{{ c }}</div></md-select-option></SelectField>
+      <md-outlined-text-field v-if="modal.source === 'manual'" v-model="modal.manual_amount" :label="`Déjà épargné (${cur()})`" type="number" step="any"></md-outlined-text-field>
+      <md-outlined-text-field v-model="modal.target" :label="`Montant visé (${cur()})`" type="number" step="any" :placeholder="modal.source === 'emergency' ? 'calculé si vide' : ''"></md-outlined-text-field>
+      <md-outlined-text-field v-model="modal.target_date" label="Échéance" type="date"></md-outlined-text-field>
     </div>
     <p class="help">Lié à un compte, l'objectif suit son solde automatiquement (et tient compte du taux du livret pour le versement mensuel). L'épargne de précaution vise par défaut {{ "le nombre de mois de dépenses réglé dans Paramètres" }}.</p>
-    <template #foot><button @click="modal = null">Annuler</button><button class="primary" :disabled="!modal.name || (modal.source !== 'emergency' && !modal.target)" @click="save">Enregistrer</button></template>
+    <template #foot><md-text-button @click="modal = null">Annuler</md-text-button><md-filled-button :disabled="!modal.name || (modal.source !== 'emergency' && !modal.target)" @click="save">Enregistrer</md-filled-button></template>
   </Modal>
 </template>

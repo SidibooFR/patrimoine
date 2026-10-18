@@ -32,7 +32,7 @@ const curMonth = new Date().getMonth();
 
 <template>
   <PageHeader :title="`Budget ${year}`" sub="Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel prévu dans la colonne jaune pour suivre l'écart.">
-    <button @click="year--">‹ {{ year - 1 }}</button><button @click="year++">{{ year + 1 }} ›</button><button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</button>
+    <md-outlined-button @click="year--">‹ {{ year - 1 }}</md-outlined-button><md-outlined-button @click="year++">{{ year + 1 }} ›</md-outlined-button><md-outlined-button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</md-outlined-button>
   </PageHeader>
 
   <div v-if="b" class="grid c4 mb-3">

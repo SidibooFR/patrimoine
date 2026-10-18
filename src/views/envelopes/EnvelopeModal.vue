@@ -14,6 +14,7 @@ import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import SelectField from "../../components/SelectField.vue";
 import type { Account } from "../../../core/schema";
 
 const props = defineProps<{ envelope: EnvelopeDraft; accounts: Account[]; kinds: EnvelopeKindInfo[] }>();
@@ -40,19 +41,19 @@ async function save() {
 <template>
   <Modal :title="draft.id ? 'Modifier l\'enveloppe' : 'Nouvelle enveloppe'" @close="emit('close')">
     <div class="form">
-      <label class="field">Compte<select v-model="draft.account_id"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label class="field">Type<select v-model="draft.kind"><option v-for="k in kinds" :key="k.name">{{ k.name }}</option></select></label>
-      <label class="field">Plafond ({{ cur() }})<input v-model="draft.ceiling" type="number" step="any" :placeholder="modalKind?.ceiling ? 'officiel : ' + modalKind.ceiling.toLocaleString('fr-FR') : 'aucun'" /></label>
-      <label class="field">Taux annuel net (%)<input v-model="draft.ratePct" type="number" step="0.01" :placeholder="modalKind?.rate !== null && modalKind?.rate !== undefined ? 'officiel : ' + (modalKind.rate * 100).toLocaleString('fr-FR') : 'constaté si vide'" /></label>
-      <label class="field">Versement programmé ({{ cur() }} / mois)<input v-model="draft.monthly_deposit" type="number" step="any" /></label>
-      <label class="field">Date d'ouverture<input v-model="draft.opened_on" type="date" /></label>
-      <label v-if="modalKind?.ceilingOn === 'deposits'" class="field">Versements antérieurs aux relevés ({{ cur() }})<input v-model="draft.initial_deposits" type="number" step="any" /></label>
-      <label class="field full">Note<input v-model="draft.note" /></label>
+      <SelectField v-model="draft.account_id" label="Compte"><md-select-option v-for="a in accounts" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
+      <SelectField v-model="draft.kind" label="Type"><md-select-option v-for="k in kinds" :key="k.name" :value="k.name"><div slot="headline">{{ k.name }}</div></md-select-option></SelectField>
+      <md-outlined-text-field v-model="draft.ceiling" :label="`Plafond (${cur()})`" type="number" step="any" :placeholder="modalKind?.ceiling ? 'officiel : ' + modalKind.ceiling.toLocaleString('fr-FR') : 'aucun'"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.ratePct" label="Taux annuel net (%)" type="number" step="0.01" :placeholder="modalKind?.rate !== null && modalKind?.rate !== undefined ? 'officiel : ' + (modalKind.rate * 100).toLocaleString('fr-FR') : 'constaté si vide'"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.monthly_deposit" :label="`Versement programmé (${cur()} / mois)`" type="number" step="any"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.opened_on" label="Date d'ouverture" type="date"></md-outlined-text-field>
+      <md-outlined-text-field v-if="modalKind?.ceilingOn === 'deposits'" v-model="draft.initial_deposits" :label="`Versements antérieurs aux relevés (${cur()})`" type="number" step="any"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.note" class="full" label="Note"></md-outlined-text-field>
     </div>
     <p class="help">{{ modalKind?.help }} Laisse plafond et taux vides pour suivre automatiquement les valeurs officielles (et leurs changements au 1er février et au 1er août).</p>
     <template #foot>
-      <button v-if="draft.id" class="danger" style="margin-right:auto" @click="emit('remove')">Retirer</button>
-      <button @click="emit('close')">Annuler</button><button class="primary" :disabled="!draft.account_id" @click="save">Enregistrer</button>
+      <md-text-button v-if="draft.id" class="danger" style="margin-right:auto" @click="emit('remove')">Retirer</md-text-button>
+      <md-text-button @click="emit('close')">Annuler</md-text-button><md-filled-button :disabled="!draft.account_id" @click="save">Enregistrer</md-filled-button>
     </template>
   </Modal>
 </template>

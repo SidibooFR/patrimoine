@@ -58,7 +58,7 @@ const chart = computed<ChartConfiguration<"bar">>(() => ({
 
   <div v-if="nw" class="grid" style="grid-template-columns: 380px 1fr">
     <div class="card">
-      <div class="card-title"><h2>Relevé du mois</h2><input v-model="editMonth" type="month" @change="fillDraft" /></div>
+      <div class="card-title"><h2>Relevé du mois</h2><md-outlined-text-field v-model="editMonth" label="Mois" type="month" @change="fillDraft"></md-outlined-text-field></div>
       <table>
         <tbody>
           <tr v-for="a in nw.accounts" :key="a.id">
@@ -69,9 +69,9 @@ const chart = computed<ChartConfiguration<"bar">>(() => ({
         </tbody>
       </table>
       <div class="toolbar mt-2">
-        <button class="primary" @click="save">Enregistrer</button>
-        <button @click="useSuggested" title="Reprend le dernier solde connu de chaque compte importé">Soldes des relevés</button>
-        <button @click="copyPrevious">Copier le mois précédent</button>
+        <md-filled-button @click="save">Enregistrer</md-filled-button>
+        <md-outlined-button title="Reprend le dernier solde connu de chaque compte importé" @click="useSuggested">Soldes des relevés</md-outlined-button>
+        <md-outlined-button @click="copyPrevious">Copier le mois précédent</md-outlined-button>
       </div>
       <p class="help">Les comptes d'investissement (crypto, actions) ne sont pas dans les exports : reprends la valeur affichée par l'application de ton courtier.</p>
     </div>
