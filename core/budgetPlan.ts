@@ -74,7 +74,8 @@ export function buildScenarios(rows: AvgRow[], fixed: string[]): Scenario[] {
         value.set(r.category_id, Math.max(0, r.average + delta * share));
       });
     }
-    const amounts = rows.map((r) => ({ category_id: r.category_id, amount: round10(value.get(r.category_id) ?? 0) })).filter((a) => a.amount > 0);
+    // Sans revenus, un budget n'a pas de sens : aucune proposition
+    const amounts = R <= 0 ? [] : rows.map((r) => ({ category_id: r.category_id, amount: round10(value.get(r.category_id) ?? 0) })).filter((a) => a.amount > 0);
     const expense = C + k * V;
     const investIds = new Set(savingsRows.filter((r) => isInvest(r.name)).map((r) => r.category_id));
     return {
@@ -102,7 +103,7 @@ function addMonths(ym: string, n: number): string {
 }
 const monthsBetween = (a: string, b: string) => (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + Number(b.slice(5, 7)) - Number(a.slice(5, 7)) + 1;
 
-/** Moyenne mensuelle par catégorie sur les 12 mois complets avant `asOf`, remboursements rapprochés déduits (même logique que budgetReport). */
+/** Moyenne mensuelle par catégorie sur les 12 mois complets avant `asOf` (ou depuis le premier mois de données s'il est plus récent), remboursements rapprochés déduits (même logique que budgetReport). */
 export function categoryAverages(store: Store, asOf: string): { period: { from: string; to: string }; rows: AvgRow[] } {
   const cur = asOf.slice(0, 7);
   const from = addMonths(cur, -12), to = addMonths(cur, -1);
@@ -124,13 +125,14 @@ export function categoryAverages(store: Store, asOf: string): { period: { from: 
       if (inWindow(a.date)) bump(a.category_id, budgetAmount(kindOf.get(a.category_id) ?? null, a.amount));
     }
   }
-  const first = new Map(store.all<{ category_id: number; m: string }>(
-    "SELECT category_id, substr(MIN(date),1,7) AS m FROM transactions WHERE category_id IS NOT NULL GROUP BY category_id").map((r) => [r.category_id, r.m]));
+  // Dénominateur commun : depuis le premier mois de données (une dépense ponctuelle ou annuelle est lissée, pas gonflée)
+  const f = store.scalar<string | null>("SELECT substr(MIN(date),1,7) FROM transactions WHERE category_id IS NOT NULL");
+  const n = f && f <= to ? monthsBetween(f > from ? f : from, to) : 12;
   const rows: AvgRow[] = [];
   for (const c of cats) {
-    const f = first.get(c.id);
-    if (!total.has(c.id) || !f || f > to) continue;
-    rows.push({ category_id: c.id, name: c.name, kind: c.kind, average: total.get(c.id)! / monthsBetween(f > from ? f : from, to) });
+    // Les catégories d'épargne sans historique restent des cibles possibles (moyenne 0) pour y reporter un surplus
+    if (total.has(c.id)) rows.push({ category_id: c.id, name: c.name, kind: c.kind, average: total.get(c.id)! / n });
+    else if (c.kind === "Épargne") rows.push({ category_id: c.id, name: c.name, kind: c.kind, average: 0 });
   }
   return { period: { from, to }, rows };
 }

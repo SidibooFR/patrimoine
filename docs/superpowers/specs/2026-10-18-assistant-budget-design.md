@@ -37,7 +37,7 @@ Dans l'onglet Budget, remplir la colonne « Budget / mois » catégorie par cat�
 
 - Elle porte sur les **12 derniers mois complets** : le mois en cours est exclu, et la période peut couvrir deux années civiles.
 - Le montant mensuel de chaque catégorie est calculé exactement comme dans `budgetReport` : même signe via `budgetAmount`, et mêmes ajustements de remboursements rapprochés (`refundAllocations`). C'est indispensable pour que la proposition reste cohérente avec la colonne « Moy. / mois » de la grille.
-- Le dénominateur va du **premier mois où la catégorie a une transaction** jusqu'à la fin de la période, comme le fait YNAB. Les mois sans dépense après ce premier mois comptent pour 0. Une catégorie sans aucune transaction sur la période n'a pas de moyenne et n'est pas proposée.
+- Le dénominateur est commun à toutes les catégories : il va du **premier mois où l'appli a des transactions** (ou du début de la fenêtre s'il est antérieur) jusqu'à la fin de la période. Une dépense ponctuelle ou annuelle est ainsi lissée et non gonflée. *(révisé après revue : un dénominateur par catégorie proposait 1 200 €/mois pour une taxe foncière unique)*. Une catégorie Revenu ou Dépense sans transaction sur la période n'est pas proposée. Les catégories Épargne sans historique restent des cibles possibles (moyenne 0) pour recevoir un surplus.
 - Les montants proposés sont arrondis à 10 €.
 - La base ne dépend pas de l'année affichée. Elle porte toujours sur les 12 derniers mois complets à partir d'aujourd'hui. Le bouton reste disponible quelle que soit l'année, et on n'écrit de toute façon que dans les cases vides. *(mon choix)*
 - Les ajustements de remboursements sont découpés par date de transaction sur la fenêtre glissante, et non par année civile.
@@ -157,4 +157,4 @@ Le module `core/budgetPlan.ts` a ses tests dans `tests/`. Ils doivent couvrir :
 - Le réglage persistant.
 - Le seul outil MCP en lecture.
 - La répartition au prorata.
-- Le dénominateur « depuis le premier mois actif ».
+- Le dénominateur commun « depuis le premier mois de données ».

@@ -75,6 +75,11 @@ describe("budgetPlan : scénarios", () => {
     for (const x of s) { expect(x.k).toBe(1); expect(x.rate).toBeNull(); }
   });
 
+  it("Revenus nuls avec dépenses : aucune proposition", () => {
+    const s = buildScenarios(ROWS.filter((r) => r.kind !== "Revenu"), FIXED);
+    expect(s.every((x) => x.amounts.length === 0)).toBe(true);
+  });
+
   it("Moyenne négative : aucune proposition", () => {
     const m = get(buildScenarios([...ROWS, row(8, "Santé", "Dépense", -30)], FIXED), "moyenne");
     expect(amt(m, 8)).toBeUndefined();
@@ -154,6 +159,21 @@ describe("budgetPlan : base et application", () => {
     const before = snap();
     applyBudgetScenario(store, 2026, "econome", undefined, AS_OF);
     expect(snap()).toBe(before);
+  });
+
+  it("dépense ponctuelle : moyennée depuis le début des données, pas depuis sa date", async () => {
+    const { add, avg } = await setup();
+    for (const d of WINDOW) add(d, "Salaire", 2000);
+    add("2026-09-10", "Impôts & taxes", -1200);
+    expect(avg("Impôts & taxes")).toBeCloseTo(100, 6);
+  });
+
+  it("Investissement sans historique bourse/crypto : le surplus y va quand même", async () => {
+    const { store, cat, add } = await setup();
+    for (const d of WINDOW) { add(d, "Salaire", 2000); add(d, "Restaurants & sorties", -1600); add(d, "Épargne (livrets)", -100); }
+    const inv = budgetScenarios(store, 2026, [], AS_OF).scenarios.find((s) => s.key === "investissement")!;
+    expect(inv.invest).toBeGreaterThan(0);
+    expect(inv.amounts.some((a) => a.category_id === cat("Investissement bourse"))).toBe(true);
   });
 
   it("base vide : 5 scénarios, rien à remplir", async () => {
