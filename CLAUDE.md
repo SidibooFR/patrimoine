@@ -41,6 +41,24 @@ One business implementation, three façades:
 - sql.js needs `sql-wasm.wasm` next to each bundle: `scripts/copy-wasm.mjs` copies it into `dist-electron/` and `dist-mcp/`.
 - `electron/updater.ts` — electron-updater against GitHub releases (installed build auto-updates; portable build only notifies).
 
+## Branches (gitflow)
+
+- `develop` is the integration branch: feature/fix branches (`feat/…`, `fix/…`, `refactor/…`) start from `develop` and come back through a PR into `develop`.
+- `main` only receives PRs from `develop` (or `hotfix/…` branches cut from `main`); each merge into `main` publishes a release.
+- After every release, merge `main` back into `develop`: semantic-release commits `package.json`/`CHANGELOG.md` on `main`, and skipping the back-merge causes conflicts on those files in the next `develop` → `main` PR. Same for hotfixes.
+- CI (`ci.yml`) runs on every branch except `main`; `main` is checked by the Release workflow.
+
 ## Releases
 
 Every push to `main` runs semantic-release (`.releaserc.json`): version is derived from **Conventional Commits** (`fix:` → patch, `feat:` → minor, `feat!:`/`BREAKING CHANGE:` → major; `docs/chore/ci/refactor/test` → no release). It updates `package.json` and `CHANGELOG.md` itself — don't bump the version by hand. `core/version.ts` reads the version from `package.json`.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- When graphify-out/graph.json exists, run `graphify query "<question>"` before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
