@@ -13,6 +13,7 @@ import { allocationReport, budgetReport, dashboard, envelopes, goals, networthRe
 import { ENVELOPE_KINDS, ENVELOPE_KIND_NAMES, RATES_AS_OF, officialRate } from "./envelopes.js";
 import { saveGoal, GOAL_SOURCES, type GoalInput } from "./goals.js";
 import { linkRefund, refundsReport } from "./refunds.js";
+import { applyBudgetScenario, budgetScenarios, type ScenarioKey } from "./budgetPlan.js";
 import { backfillPriceHistory, portfolioHistory, recordPrice } from "./history.js";
 import { lastStatementBalances } from "./balances.js";
 import { today } from "./finance.js";
@@ -176,6 +177,10 @@ export function createApi(store: Store) {
       else store.run("INSERT INTO budgets(category_id,year,monthly_amount) VALUES(?,?,?) ON CONFLICT(category_id,year) DO UPDATE SET monthly_amount=excluded.monthly_amount", [category_id, year, monthly_amount]);
       return true;
     },
+    /** Assistant « Proposer un budget » : 5 scénarios calculés sur les 12 derniers mois complets. */
+    budgetScenarios(year: number, fixed?: string[], asOf?: string) { return budgetScenarios(store, year, fixed, asOf); },
+    /** Applique un scénario : ne remplit que les catégories sans budget pour l'année. */
+    applyBudgetScenario(year: number, key: ScenarioKey, fixed?: string[], asOf?: string) { return applyBudgetScenario(store, year, key, fixed, asOf); },
 
     // ------------------------------------------------------------ patrimoine
     networth() { return networthReport(store); },

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-defineProps<{ title: string }>();
+defineProps<{ title: string; wide?: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 </script>
 <template>
   <div class="modal-back" @mousedown.self="emit('close')">
-    <div class="modal" role="dialog" :aria-label="title">
+    <div class="modal" :class="{ wide }" role="dialog" :aria-label="title">
       <div class="card-title"><h2>{{ title }}</h2><button class="icon-btn" aria-label="Fermer" title="Fermer" @click="emit('close')">✕</button></div>
       <slot />
       <div class="modal-foot"><slot name="foot" /></div>
