@@ -1,5 +1,8 @@
 // Assistant de budgétisation : propose des budgets mensuels par scénario à partir des moyennes réelles.
-import { round2 } from "./finance.js";
+import type { Store } from "./db.js";
+import { round2, today } from "./finance.js";
+import { budgetAmount, setting } from "./reports.js";
+import { refundAllocations } from "./refunds.js";
 
 export type ScenarioKey = "moyenne" | "equilibre" | "econome" | "loisirs" | "investissement";
 export interface AvgRow { category_id: number; name: string; kind: string; average: number }
@@ -81,5 +84,86 @@ export function buildScenarios(rows: AvgRow[], fixed: string[]): Scenario[] {
       invest: amounts.filter((a) => investIds.has(a.category_id)).reduce((s, a) => s + a.amount, 0),
       amounts,
     };
+  });
+}
+
+// ---------------------------------------------------------------- base glissante et application
+export interface BudgetScenarios {
+  period: { from: string; to: string };
+  fixedCandidates: { name: string; checked: boolean }[];
+  /** fillable = nombre de montants proposés sans budget existant pour l'année. */
+  scenarios: (Scenario & { fillable: number })[];
+}
+
+/** "2026-10" + n mois → "AAAA-MM". */
+function addMonths(ym: string, n: number): string {
+  const d = new Date(Date.UTC(Number(ym.slice(0, 4)), Number(ym.slice(5, 7)) - 1 + n, 1));
+  return d.toISOString().slice(0, 7);
+}
+const monthsBetween = (a: string, b: string) => (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + Number(b.slice(5, 7)) - Number(a.slice(5, 7)) + 1;
+
+/** Moyenne mensuelle par catégorie sur les 12 mois complets avant `asOf`, remboursements rapprochés déduits (même logique que budgetReport). */
+export function categoryAverages(store: Store, asOf: string): { period: { from: string; to: string }; rows: AvgRow[] } {
+  const cur = asOf.slice(0, 7);
+  const from = addMonths(cur, -12), to = addMonths(cur, -1);
+  const inWindow = (date: string) => date.slice(0, 7) >= from && date.slice(0, 7) <= to;
+  const cats = store.all<{ id: number; name: string; kind: string }>("SELECT id, name, kind FROM categories WHERE kind <> 'Transfert' ORDER BY sort, id");
+  const kindOf = new Map(cats.map((c) => [c.id, c.kind]));
+  const total = new Map<number, number>();
+  const bump = (cat: number, v: number) => total.set(cat, (total.get(cat) ?? 0) + v);
+  for (const s of store.all<{ category_id: number; total: number }>(
+    "SELECT category_id, SUM(amount) AS total FROM transactions WHERE category_id IS NOT NULL AND date >= ? AND date < ? GROUP BY category_id",
+    [from + "-01", cur + "-01"])) bump(s.category_id, budgetAmount(kindOf.get(s.category_id) ?? null, s.total));
+  const allocs = refundAllocations(store);
+  if (allocs.length) {
+    const ph = allocs.map(() => "?").join(",");
+    const src = new Map(store.all<{ id: number; date: string; category_id: number | null }>(`SELECT id, date, category_id FROM transactions WHERE id IN (${ph})`, allocs.map((a) => a.refund_id)).map((r) => [r.id, r]));
+    for (const a of allocs) {
+      const r = src.get(a.refund_id);
+      if (r?.category_id && inWindow(r.date)) bump(r.category_id, -budgetAmount(kindOf.get(r.category_id) ?? null, a.amount));
+      if (inWindow(a.date)) bump(a.category_id, budgetAmount(kindOf.get(a.category_id) ?? null, a.amount));
+    }
+  }
+  const first = new Map(store.all<{ category_id: number; m: string }>(
+    "SELECT category_id, substr(MIN(date),1,7) AS m FROM transactions WHERE category_id IS NOT NULL GROUP BY category_id").map((r) => [r.category_id, r.m]));
+  const rows: AvgRow[] = [];
+  for (const c of cats) {
+    const f = first.get(c.id);
+    if (!total.has(c.id) || !f || f > to) continue;
+    rows.push({ category_id: c.id, name: c.name, kind: c.kind, average: total.get(c.id)! / monthsBetween(f > from ? f : from, to) });
+  }
+  return { period: { from, to }, rows };
+}
+
+/** Charges fixes cochées (réglage `budget_fixed_categories`, noms séparés par « | »). Réglage absent → DEFAULT_FIXED, vide → aucune. */
+export function fixedCategories(store: Store): string[] {
+  const raw = setting(store, "budget_fixed_categories", "\u0000");
+  if (raw === "\u0000") return DEFAULT_FIXED;
+  return raw.split("|").map((x) => x.trim()).filter(Boolean);
+}
+
+export function budgetScenarios(store: Store, year: number, fixed?: string[], asOf = today()): BudgetScenarios {
+  const names = fixed ?? fixedCategories(store);
+  const { period, rows } = categoryAverages(store, asOf);
+  const taken = new Set(store.all<{ category_id: number }>("SELECT category_id FROM budgets WHERE year=?", [year]).map((b) => b.category_id));
+  return {
+    period,
+    fixedCandidates: store.all<{ name: string }>("SELECT name FROM categories WHERE kind='Dépense' ORDER BY sort, id").map((c) => ({ name: c.name, checked: names.includes(c.name) })),
+    scenarios: buildScenarios(rows, names).map((s) => ({ ...s, fillable: s.amounts.filter((a) => !taken.has(a.category_id)).length })),
+  };
+}
+
+/** Écrit le scénario dans `budgets` pour l'année, uniquement sur les catégories sans budget. Ne touche jamais aux transactions. */
+export function applyBudgetScenario(store: Store, year: number, key: ScenarioKey, fixed?: string[], asOf = today()): { filled: number; skipped: number } {
+  const s = budgetScenarios(store, year, fixed, asOf).scenarios.find((x) => x.key === key);
+  if (!s) throw new Error(`Scénario inconnu : ${key}`);
+  return store.transaction(() => {
+    let filled = 0, skipped = 0;
+    for (const a of s.amounts) {
+      if (store.scalar<number>("SELECT COUNT(*) FROM budgets WHERE category_id=? AND year=?", [a.category_id, year])) { skipped++; continue; }
+      store.run("INSERT INTO budgets(category_id,year,monthly_amount) VALUES(?,?,?)", [a.category_id, year, a.amount]);
+      filled++;
+    }
+    return { filled, skipped };
   });
 }

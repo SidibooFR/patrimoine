@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { buildScenarios, type Scenario, type ScenarioKey } from "../core/budgetPlan.js";
+import { buildScenarios, categoryAverages, fixedCategories, budgetScenarios, applyBudgetScenario, DEFAULT_FIXED, type Scenario, type ScenarioKey } from "../core/budgetPlan.js";
+import { Store } from "../core/db.js";
+import { createApi } from "../core/api.js";
 
 const row = (id: number, name: string, kind: string, average: number) => ({ category_id: id, name, kind, average });
 // R = 2000, C = 800 (Loyer), V = 1000 (Restaurants 600 + Courses 400), E : livrets 100, bourse 100, crypto 0
@@ -80,5 +82,84 @@ describe("budgetPlan : scénarios", () => {
 
   it("Toujours 5 scénarios dans l'ordre", () => {
     expect(buildScenarios(ROWS, FIXED).map((x) => x.key)).toEqual(["moyenne", "equilibre", "econome", "loisirs", "investissement"]);
+  });
+});
+
+describe("budgetPlan : base et application", () => {
+  const AS_OF = "2026-10-18";
+  // Les 12 mois complets avant octobre 2026
+  const WINDOW = Array.from({ length: 12 }, (_, i) => { const d = new Date(Date.UTC(2025, 9 + i, 15)); return d.toISOString().slice(0, 10); });
+  async function setup() {
+    const store = await Store.open(null);
+    const api = createApi(store);
+    const cat = (n: string) => store.scalar<number>("SELECT id FROM categories WHERE name=?", [n])!;
+    const account_id = store.scalar<number>("SELECT id FROM accounts LIMIT 1")!;
+    const add = (date: string, name: string, amount: number) => api.addTransaction({ date, account_id, label: name, amount, category_id: cat(name) });
+    const avg = (name: string) => categoryAverages(store, AS_OF).rows.find((r) => r.name === name)?.average;
+    return { store, api, cat, add, avg };
+  }
+
+  it("fenêtre de 12 mois complets, mois en cours exclu", async () => {
+    const { store, add, avg } = await setup();
+    for (const d of WINDOW) add(d, "Restaurants & sorties", -100);
+    add("2026-10-05", "Restaurants & sorties", -9999);
+    add("2025-09-15", "Restaurants & sorties", -9999);
+    expect(categoryAverages(store, AS_OF).period).toEqual({ from: "2025-10", to: "2026-09" });
+    expect(avg("Restaurants & sorties")).toBeCloseTo(100, 6);
+  });
+
+  it("dénominateur depuis le premier mois actif", async () => {
+    const { add, avg } = await setup();
+    for (const d of WINDOW.slice(6)) add(d, "Courses", -400);
+    expect(avg("Courses")).toBeCloseTo(400, 6);
+  });
+
+  it("les remboursements rapprochés sont déduits dans la fenêtre", async () => {
+    const { api, add, avg } = await setup();
+    const exp = add("2026-03-10", "Santé", -100);
+    const ref = add("2026-03-20", "Remboursements", 60);
+    api.linkRefund(ref, { expense_id: exp });
+    // Santé active depuis mars 2026 : 7 mois (mars → septembre)
+    expect(avg("Santé")).toBeCloseTo(40 / 7, 2);
+  });
+
+  it("charges : défaut, réglage vide, nom inconnu", async () => {
+    const { store, api } = await setup();
+    expect(fixedCategories(store)).toEqual(DEFAULT_FIXED);
+    api.setSetting("budget_fixed_categories", "");
+    expect(fixedCategories(store)).toEqual([]);
+    api.setSetting("budget_fixed_categories", "Loyer & charges|Inexistante");
+    const c = budgetScenarios(store, 2026, undefined, AS_OF).fixedCandidates;
+    expect(c.some((x) => x.name === "Inexistante")).toBe(false);
+    expect(c.find((x) => x.name === "Loyer & charges")?.checked).toBe(true);
+    expect(c.find((x) => x.name === "Courses")?.checked).toBe(false);
+  });
+
+  it("application : ne remplit que les cases vides, idempotente", async () => {
+    const { store, api, cat, add } = await setup();
+    for (const d of WINDOW) { add(d, "Salaire", 2000); add(d, "Restaurants & sorties", -300); }
+    api.setBudget(cat("Restaurants & sorties"), 2026, 42);
+    const r = applyBudgetScenario(store, 2026, "moyenne", undefined, AS_OF);
+    expect(r).toEqual({ filled: 1, skipped: 1 });
+    const b = (n: string) => store.scalar<number>("SELECT monthly_amount FROM budgets WHERE category_id=? AND year=2026", [cat(n)]);
+    expect(b("Salaire")).toBe(2000);
+    expect(b("Restaurants & sorties")).toBe(42);
+    expect(applyBudgetScenario(store, 2026, "moyenne", undefined, AS_OF).filled).toBe(0);
+  });
+
+  it("aucune transaction n'est modifiée", async () => {
+    const { store, add } = await setup();
+    for (const d of WINDOW) { add(d, "Salaire", 2000); add(d, "Courses", -500); }
+    const snap = () => JSON.stringify(store.all("SELECT * FROM transactions ORDER BY id"));
+    const before = snap();
+    applyBudgetScenario(store, 2026, "econome", undefined, AS_OF);
+    expect(snap()).toBe(before);
+  });
+
+  it("base vide : 5 scénarios, rien à remplir", async () => {
+    const { store } = await setup();
+    const s = budgetScenarios(store, 2026, undefined, AS_OF).scenarios;
+    expect(s).toHaveLength(5);
+    expect(s.every((x) => x.fillable === 0)).toBe(true);
   });
 });
