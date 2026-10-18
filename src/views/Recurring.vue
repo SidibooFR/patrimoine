@@ -7,9 +7,11 @@ import Modal from "../components/Modal.vue";
 import type { RecurringReport, Recurring } from "../../core/recurring";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
+import RecurringCalendar from "./recurring/RecurringCalendar.vue";
 
 const rep = ref<RecurringReport>();
 const show = ref<"actifs" | "tous">("actifs");
+const mode = ref<"liste" | "calendrier">("liste");
 const open = ref<string | null>(null);
 async function load() { rep.value = await guard(() => api.recurring()); }
 onMounted(load);
@@ -32,7 +34,8 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
 
 <template>
   <PageHeader title="Abonnements & charges fixes" sub="Détectés automatiquement dans tes relevés : ce qui revient chaque semaine, mois ou année, ce que ça coûte sur un an, et les hausses de prix.">
-    <div class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div>
+    <div class="seg"><button :class="{ on: mode === 'liste' }" @click="mode = 'liste'">Liste</button><button :class="{ on: mode === 'calendrier' }" @click="mode = 'calendrier'">Calendrier</button></div>
+    <div v-if="mode === 'liste'" class="seg"><button :class="{ on: show === 'actifs' }" @click="show = 'actifs'">En cours</button><button :class="{ on: show === 'tous' }" @click="show = 'tous'">Tout (arrêtés, ignorés)</button></div>
   </PageHeader>
 
   <template v-if="rep">
@@ -47,7 +50,8 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
       ⚠ <b>{{ i.label }}</b> est passé de {{ eur(i.change!.from) }} à {{ eur(i.change!.to) }} (+{{ pct(i.change!.pct, 0) }}) depuis le {{ date(i.change!.since) }}, soit <b>+{{ eur((i.change!.to - i.change!.from) * i.perYear) }} par an</b>. Vérifie ton offre ou résilie si tu ne t'en sers plus.
     </div>
 
-    <div class="grid" style="grid-template-columns: minmax(0, 1fr) 260px; margin-top:8px">
+    <RecurringCalendar v-if="mode === 'calendrier'" :items="rep.items" style="margin-top:8px" />
+    <div v-else class="grid" style="grid-template-columns: minmax(0, 1fr) 260px; margin-top:8px">
       <div class="card pad0">
         <div class="table-wrap">
           <table>

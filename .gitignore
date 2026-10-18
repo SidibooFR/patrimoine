@@ -9,3 +9,6 @@ release/
 
 # Relevés bancaires réels (données personnelles) : à garder en local
 tests/fixtures/
+
+# Maquettes des sessions de brainstorming
+.superpowers/

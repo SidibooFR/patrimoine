@@ -6,7 +6,8 @@ import initSqlJs from "sql.js";
 import { Store } from "../core/db.js";
 import { createApi, type Api } from "../core/api.js";
 import { officialRate, quinzaineInterest, guessEnvelopeKind } from "../core/envelopes.js";
-import { detectFrequency, groupKey, prettyLabel } from "../core/recurring.js";
+import { detectFrequency, groupKey, prettyLabel, type Recurring } from "../core/recurring.js";
+import { calendarMonth, projectedDates } from "../core/calendar.js";
 import { monthlyPayment } from "../core/goals.js";
 import { payerKey } from "../core/refunds.js";
 import { fetchYahooHistory, fetchCoinGeckoHistory, portfolioHistory } from "../core/history.js";
@@ -70,6 +71,21 @@ describe("charges récurrentes : détection", () => {
     expect(groupKey("Free")).toBe("free");
     expect(prettyLabel("PRELEVEMENT AXA DU 05/10/26 - EMETTEUR : FR14ZZZ - MOTIF : I CONTRA")).toBe("Axa");
     expect(prettyLabel("Discord")).toBe("Discord");
+  });
+  it("calendrier : dates prévues (fin de mois, hebdo, annuel) et paiements réels", () => {
+    expect(projectedDates("2026-01-31", "mensuel", "2026-02-01", "2026-04-30")).toEqual(["2026-02-28", "2026-03-31", "2026-04-30"]);
+    expect(projectedDates("2026-10-05", "mensuel", "2026-12-01", "2026-12-31")).toEqual(["2026-12-05"]);
+    expect(projectedDates("2026-10-01", "hebdomadaire", "2026-10-01", "2026-10-31")).toEqual(["2026-10-08", "2026-10-15", "2026-10-22", "2026-10-29"]);
+    expect(projectedDates("2025-11-10", "annuel", "2026-10-01", "2026-10-31")).toEqual([]);
+    const sub = (o: Partial<Recurring>) => ({ key: o.label, account: "BNP", frequency: "mensuel", status: "auto", active: true, lastAmount: 10, occurrences: [], ...o }) as Recurring;
+    const cal = calendarMonth([
+      sub({ label: "Netflix", last: "2026-10-05", occurrences: [{ id: 1, date: "2026-10-05", amount: 13.49, label: "NETFLIX" }] }),
+      sub({ label: "Ancien", last: "2026-09-05", active: false }),
+      sub({ label: "Faux", last: "2026-10-01", status: "ignored" }),
+    ], "2026-10");
+    expect(cal["2026-10-05"]).toEqual([{ key: "Netflix", label: "Netflix", account: "BNP", frequency: "mensuel", amount: 13.49, date: "2026-10-05", paid: true }]);
+    expect(Object.keys(cal)).toEqual(["2026-10-05"]);
+    expect(calendarMonth([sub({ label: "Netflix", last: "2026-10-05" })], "2026-11")["2026-11-05"][0]).toMatchObject({ paid: false, amount: 10 });
   });
 });
 
