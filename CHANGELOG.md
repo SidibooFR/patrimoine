@@ -1,5 +1,11 @@
 # Journal des versions
 
+## [1.6.0](https://github.com/SidibooFR/patrimoine/compare/v1.5.0...v1.6.0) (2026-10-18)
+
+### Nouveautés
+
+* **abonnements:** calendrier des prélèvements avec popover par jour ([0f2ed7c](https://github.com/SidibooFR/patrimoine/commit/0f2ed7ceecd547b473af72e63f07764644d7cec5))
+
 ## [1.5.0](https://github.com/SidibooFR/patrimoine/compare/v1.4.0...v1.5.0) (2026-10-16)
 
 ### Nouveautés
