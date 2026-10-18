@@ -38,6 +38,40 @@ export async function fetchCoinGeckoPrices(ids: string[], currency = "EUR"): Pro
   }
 }
 
+export interface AssetSuggestion { name: string; symbol: string; exchange: string; currency: string; asset_class: "Actions & ETF" | "Crypto" }
+
+async function getJson<T>(url: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "application/json" } });
+    return res.ok ? ((await res.json()) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Suggestions d'actifs par nom, ISIN ou ticker : Yahoo (ETF / actions / fonds) puis CoinGecko (cryptos).
+ * La recherche Yahoo ne donne pas la devise : on la lit sur le cours de chaque résultat,
+ * et les cotations dans la devise de référence passent en tête.
+ */
+export async function searchAssets(query: string, prefer = "EUR"): Promise<AssetSuggestion[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  type YQuote = { symbol?: string; longname?: string; shortname?: string; exchDisp?: string; exchange?: string; quoteType?: string };
+  const [y, cg] = await Promise.all([
+    getJson<{ quotes?: YQuote[] }>(`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=8&newsCount=0`),
+    getJson<{ coins?: { id: string; name: string; symbol: string }[] }>(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(q)}`),
+  ]);
+  const quotes = (y?.quotes ?? []).filter((x) => x.symbol && ["ETF", "EQUITY", "MUTUALFUND"].includes(x.quoteType ?? ""));
+  const currencies = await Promise.all(quotes.map((x) => fetchYahooPrice(x.symbol!).then((p) => p?.currency ?? "")));
+  const stocks: AssetSuggestion[] = quotes.map((x, i) => ({
+    name: x.longname || x.shortname || x.symbol!, symbol: x.symbol!, exchange: x.exchDisp || x.exchange || "", currency: currencies[i], asset_class: "Actions & ETF",
+  }));
+  stocks.sort((a, b) => Number(b.currency === prefer) - Number(a.currency === prefer)); // tri stable : l'ordre de pertinence Yahoo est conservé
+  const coins: AssetSuggestion[] = (cg?.coins ?? []).slice(0, 3).map((c) => ({ name: c.name, symbol: c.id, exchange: "CoinGecko", currency: c.symbol.toUpperCase(), asset_class: "Crypto" }));
+  return [...stocks, ...coins];
+}
+
 export interface RefreshResult { updated: number; failed: string[]; at: string }
 
 /** Met à jour `assets.price` pour tous les actifs ayant un symbole. */

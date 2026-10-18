@@ -8,12 +8,12 @@ import type { SqlValue } from "sql.js";
 import type { Account, AssetRow, BankCategoryMapRow, Category, ImportAccountMapRow, OperationRow, RuleRow, Transaction, TransactionRow } from "./schema.js";
 import { buildCategorizer, recategorizeAll } from "./categorize.js";
 import { importFile, parseFile, type Source } from "./importers.js";
-import { refreshPrices } from "./prices.js";
+import { refreshPrices, searchAssets } from "./prices.js";
 import { allocationReport, budgetReport, dashboard, envelopes, goals, networthReport, portfolioReport, projectionReport, recurring, setting, type ProjectionParams } from "./reports.js";
 import { ENVELOPE_KINDS, ENVELOPE_KIND_NAMES, RATES_AS_OF, officialRate } from "./envelopes.js";
 import { saveGoal, GOAL_SOURCES, type GoalInput } from "./goals.js";
 import { linkRefund, refundsReport } from "./refunds.js";
-import { backfillPriceHistory, portfolioHistory, recordPrice } from "./history.js";
+import { backfillPriceHistory, currencyOf, portfolioHistory, recordPrice } from "./history.js";
 import { lastStatementBalances } from "./balances.js";
 import { today } from "./finance.js";
 import { exportWorkbook } from "./export.js";
@@ -231,6 +231,8 @@ export function createApi(store: Store) {
     deleteOperation(id: number) { store.run("DELETE FROM operations WHERE id=?", [id]); return true; },
     portfolio() { return portfolioReport(store); },
     refreshPrices() { return refreshPrices(store); },
+    /** Suggestions pour le formulaire d'actif (nom, ISIN ou ticker). */
+    searchAssets(query: string) { return searchAssets(query, currencyOf(store)); },
     portfolioHistory() { return portfolioHistory(store); },
     backfillPriceHistory() { return backfillPriceHistory(store); },
     priceHistory(asset_id: number) {

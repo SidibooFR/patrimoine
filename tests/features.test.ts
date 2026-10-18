@@ -322,6 +322,27 @@ describe("historique des cours et performance pondérée par le temps", () => {
     expect(api.priceHistory(a).map((p) => p.price)).toEqual([100, 102.5]);
     expect(api.priceHistory(b)).toHaveLength(2);
   });
+
+  it("recherche d'actifs : devise lue sur le cours, devise de référence en tête, cryptos à la fin", async () => {
+    const search = { quotes: [
+      { symbol: "VUAA.L", longname: "Vanguard S&P 500 UCITS ETF USD Acc", exchDisp: "London", quoteType: "ETF" },
+      { symbol: "^GSPC", shortname: "S&P 500", quoteType: "INDEX" },
+      { symbol: "VUAA.DE", longname: "Vanguard S&P 500 UCITS ETF USD Acc", exchDisp: "XETRA", quoteType: "ETF" },
+    ] };
+    const chart = (currency: string) => ({ chart: { result: [{ meta: { regularMarketPrice: 100, currency } }] } });
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url.includes("/v1/finance/search")) return new Response(JSON.stringify(search), { status: 200 });
+      if (url.includes("/chart/")) return new Response(JSON.stringify(chart(url.includes("VUAA.L") ? "USD" : "EUR")), { status: 200 });
+      return new Response(JSON.stringify({ coins: [{ id: "vanguard-token", name: "Vanguard Token", symbol: "vgt" }] }), { status: 200 });
+    }));
+    const { searchAssets } = await import("../core/prices.js");
+    expect(await searchAssets("v")).toEqual([]);
+    expect((await searchAssets("vanguard s&p")).map((s) => [s.symbol, s.currency, s.asset_class])).toEqual([
+      ["VUAA.DE", "EUR", "Actions & ETF"], ["VUAA.L", "USD", "Actions & ETF"], ["vanguard-token", "VGT", "Crypto"],
+    ]);
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("hors ligne"); }));
+    expect(await searchAssets("vanguard")).toEqual([]);
+  });
 });
 
 describe("migration d'une base existante (version 1)", () => {
