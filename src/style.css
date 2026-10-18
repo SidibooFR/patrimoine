@@ -154,6 +154,19 @@ a.link-card:hover { background: var(--surface-2); }
 .swatch.on { box-shadow: 0 0 0 2px var(--text); }
 .swatch.custom input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; padding: 0; border: 0; }
 
+/* Abonnements › Calendrier */
+.cal-month { min-width: 150px; text-align: center; text-transform: capitalize; align-self: center; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-h { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; padding: 4px 0; }
+.cal-day { min-height: 84px; border: 1px solid var(--line); border-radius: 10px; padding: 4px 6px; font-size: 12px; min-width: 0; }
+.cal-day.clickable { cursor: pointer; } .cal-day.clickable:hover { background: var(--hover); }
+.cal-day.past { opacity: .55; }
+.cal-day.today { outline: 2px solid var(--accent); outline-offset: -1px; }
+.cal-n { font-weight: 600; margin-bottom: 2px; }
+.cal-chip { display: block; margin-top: 2px; padding: 1px 6px; border-radius: 6px; background: var(--accent-soft); color: var(--on-accent-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-pop { inset: auto; margin: 0; position: fixed; width: 320px; max-width: calc(100vw - 16px); padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--text); box-shadow: var(--elev); font-size: 13px; }
+.cal-pop table { width: 100%; margin-top: 8px; } .cal-pop td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+
 /* Utilitaires d'espacement (en fin de fichier pour l'emporter sur les règles de composants) */
 .mt-1 { margin-top: 8px; }
 .mb-1 { margin-bottom: 8px; }
