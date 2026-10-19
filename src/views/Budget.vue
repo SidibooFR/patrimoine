@@ -166,24 +166,36 @@ const divergeOptions = computed<ApexOptions>(() => {
   };
 });
 // Taux d'épargne par mois : null = mois sans relevé (trou dans la courbe)
+// Tracé plancher à −15 % : la base reste en bas et un mois négatif (parfois −10 000 % en début de mois) se voit juste sous zéro ; l'étiquette garde la vraie valeur.
+const RATE_FLOOR = -0.15;
+const rateData = computed(() => (b.value?.totals.rate ?? []).map((r) => (r === null ? null : Math.max(r, RATE_FLOOR))));
+const ratePct = (v: unknown, o?: { dataPointIndex: number }) => {
+  const r = o ? b.value?.totals.rate[o.dataPointIndex] : v;
+  return typeof r === "number" ? Math.round(r * 100) + " %" : "";
+};
 const rateOptions = computed<ApexOptions>(() => {
   const rates = b.value?.totals.rate ?? [];
-  const vals = rates.filter((r): r is number => r !== null);
-  const accent = cssVar("--accent"), muted = cssVar("--muted");
+  const vals = rateData.value.filter((r): r is number => r !== null);
+  const accent = cssVar("--accent"), muted = cssVar("--muted"), neg = cssVar("--neg"), panel = cssVar("--panel");
+  const isNeg = (i: number) => (rates[i] ?? 0) < 0;
+  const discrete = rates.flatMap((r, i) => (r === null || (i !== mi.value && !isNeg(i)) ? [] : [{
+    seriesIndex: 0, dataPointIndex: i, size: i === mi.value ? 7 : 5,
+    fillColor: i === mi.value ? (isNeg(i) ? neg : accent) : panel, strokeColor: i === mi.value ? panel : neg,
+  }]));
   return {
     colors: [accent],
-    stroke: { width: 3 },
-    markers: {
-      size: 5, colors: [cssVar("--panel")], strokeColors: accent, strokeWidth: 2, hover: { size: 7 },
-      discrete: rates[mi.value] === null ? [] : [{ seriesIndex: 0, dataPointIndex: mi.value, fillColor: accent, strokeColor: cssVar("--panel"), size: 7 }],
-    },
-    dataLabels: { enabled: true, offsetY: -8, formatter: (v: unknown) => (typeof v === "number" ? Math.round(v * 100) + " %" : ""), background: { enabled: false }, style: { fontSize: "11.5px", fontWeight: 500, colors: [muted] } },
+    // Courbe et aire en rouge sous zéro (seuil natif d'ApexCharts) ; le trait doit être en « gradient » pour suivre le seuil.
+    plotOptions: { line: { colors: { threshold: 0, colorAboveThreshold: accent, colorBelowThreshold: neg } } },
+    stroke: { width: 3, fill: { type: "gradient", opacity: 1 } },
+    fill: { opacity: 0.12 },
+    markers: { size: 5, colors: [panel], strokeColors: accent, strokeWidth: 2, hover: { size: 7 }, discrete },
+    dataLabels: { enabled: true, offsetY: -8, formatter: ratePct, background: { enabled: false }, style: { fontSize: "11.5px", fontWeight: 500, colors: [({ dataPointIndex }: { dataPointIndex: number }) => (isNeg(dataPointIndex) ? neg : muted)] } },
     xaxis: { categories: MONTHS, labels: { style: { colors: MONTHS.map((_, i) => (i === mi.value ? accent : muted)), fontWeight: 500 } }, tooltip: { enabled: false } },
-    yaxis: { show: false, min: Math.min(...vals, 0) - 0.1, max: Math.max(...vals, 0.3) * 1.2 },
+    yaxis: { show: false, min: Math.min(...vals, 0) - 0.05, max: Math.max(...vals, 0.3) * 1.2 },
     grid: { yaxis: { lines: { show: false } }, xaxis: { lines: { show: false } }, padding: { left: 16, right: 16 } },
     annotations: { yaxis: [{ y: 0, borderColor: cssVar("--outline"), strokeDashArray: 0 }], xaxis: [{ x: MONTHS[mi.value], borderColor: accent, strokeDashArray: 3, opacity: 0.5 }] },
     legend: { show: false },
-    tooltip: { shared: false, y: { formatter: (v: unknown) => (typeof v === "number" ? Math.round(v * 100) + " %" : "–") } },
+    tooltip: { shared: false, y: { formatter: (v: unknown, o?: { dataPointIndex: number }) => ratePct(v, o) || "–" } },
   };
 });
 
@@ -350,7 +362,7 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
 
         <div class="card mb-3">
           <h2 class="card-h" style="margin-bottom:8px">Taux d'épargne par mois</h2>
-          <ApexChart type="area" :height="200" :series="[{ name: 'Taux d\'épargne', data: b.totals.rate }]" :options="rateOptions" />
+          <ApexChart type="area" :height="200" :series="[{ name: 'Taux d\'épargne', data: rateData }]" :options="rateOptions" />
         </div>
       </template>
       <div v-else class="empty-box mb-3">{{ emptyMsg }}</div>

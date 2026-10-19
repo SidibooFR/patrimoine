@@ -228,9 +228,9 @@
     "semantic_hash": ""
   },
   "src/lib/charts.ts": {
-    "mtime": 1792418529.1091545,
-    "seen": 1792418572.9176521,
-    "ast_hash": "ea6d8a00c2968d4f5c310ed52fe93fc4",
+    "mtime": 1792418964.4291594,
+    "seen": 1792419111.6574657,
+    "ast_hash": "6fcdf16eda5fd65d0a74386ffdd5542d",
     "semantic_hash": ""
   },
   "src/lib/format.ts": {
@@ -264,21 +264,21 @@
     "semantic_hash": ""
   },
   "src/views/Allocation.vue": {
-    "mtime": 1792418130.1959338,
-    "seen": 1792418154.8850799,
-    "ast_hash": "11cbc74b7990ab26dd45cdab5983e3fb",
+    "mtime": 1792418972.0197089,
+    "seen": 1792419111.6574657,
+    "ast_hash": "a07fb80840fd892c89949c8f95e98288",
     "semantic_hash": ""
   },
   "src/views/Budget.vue": {
-    "mtime": 1792418398.7975225,
-    "seen": 1792418422.4580956,
-    "ast_hash": "4efb323bc0b9d2c83b44a793c4593fa6",
+    "mtime": 1792419653.3346827,
+    "seen": 1792419674.8312747,
+    "ast_hash": "ffae385d18a5d84932f7f8c0981a1219",
     "semantic_hash": ""
   },
   "src/views/Dashboard.vue": {
-    "mtime": 1792417906.6100006,
-    "seen": 1792417931.2739663,
-    "ast_hash": "c9c43ce98ef691612b7769365a44849b",
+    "mtime": 1792418966.5888195,
+    "seen": 1792419111.6574657,
+    "ast_hash": "6afecf791f2bf402f51e9f7085bf6667",
     "semantic_hash": ""
   },
   "src/views/Envelopes.vue": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "src/views/Projection.vue": {
-    "mtime": 1792417734.7488482,
-    "seen": 1792417760.1560574,
-    "ast_hash": "1d28bfce73063159528561f55d165395",
+    "mtime": 1792418970.8915567,
+    "seen": 1792419111.6574657,
+    "ast_hash": "1975b6d007805c1a93563ecd2cef9ba6",
     "semantic_hash": ""
   },
   "src/views/Recurring.vue": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "tests/charts.test.ts": {
-    "mtime": 1792418529.266428,
-    "seen": 1792418572.9176521,
-    "ast_hash": "832e197df2baac946b0f4c73f83ac87d",
+    "mtime": 1792418949.3122861,
+    "seen": 1792419111.6574657,
+    "ast_hash": "e58348b4c91735d6375004a17ab31e3b",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-19-graphiques-apexcharts.md": {
