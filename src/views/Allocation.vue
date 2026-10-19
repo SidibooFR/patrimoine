@@ -4,9 +4,9 @@ import { api } from "../lib/api";
 import { eur0, pct, sign, monthLong, cur } from "../lib/format";
 import { theme, rgba } from "../lib/appearance";
 import { guard } from "../lib/toast";
-import Chart from "../components/Chart.vue";
-import type { ChartConfiguration } from "chart.js";
-import { CLASS_COLORS, pctTick } from "../lib/charts";
+import ApexChart from "../components/ApexChart.vue";
+import type { ApexOptions } from "apexcharts";
+import { CLASS_COLORS, PALETTE, pctTick } from "../lib/charts";
 import type { AllocationReport, AllocationRow } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
@@ -26,12 +26,16 @@ async function setTarget(row: AllocationRow, v: string) {
   await guard(() => api.setTarget(row.asset_class, Number(v) / 100));
   await load();
 }
-const chart = computed<ChartConfiguration<"bar">>(() => ({
-  type: "bar",
-  data: { labels: al.value!.rows.map((r) => r.asset_class), datasets: [
-    { label: "Actuel", data: al.value!.rows.map((r) => r.pct ?? 0), backgroundColor: al.value!.rows.map((r) => CLASS_COLORS[r.asset_class] ?? "#999") },
-    { label: "Cible", data: al.value!.rows.map((r) => r.target), backgroundColor: rgba(theme.navy, .25), borderColor: theme.navy, borderWidth: 1 }] },
-  options: { plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label} : ${pct(c.parsed.y)}` } } }, scales: { y: { ticks: { callback: pctTick }, max: 1 } } },
+const series = computed(() => [
+  { name: "Actuel", data: al.value!.rows.map((r) => r.pct ?? 0) },
+  { name: "Cible", data: al.value!.rows.map((r) => r.target) }]);
+const options = computed<ApexOptions>(() => ({
+  colors: [({ dataPointIndex }: { dataPointIndex: number }) => CLASS_COLORS[al.value!.rows[dataPointIndex].asset_class] ?? PALETTE[6], rgba(theme.navy, .25)],
+  fill: { type: "solid", opacity: 1 },
+  stroke: { show: true, width: [0, 1], colors: ["transparent", theme.navy] },
+  xaxis: { categories: al.value!.rows.map((r) => r.asset_class) },
+  yaxis: { max: 1, labels: { formatter: pctTick } },
+  tooltip: { y: { formatter: (v: number) => pct(v) } },
 }));
 const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "Alléger" ? "" : a === "OK" ? "ok" : "");
 </script>
@@ -59,7 +63,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
         </tbody>
       </table>
       <p class="help mt-1">Tolérance d'écart : ±{{ pct(al.tolerance, 0) }} (modifiable dans Paramètres).</p>
-      <Chart :config="chart" :height="240" />
+      <ApexChart type="bar" :series="series" :options="options" :height="240" />
     </div>
 
     <div>

@@ -282,9 +282,9 @@
     "semantic_hash": ""
   },
   "src/views/Dashboard.vue": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "b8b2adb01a8b40cf90e78785a380cfe2",
+    "mtime": 1792417906.6100006,
+    "seen": 1792417931.2739663,
+    "ast_hash": "c9c43ce98ef691612b7769365a44849b",
     "semantic_hash": ""
   },
   "src/views/Envelopes.vue": {

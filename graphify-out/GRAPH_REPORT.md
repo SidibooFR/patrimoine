@@ -1,17 +1,17 @@
 # Graph Report - patrimoine  (2026-10-19)
 
 ## Corpus Check
-- 131 files · ~105,091 words
+- 131 files · ~105,026 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .css 1)
 
 ## Summary
-- 1116 nodes · 2608 edges · 65 communities (58 shown, 7 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 170 edges (avg confidence: 0.88)
+- 1121 nodes · 2604 edges · 63 communities (56 shown, 7 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 166 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `da6e33d6`
+- Built from commit: `aa9b960d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -42,7 +42,7 @@
 - Settings.vue
 - Store
 - Scripts npm
-- TransactionModal.vue
+- electron/main.ts
 - Budget.vue
 - Configuration TypeScript
 - Networth.vue
@@ -70,9 +70,8 @@
 - sumKind
 - seed.ts
 - Category
-- PickerModal.vue
-- Account
-- Graphiques : passage de Chart.js à ApexCharts
+- run-ts.mjs
+- Chart.vue
 - hero
 - cellClass
 - expB
@@ -80,7 +79,6 @@
 - prevRow
 - vue
 - draftSum
-- load
 
 ## God Nodes (most connected - your core abstractions)
 1. `guard()` - 86 edges
@@ -88,7 +86,7 @@
 3. `vue` - 41 edges
 4. `Store` - 38 edges
 5. `round2()` - 35 edges
-6. `eur0()` - 31 edges
+6. `eur0()` - 30 edges
 7. `api` - 26 edges
 8. `notify()` - 25 edges
 9. `Vue Best Practices Workflow (SKILL)` - 25 edges
@@ -116,47 +114,47 @@
 - **Vue Built-in Components (Transition, TransitionGroup, KeepAlive, Suspense, Teleport)** — _claude_skills_vue_best_practices_references_component_transition_transition, _claude_skills_vue_best_practices_references_component_transition_group_transition_group, _claude_skills_vue_best_practices_references_component_keep_alive_keepalive_cache, _claude_skills_vue_best_practices_references_component_suspense_suspense, _claude_skills_vue_best_practices_references_component_teleport_teleport_overlay [INFERRED 0.85]
 - **Large List Rendering Performance Techniques** — _claude_skills_vue_best_practices_references_perf_virtualize_large_lists_list_virtualization, _claude_skills_vue_best_practices_references_perf_v_once_v_memo_directives_v_memo, _claude_skills_vue_best_practices_references_perf_avoid_component_abstraction_in_lists_component_overhead_in_lists, _claude_skills_vue_best_practices_references_sfc_stable_key [INFERRED 0.85]
 
-## Communities (65 total, 7 thin omitted)
+## Communities (63 total, 7 thin omitted)
 
 ### Community 0 - "history.ts"
-Cohesion: 0.14
-Nodes (24): exportWorkbook(), sheet(), today(), addDays(), backfillPriceHistory(), BackfillResult, currencyOf(), fetchCoinGeckoHistory() (+16 more)
+Cohesion: 0.13
+Nodes (24): Api, exportWorkbook(), sheet(), addDays(), backfillPriceHistory(), BackfillResult, currencyOf(), fetchCoinGeckoHistory() (+16 more)
 
 ### Community 1 - "importers.ts"
-Cohesion: 0.22
-Nodes (16): buildCategorizer(), Categorizer, decodeHtml(), detectSource(), excelDate(), fingerprint(), importFile(), num() (+8 more)
+Cohesion: 0.28
+Nodes (13): decodeHtml(), detectSource(), excelDate(), fingerprint(), num(), parseBnp(), parseBoursobank(), parseCsvLine() (+5 more)
 
 ### Community 2 - "lib/api.ts"
-Cohesion: 0.19
-Nodes (10): api, Bridge, call(), files, Promisify, Window, exportOps(), opsFilter (+2 more)
+Cohesion: 0.18
+Nodes (11): api, Bridge, call(), files, isElectron, Promisify, Window, exportOps() (+3 more)
 
 ### Community 3 - "Envelopes.vue"
 Cohesion: 0.12
 Nodes (18): EnvelopeRow, accounts, draft, emit, EnvelopeDraft, EnvelopeKindInfo, modalKind, props (+10 more)
 
 ### Community 4 - "ScenarioModal.vue"
-Cohesion: 0.12
-Nodes (18): notify(), applyOnce(), busy, choice, chosen, data, emit, empty (+10 more)
+Cohesion: 0.18
+Nodes (12): applyOnce(), busy, choice, chosen, data, emit, empty, follow() (+4 more)
 
 ### Community 5 - "appearance.ts"
-Cohesion: 0.20
-Nodes (15): Global Constraints, Graphiques ApexCharts : plan d'implémentation, Contraintes, ACCENT_PRESETS, appearance, applyAppearance(), CURRENCIES, DEFAULTS (+7 more)
+Cohesion: 0.11
+Nodes (23): Contraintes, Décidé par l'utilisateur, Graphiques : passage de Chart.js à ApexCharts, Intention, Le style C : les ingrédients communs, Livraison, Non-objectifs, Objectifs (+15 more)
 
 ### Community 6 - "Règles de catégorisation"
-Cohesion: 0.15
-Nodes (19): addMap(), addRule(), bankMap, categories, delMap(), delRule(), filtered, load() (+11 more)
+Cohesion: 0.11
+Nodes (33): guard(), notify(), load(), setTarget(), copyPrev(), load(), loadPrep(), loadYear() (+25 more)
 
 ### Community 7 - "Configuration electron-builder"
 Cohesion: 0.08
 Nodes (25): build, appId, asar, copyright, directories, extraResources, files, linux (+17 more)
 
 ### Community 8 - "Vue Transactions"
-Cohesion: 0.12
-Nodes (14): TxFilter, todayIso(), newOp(), accounts, categories, filter, modal, openNew() (+6 more)
+Cohesion: 0.08
+Nodes (26): TxFilter, el, emit, props, Value, thisMonth(), todayIso(), newOp() (+18 more)
 
 ### Community 9 - "envelopes.ts"
-Cohesion: 0.20
-Nodes (18): CurrentBalance, currentBalances(), dailyBalances(), lastStatementBalances(), portfolioValueByAccount(), addDays(), ENVELOPE_KIND_NAMES, ENVELOPE_KINDS (+10 more)
+Cohesion: 0.13
+Nodes (31): CurrentBalance, currentBalances(), dailyBalances(), lastStatementBalances(), portfolioValueByAccount(), addDays(), ENVELOPE_KIND_NAMES, ENVELOPE_KINDS (+23 more)
 
 ### Community 10 - "Dépendances de développement"
 Cohesion: 0.09
@@ -171,8 +169,8 @@ Cohesion: 0.08
 Nodes (28): author, description, engines, node, main, name, private, type (+20 more)
 
 ### Community 13 - "budgetPlan.ts"
-Cohesion: 0.07
-Nodes (43): addDays(), addMonths(), applyBudgetScenario(), autoBudgets(), AvgRow, budgetPrepare(), budgetScenarios, buildScenarios() (+35 more)
+Cohesion: 0.08
+Nodes (37): addDays(), addMonths(), applyBudgetScenario(), AvgRow, budgetPrepare(), budgetScenarios, buildScenarios(), categoryAverages() (+29 more)
 
 ### Community 14 - "Vue Objectifs"
 Cohesion: 0.13
@@ -183,48 +181,48 @@ Cohesion: 0.13
 Nodes (21): Asset, AssetRow, BankCategoryMap, BankCategoryMapRow, Envelope, Goal, ImportAccountMap, ImportAccountMapRow (+13 more)
 
 ### Community 16 - "charts.ts"
-Cohesion: 0.31
-Nodes (9): Tâche 1 : Fondations (dépendances, helpers, composant), apexcharts, merged, props, ChartUi, isPlain(), mergeOptions(), moneyAxis() (+1 more)
+Cohesion: 0.16
+Nodes (20): Graphiques ApexCharts : plan d'implémentation, Review Focus, Tâche 1 : Fondations (dépendances, helpers, composant), Tâche 2 : Projection (graphique de référence), Tâche 3 : Tableau de bord (4 graphiques), Tâche 4 : Patrimoine, Allocation, Portefeuille (4 graphiques), Tâche 6 : Retrait de Chart.js, Laissé au constructeur (+12 more)
 
 ### Community 17 - "Release et gitflow"
-Cohesion: 0.05
-Nodes (42): frontend-design LICENSE (Apache 2.0), frontend-design skill (.agents), AI-generated design defaults to avoid, UX writing in design, frontend-design LICENSE (Apache 2.0, .claude copy), frontend-design skill (.claude), CI workflow (typecheck, lint, test, build), Release workflow (semantic-release, Windows .exe) (+34 more)
+Cohesion: 0.08
+Nodes (30): frontend-design LICENSE (Apache 2.0), frontend-design skill (.agents), AI-generated design defaults to avoid, UX writing in design, frontend-design LICENSE (Apache 2.0, .claude copy), frontend-design skill (.claude), CI workflow (typecheck, lint, test, build), Release workflow (semantic-release, Windows .exe) (+22 more)
 
 ### Community 18 - "Assistant de budgétisation : propositions de budget par scénario"
-Cohesion: 0.13
-Nodes (14): Anti-objectifs (échec même si « ça marche »), Application, Architecture (décidée), Assistant de budgétisation : propositions de budget par scénario, Charges fixes, Intention, Laissé au constructeur, Mes choix (non validés explicitement par l'utilisateur) (+6 more)
+Cohesion: 0.12
+Nodes (15): Anti-objectifs (échec même si « ça marche »), Application, Architecture (décidée), Assistant de budgétisation : propositions de budget par scénario, Base : « moyenne » d'une catégorie, Charges fixes, Intention, Laissé au constructeur (+7 more)
 
 ### Community 19 - "eur0"
-Cohesion: 0.11
-Nodes (19): Tâche 4 : modale de scénarios (UI), chart.js, canvas, props, theme, PALETTE, eur0(), byClass (+11 more)
+Cohesion: 0.10
+Nodes (19): apexcharts, theme, PALETTE, byClass, options, parts, props, series (+11 more)
 
 ### Community 20 - "src/main.ts"
-Cohesion: 0.29
-Nodes (5): @fontsource-variable/roboto, @material/web, vue3-apexcharts, applyCachedAppearance(), router
+Cohesion: 0.33
+Nodes (4): @fontsource-variable/roboto, @material/web, vue3-apexcharts, router
 
 ### Community 21 - "Recurring.vue"
 Cohesion: 0.07
-Nodes (43): CalendarEntry, calendarMonth(), iso(), lastDay(), MONTHS, projectedDates(), normalize(), addDays() (+35 more)
+Nodes (45): CalendarEntry, calendarMonth(), iso(), lastDay(), MONTHS, projectedDates(), Categorizer, normalize() (+37 more)
 
 ### Community 22 - "Dashboard.vue"
-Cohesion: 0.10
-Nodes (25): AllocationRow, Review Focus, Tâche 2 : Projection (graphique de référence), Tâche 3 : Tableau de bord (4 graphiques), Tâche 4 : Patrimoine, Allocation, Portefeuille (4 graphiques), CLASS_COLORS, pctTick(), monthLong() (+17 more)
+Cohesion: 0.17
+Nodes (11): budgetMois, budgetOptions, budgetSeries, classEntries, classOptions, classSeries, d, moisNw (+3 more)
 
 ### Community 23 - "Settings.vue"
-Cohesion: 0.17
-Nodes (19): isElectron, DEFAULT_ACCENT, DEFAULT_FONT, fromSettings(), accounts, addAcc(), addCat(), categories (+11 more)
+Cohesion: 0.15
+Nodes (21): fromSettings(), accounts, addAcc(), addCat(), categories, addCat(), emit, newCat (+13 more)
 
 ### Community 24 - "Store"
 Cohesion: 0.17
-Nodes (11): recategorizeAll(), locateWasm(), Store, guessEnvelopeKind(), saveGoal(), DEFAULT_SETTINGS_V2, migrate(), SCHEMA_VERSION (+3 more)
+Nodes (14): buildCategorizer(), recategorizeAll(), Store, guessEnvelopeKind(), saveGoal(), importFile(), DEFAULT_SETTINGS_V2, migrate() (+6 more)
 
 ### Community 25 - "Scripts npm"
 Cohesion: 0.13
 Nodes (15): scripts, build, build:electron, build:mcp, build:renderer, dev, dev:electron, lint (+7 more)
 
-### Community 26 - "TransactionModal.vue"
-Cohesion: 0.12
-Nodes (15): dialog, emit, el, emit, props, Value, draft, emit (+7 more)
+### Community 26 - "electron/main.ts"
+Cohesion: 0.21
+Nodes (7): check(), isPortable(), setupUpdater(), state, UpdateState, electron, electron-updater
 
 ### Community 27 - "Budget.vue"
 Cohesion: 0.04
@@ -236,11 +234,11 @@ Nodes (12): compilerOptions, esModuleInterop, lib, module, moduleResolution, noE
 
 ### Community 29 - "Networth.vue"
 Cohesion: 0.16
-Nodes (18): Tâche 6 : Retrait de Chart.js, Laissé au constructeur, eurTick(), eurTip(), month(), thisMonth(), chart, classes (+10 more)
+Nodes (15): month(), classes, copyPrevious(), draft, draftTotal, editMonth, fillDraft(), load() (+7 more)
 
 ### Community 30 - "db.ts"
-Cohesion: 0.14
-Nodes (10): Row, esbuild, vite, @vitejs/plugin-vue, out, r, [script, ...args], [dir, out] (+2 more)
+Cohesion: 0.19
+Nodes (7): locateWasm(), Row, vite, @vitejs/plugin-vue, [dir, out], FX, HAS_FX
 
 ### Community 31 - "Dépendances runtime"
 Cohesion: 0.14
@@ -259,16 +257,16 @@ Cohesion: 0.16
 Nodes (11): ImportResult, accounts, addMap(), busy, delMap(), loadMaps(), maps, newMap (+3 more)
 
 ### Community 35 - "Refunds.vue"
-Cohesion: 0.18
-Nodes (13): applyAll(), categories, deleteRule(), expenseCats, linkTo(), load(), pick(), picker (+5 more)
+Cohesion: 0.12
+Nodes (21): RefundRow, applyAll(), categories, deleteRule(), expenseCats, linkTo(), load(), pick() (+13 more)
 
 ### Community 36 - "Animations, slots, composables"
 Cohesion: 0.25
 Nodes (3): Use Class-based Animations for Non-Enter/Leave Effects, Component Slots Best Practices, Composable Organization Patterns
 
 ### Community 38 - "core/api.ts"
-Cohesion: 0.15
-Nodes (36): ApiMethod, createApi(), addMonths(), CashFlow, days(), futureValue(), monthStart(), monthsToGoal() (+28 more)
+Cohesion: 0.18
+Nodes (25): ApiMethod, createApi(), autoBudgets(), effectiveBudget(), setBudgetScenario(), officialRate(), monthStart(), allocationReport (+17 more)
 
 ### Community 40 - "KeepAlive, Suspense, Transition"
 Cohesion: 0.29
@@ -291,40 +289,36 @@ Cohesion: 0.13
 Nodes (13): cd, centrals, end, entries, files, locals, now, out (+5 more)
 
 ### Community 48 - "AssetModal.vue"
-Cohesion: 0.20
-Nodes (9): AssetSuggestion, AssetDraft, draft, emit, props, query, results, saveAsset() (+1 more)
+Cohesion: 0.11
+Nodes (17): AssetSuggestion, Account, AssetDraft, draft, emit, props, query, results (+9 more)
 
 ### Community 49 - "Recurring.vue"
-Cohesion: 0.18
-Nodes (10): load(), maxCat, mode, open, rename, rep, rows, saveRename() (+2 more)
+Cohesion: 0.11
+Nodes (13): AllocationRow, CLASS_COLORS, monthLong(), al, deposit, series, maxCat, mode (+5 more)
 
 ### Community 50 - "format.ts"
 Cohesion: 0.22
-Nodes (10): Anti-objectifs (échec même si « ça marche »), cur(), date(), eur(), fmtCache, moneyFormat(), num(), sign() (+2 more)
+Nodes (15): Tâche 4 : modale de scénarios (UI), Global Constraints, Anti-objectifs (échec même si « ça marche »), cur(), date(), eur(), eur0(), fmtCache (+7 more)
 
 ### Community 51 - "sumKind"
 Cohesion: 0.29
 Nodes (7): exp, inc, pexp, pinc, psav, sav, sumKind()
 
 ### Community 52 - "seed.ts"
-Cohesion: 0.22
-Nodes (8): ACCOUNT_TYPES, ACCOUNTS, BANK_MAP, CATEGORIES, CATEGORY_KINDS, RULES, SOURCES, TARGETS
+Cohesion: 0.20
+Nodes (9): ACCOUNT_TYPES, ACCOUNTS, ASSET_CLASSES, BANK_MAP, CATEGORIES, CATEGORY_KINDS, RULES, SOURCES (+1 more)
 
 ### Community 53 - "Category"
 Cohesion: 0.22
-Nodes (9): Category, addCat(), emit, newCat, NewCategory, emit, excluded, props (+1 more)
+Nodes (9): Category, emit, excluded, props, setExcluded(), draft, emit, props (+1 more)
 
-### Community 54 - "PickerModal.vue"
-Cohesion: 0.31
-Nodes (8): RefundRow, emit, pickCategory(), picker, pickExpense(), props, searchExpenses(), shift()
+### Community 54 - "run-ts.mjs"
+Cohesion: 0.33
+Nodes (4): esbuild, out, r, [script, ...args]
 
-### Community 55 - "Account"
-Cohesion: 0.25
-Nodes (8): Account, accountsShown, addAcc(), emit, newAcc, NewAccount, props, showArchived
-
-### Community 56 - "Graphiques : passage de Chart.js à ApexCharts"
-Cohesion: 0.25
-Nodes (7): Décidé par l'utilisateur, Graphiques : passage de Chart.js à ApexCharts, Intention, Le style C : les ingrédients communs, Livraison, Non-objectifs, Objectifs
+### Community 55 - "Chart.vue"
+Cohesion: 0.40
+Nodes (3): chart.js, canvas, props
 
 ### Community 58 - "hero"
 Cohesion: 0.40
@@ -343,32 +337,28 @@ Cohesion: 0.67
 Nodes (3): editGroups, exps, prevRow()
 
 ### Community 63 - "vue"
-Cohesion: 0.12
-Nodes (16): vue, vue-router, group, route, tabs, *.vue, toast, routes (+8 more)
-
-### Community 67 - "load"
-Cohesion: 0.24
-Nodes (13): guard(), load(), setTarget(), copyPrev(), load(), loadPrep(), loadYear(), save() (+5 more)
+Cohesion: 0.08
+Nodes (25): vue, vue-router, group, route, tabs, dialog, emit, *.vue (+17 more)
 
 ## Knowledge Gaps
 - **15 isolated node(s):** `@semantic-release/changelog`, `@semantic-release/exec`, `@semantic-release/git`, `@types/node`, `@types/sql.js` (+10 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 481 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 488 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vue` connect `vue` to `lib/api.ts`, `Envelopes.vue`, `ScenarioModal.vue`, `appearance.ts`, `Règles de catégorisation`, `Vue Transactions`, `Portfolio.vue`, `Métadonnées package.json`, `Vue Objectifs`, `schema.ts`, `charts.ts`, `Release et gitflow`, `eur0`, `src/main.ts`, `Recurring.vue`, `Dashboard.vue`, `Settings.vue`, `TransactionModal.vue`, `Budget.vue`, `Networth.vue`, `Import.vue`, `Refunds.vue`, `AssetModal.vue`, `Recurring.vue`, `Category`, `PickerModal.vue`, `Account`?**
-  _High betweenness centrality (0.137) - this node is a cross-community bridge._
+- **Why does `vue` connect `vue` to `lib/api.ts`, `Envelopes.vue`, `ScenarioModal.vue`, `appearance.ts`, `Règles de catégorisation`, `Vue Transactions`, `Portfolio.vue`, `Métadonnées package.json`, `Vue Objectifs`, `schema.ts`, `charts.ts`, `eur0`, `src/main.ts`, `Recurring.vue`, `Dashboard.vue`, `Settings.vue`, `Budget.vue`, `Networth.vue`, `Import.vue`, `Refunds.vue`, `AssetModal.vue`, `Recurring.vue`, `Category`, `Chart.vue`?**
+  _High betweenness centrality (0.142) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `round2()` (e.g. with `Tâche 1 : calcul pur des scénarios` and `Tâche 2 : moyennes glissantes, réglage des charges, application et API`) actually correct?**
   _`round2()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@semantic-release/changelog`, `@semantic-release/exec`, `@semantic-release/git` to the rest of the system?**
   _15 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `history.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1396011396011396 - nodes in this community are weakly interconnected._
-- **Why does `guard()` connect `load` to `lib/api.ts`, `Envelopes.vue`, `ScenarioModal.vue`, `Règles de catégorisation`, `Vue Transactions`, `Portfolio.vue`, `Vue Objectifs`, `schema.ts`, `eur0`, `Dashboard.vue`, `Settings.vue`, `TransactionModal.vue`, `Budget.vue`, `Networth.vue`, `Import.vue`, `Refunds.vue`, `AssetModal.vue`, `Recurring.vue`, `PickerModal.vue`, `vue`?**
-  _High betweenness centrality (0.067) - this node is a cross-community bridge._
+  _Cohesion score 0.1339031339031339 - nodes in this community are weakly interconnected._
+- **Why does `guard()` connect `Règles de catégorisation` to `Import.vue`, `Envelopes.vue`, `ScenarioModal.vue`, `lib/api.ts`, `Refunds.vue`, `Vue Transactions`, `Portfolio.vue`, `Vue Objectifs`, `schema.ts`, `AssetModal.vue`, `Recurring.vue`, `eur0`, `Category`, `Dashboard.vue`, `Settings.vue`, `Budget.vue`, `Networth.vue`, `vue`?**
+  _High betweenness centrality (0.063) - this node is a cross-community bridge._
 - **Should `Envelopes.vue` be split into smaller, more focused modules?**
   _Cohesion score 0.11904761904761904 - nodes in this community are weakly interconnected._
 - **Why does `devDependencies` connect `Dépendances de développement` to `Métadonnées package.json`?**
-  _High betweenness centrality (0.045) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._

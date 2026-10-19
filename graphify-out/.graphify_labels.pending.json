@@ -17,7 +17,7 @@
   "22": "Dashboard.vue",
   "23": "Settings.vue",
   "24": "Store",
-  "26": "TransactionModal.vue",
+  "26": "electron/main.ts",
   "27": "Budget.vue",
   "29": "Networth.vue",
   "30": "db.ts",
@@ -32,15 +32,13 @@
   "51": "sumKind",
   "52": "seed.ts",
   "53": "Category",
-  "54": "PickerModal.vue",
-  "55": "Account",
-  "56": "Graphiques : passage de Chart.js à ApexCharts",
+  "54": "run-ts.mjs",
+  "55": "Chart.vue",
   "58": "hero",
   "59": "cellClass",
   "60": "expB",
   "61": "sgn",
   "62": "prevRow",
   "63": "vue",
-  "64": "draftSum",
-  "67": "load"
+  "64": "draftSum"
 }
