@@ -62,7 +62,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
                   <td style="max-width:230px"><b class="nowrap">{{ i.label }}</b> <span v-if="i.status === 'confirmed'" class="tag ok" title="Confirmé">✓</span><span v-if="i.status === 'ignored'" class="tag">ignoré</span><span v-if="!i.active" class="tag warn" title="Plus de prélèvement depuis plus d'une période et demie">arrêté ?</span><div class="help ellipsis" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ i.account }} · {{ i.count }} paiements</div></td>
                   <td class="muted ellipsis" style="max-width:120px" :title="i.category ?? ''">{{ i.category ?? "–" }}</td>
                   <td class="nowrap">{{ freq(i.frequency) }}</td>
-                  <td class="num">{{ eur(i.lastAmount) }}<div v-if="i.change" class="tag" :class="i.change.kind === 'hausse' ? 'neg' : 'ok'" style="margin-top:2px">{{ i.change.kind === "hausse" ? "▲" : "▼" }} {{ pct(Math.abs(i.change.pct), 0) }}</div></td>
+                  <td class="num">{{ eur(i.lastAmount) }}<div v-if="i.change" :class="i.change.kind === 'hausse' ? 'neg' : 'pos'" style="font-size:11px;font-weight:500;line-height:1.2;margin-top:2px">{{ i.change.kind === "hausse" ? "▲" : "▼" }} {{ pct(Math.abs(i.change.pct), 0) }}</div></td>
                   <td class="num"><b>{{ eur0(i.annual) }}</b></td>
                   <td class="nowrap">{{ date(i.last) }}</td>
                   <td :class="{ muted: !i.active }" class="nowrap">{{ i.active ? date(i.next) : "–" }}</td>

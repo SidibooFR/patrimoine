@@ -66,8 +66,15 @@ describe("budgetPlan : scénarios", () => {
     expect(s.every((x) => x.amounts.every((a) => a.amount > 0))).toBe(true);
   });
 
-  it("Équilibré ne bouge pas si le taux dépasse déjà 20 %", () => {
-    expect(get(buildScenarios(RICHE, FIXED), "equilibre").k).toBe(1);
+  it("Taux déjà au-dessus de 20 % : Équilibré vise +5 pts, Économe +10 pts (scénarios toujours distincts)", () => {
+    // RICHE : t0 = 40 % → Équilibré 45 % (k = 0,85 exactement), Économe 50 % (k = 0,7 borné à 0,75)
+    const s = buildScenarios(RICHE, FIXED);
+    expect(get(s, "equilibre").k).toBeCloseTo(0.85, 6);
+    expect(get(s, "equilibre").rate).toBeCloseTo(0.45, 6);
+    expect(get(s, "econome").k).toBeCloseTo(0.75, 6);
+    expect(get(s, "investissement").k).toBeCloseTo(0.75, 6);
+    expect(new Set(s.map((x) => x.savings)).size).toBe(4); // moyenne, équilibré, économe = investissement, loisirs
+    expect(get(s, "moyenne").placed).toBe(200);
   });
 
   it("Revenus nuls : k = 1 et taux null partout", () => {

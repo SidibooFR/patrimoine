@@ -58,6 +58,7 @@ export function addMonths(month: string, n: number): string {
   return d.toISOString().slice(0, 7) + "-01";
 }
 
+/** Date du jour à l'heure locale (toISOString donnerait la veille entre minuit et 2 h en France). */
 export function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return new Date().toLocaleDateString("sv-SE");
 }

@@ -16,6 +16,16 @@ export function settingNum(store: Store, key: string, def: number): number {
   return Number.isFinite(v) ? v : def;
 }
 
+/** Charges pré-cochées quand le réglage `budget_fixed_categories` est absent. */
+export const DEFAULT_FIXED = ["Loyer & charges", "Énergie, internet & téléphone", "Assurances", "Abonnements", "Crédits", "Impôts & taxes", "Frais bancaires"];
+
+/** Charges fixes (réglage `budget_fixed_categories`, noms séparés par « | ») : à leur moyenne dans les scénarios, sans projection au rythme des jours dans le suivi du mois. Réglage absent → DEFAULT_FIXED, vide → aucune. */
+export function fixedCategories(store: Store): string[] {
+  const raw = setting(store, "budget_fixed_categories", "\u0000");
+  if (raw === "\u0000") return DEFAULT_FIXED;
+  return raw.split("|").map((x) => x.trim()).filter(Boolean);
+}
+
 /** Montant « budget » d'une opération : revenus positifs, dépenses/épargne positives aussi (valeur absolue), transferts 0. */
 export function budgetAmount(kind: string | null, amount: number): number {
   if (kind === "Revenu") return amount;
@@ -26,6 +36,12 @@ export function budgetAmount(kind: string | null, amount: number): number {
 // ---------------------------------------------------------------- Budget
 export interface BudgetRow {
   category_id: number; name: string; kind: string; budget: number | null;
+  /** manuel = saisi dans la grille, auto = montant du scénario suivi, null = pas de budget. */
+  source: "manuel" | "auto" | null;
+  /** Budget effectif de chaque mois : montant propre au mois (table budget_months) sinon `budget`. */
+  monthBudgets: (number | null)[];
+  /** Mois ayant un montant propre. */
+  overrides: number;
   months: number[]; total: number; average: number; gap: number | null;
   /** Remboursements rapprochés déduits de cette catégorie sur l'année (dépenses) ou retirés (catégorie Remboursements). */
   refunded: number;
@@ -34,12 +50,25 @@ export interface BudgetReport {
   year: number; rows: BudgetRow[]; monthsWithData: number;
   totals: { income: number[]; expense: number[]; savings: number[]; remaining: number[]; rate: (number | null)[] };
   yearTotals: { income: number; expense: number; savings: number; remaining: number; rate: number | null; avgExpense: number };
+  /** Budget prévu : somme des montants mensuels saisis par nature, reste et taux d'épargne prévus, nombre de catégories budgétées. */
+  plan: { income: number; expense: number; savings: number; remaining: number; rate: number | null; count: number };
+  /** Nombre de budgets saisis l'année précédente (pour « Reprendre le budget N−1 »). */
+  prevYearCount: number;
+  /** Scénario suivi dont viennent les montants automatiques, ou null. */
+  scenario: string | null;
   uncategorized: number;
 }
 
-export function budgetReport(store: Store, year: number): BudgetReport {
+/** `auto` : montants du scénario suivi, appliqués aux catégories sans budget saisi (voir `effectiveBudget` dans budgetPlan.ts). */
+export function budgetReport(store: Store, year: number, auto?: { scenario: string; amounts: Map<number, number> }): BudgetReport {
   const cats = store.all<{ id: number; name: string; kind: string }>("SELECT id, name, kind FROM categories ORDER BY sort, id");
   const budgets = new Map(store.all<{ category_id: number; monthly_amount: number }>("SELECT category_id, monthly_amount FROM budgets WHERE year=?", [year]).map((b) => [b.category_id, b.monthly_amount]));
+  const perMonth = new Map<number, Map<number, number>>();
+  for (const o of store.all<{ category_id: number; month: string; monthly_amount: number }>("SELECT category_id, month, monthly_amount FROM budget_months WHERE substr(month,1,4)=?", [String(year)])) {
+    const m = perMonth.get(o.category_id) ?? new Map<number, number>();
+    m.set(Number(o.month.slice(5, 7)) - 1, o.monthly_amount);
+    perMonth.set(o.category_id, m);
+  }
   const sums = store.all<{ category_id: number; m: string; kind: string; total: number }>(
     `SELECT t.category_id, substr(t.date,6,2) AS m, c.kind, SUM(t.amount) AS total
      FROM transactions t JOIN categories c ON c.id = t.category_id
@@ -74,7 +103,11 @@ export function budgetReport(store: Store, year: number): BudgetReport {
   const rows: BudgetRow[] = cats.map((c) => {
     const months = (grid.get(c.id) ?? Array(12).fill(0)).map(round2);
     months.forEach((v, i) => { if (c.kind === "Revenu") income[i] += v; else if (c.kind === "Dépense") expense[i] += v; else if (c.kind === "Épargne") savings[i] += v; });
-    return { category_id: c.id, name: c.name, kind: c.kind, budget: budgets.get(c.id) ?? null, months, total: 0, average: 0, gap: null, refunded: round2(refunded.get(c.id) ?? 0) };
+    const manual = budgets.get(c.id);
+    const budget = manual ?? auto?.amounts.get(c.id) ?? null;
+    const own = perMonth.get(c.id);
+    const monthBudgets = months.map((_, i) => own?.get(i) ?? budget);
+    return { category_id: c.id, name: c.name, kind: c.kind, budget, source: manual !== undefined ? "manuel" : budget !== null ? "auto" : null, monthBudgets, overrides: own?.size ?? 0, months, total: 0, average: 0, gap: null, refunded: round2(refunded.get(c.id) ?? 0) };
   });
   const withData = income.map((v, i) => v + expense[i] > 0).filter(Boolean).length;
   const n = Math.max(1, withData);
@@ -86,12 +119,130 @@ export function budgetReport(store: Store, year: number): BudgetReport {
   const remaining = income.map((v, i) => round2(v - expense[i]));
   const rate = income.map((v, i) => (v > 0 ? (v - expense[i]) / v : null));
   const yi = income.reduce((a, b) => a + b, 0), ye = expense.reduce((a, b) => a + b, 0), ys = savings.reduce((a, b) => a + b, 0);
+  const planOf = (kind: string) => rows.filter((r) => r.kind === kind && r.budget !== null).reduce((s, r) => s + r.budget!, 0);
+  const pi = planOf("Revenu"), pe = planOf("Dépense"), ps = planOf("Épargne");
   return {
     year, rows, monthsWithData: withData,
     totals: { income: income.map(round2), expense: expense.map(round2), savings: savings.map(round2), remaining, rate },
     yearTotals: { income: round2(yi), expense: round2(ye), savings: round2(ys), remaining: round2(yi - ye), rate: yi > 0 ? (yi - ye) / yi : null, avgExpense: round2(ye / n) },
+    plan: { income: round2(pi), expense: round2(pe), savings: round2(ps), remaining: round2(pi - pe), rate: pi > 0 ? (pi - pe) / pi : null, count: rows.filter((r) => r.budget !== null).length },
+    prevYearCount: store.scalar<number>("SELECT COUNT(*) FROM budgets WHERE year=?", [year - 1]),
+    scenario: auto?.scenario ?? null,
     uncategorized: store.scalar<number>("SELECT COUNT(*) FROM transactions WHERE category_id IS NULL"),
   };
+}
+
+// ---------------------------------------------------------------- Suivi du mois (budget vs réel)
+export type BudgetMonthStatus = "ok" | "warn" | "over" | "under";
+export interface BudgetMonthRow {
+  category_id: number; name: string; kind: string;
+  budget: number; actual: number;
+  /** Budget − réel (dépenses) ou réel − budget (revenus, épargne) : ce qu'il reste à dépenser / à atteindre. */
+  remaining: number;
+  /** Réel / budget. */
+  ratio: number;
+  /** Charge fixe (réglage `budget_fixed_categories`) : attendue au budget, pas de projection au rythme des jours. */
+  fixed: boolean;
+  /** Dépenses d'un mois en cours : réel extrapolé au rythme des jours écoulés (charge fixe : max(réel, budget)), sinon null. */
+  projected: number | null;
+  /** Dépense : over = budget dépassé, warn = rythme qui mène au dépassement ; revenu/épargne : under = mois terminé sous le budget. */
+  status: BudgetMonthStatus;
+}
+export interface BudgetMonthReport {
+  month: string; year: number;
+  /** Jours écoulés (mois terminé → total, mois futur → 0) et jours du mois. */
+  days: { elapsed: number; total: number };
+  rows: BudgetMonthRow[];
+  /** Dépenses du mois dans des catégories sans budget. */
+  untracked: { category_id: number; name: string; actual: number }[];
+  untrackedTotal: number;
+  totals: {
+    income: { budget: number; actual: number };
+    expense: { budget: number; actual: number; projected: number | null; over: number };
+    savings: { budget: number; actual: number };
+  };
+}
+
+/** Suivi mensuel : pour chaque catégorie budgétée, réel du mois contre budget, rythme et projection de fin de mois. */
+export function budgetMonthReport(store: Store, month: string, asOf = today(), auto?: { scenario: string; amounts: Map<number, number> }): BudgetMonthReport {
+  const ym = month.slice(0, 7);
+  const year = Number(ym.slice(0, 4)), mi = Number(ym.slice(5, 7)) - 1;
+  const b = budgetReport(store, year, auto);
+  const total = new Date(Date.UTC(year, mi + 1, 0)).getUTCDate();
+  const cur = asOf.slice(0, 7);
+  const elapsed = ym < cur ? total : ym > cur ? 0 : Math.min(total, Number(asOf.slice(8, 10)));
+  const inProgress = elapsed > 0 && elapsed < total;
+  const fixedSet = new Set(fixedCategories(store));
+  const rows: BudgetMonthRow[] = [];
+  const untracked: BudgetMonthReport["untracked"] = [];
+  for (const r of b.rows) {
+    if (r.kind === "Transfert") continue;
+    const actual = r.months[mi];
+    const mb = r.monthBudgets[mi];
+    if (mb === null) { if (r.kind === "Dépense" && actual > 0) untracked.push({ category_id: r.category_id, name: r.name, actual }); continue; }
+    const budget = mb;
+    const ratio = budget > 0 ? actual / budget : actual > 0 ? 1 : 0;
+    const fixed = r.kind === "Dépense" && fixedSet.has(r.name);
+    let projected: number | null = null, status: BudgetMonthStatus = "ok";
+    if (r.kind === "Dépense") {
+      // Charge fixe (loyer payé le 1er…) : attendue au budget. Variable : projection au rythme des jours écoulés,
+      // signalée seulement à partir de la mi-mois (trop bruyante avant).
+      if (inProgress) projected = fixed ? Math.max(actual, budget) : round2((actual / elapsed) * total);
+      if (actual > budget) status = "over";
+      else if (!fixed && projected !== null && projected > budget && elapsed / total >= 0.5) status = "warn";
+    } else if (elapsed === total && actual < budget) status = "under";
+    rows.push({ category_id: r.category_id, name: r.name, kind: r.kind, budget, actual, remaining: round2(r.kind === "Dépense" ? budget - actual : actual - budget), ratio, fixed, projected, status });
+  }
+  const sum = (kind: string, f: (r: BudgetMonthRow) => number) => round2(rows.filter((r) => r.kind === kind).reduce((s, r) => s + f(r), 0));
+  const expActual = sum("Dépense", (r) => r.actual);
+  return {
+    month: ym, year, days: { elapsed, total }, rows,
+    untracked, untrackedTotal: round2(untracked.reduce((s, u) => s + u.actual, 0)),
+    totals: {
+      income: { budget: sum("Revenu", (r) => r.budget), actual: sum("Revenu", (r) => r.actual) },
+      expense: { budget: sum("Dépense", (r) => r.budget), actual: expActual, projected: inProgress ? sum("Dépense", (r) => r.projected ?? 0) : null, over: sum("Dépense", (r) => Math.max(0, r.actual - r.budget)) },
+      savings: { budget: sum("Épargne", (r) => r.budget), actual: sum("Épargne", (r) => r.actual) },
+    },
+  };
+}
+
+/**
+ * Budget propre à un mois pour plusieurs catégories (null = retire le montant propre, retour au budget annuel),
+ * reporté sur les mois suivants jusqu'à `through` (AAAA-MM) si fourni.
+ */
+export function saveBudgetMonth(store: Store, month: string, entries: { category_id: number; amount: number | null }[], through?: string): { saved: number; months: number } {
+  if (!/^\d{4}-\d{2}$/.test(month)) throw new Error("Mois attendu au format AAAA-MM");
+  if (through !== undefined && (!/^\d{4}-\d{2}$/.test(through) || through < month)) throw new Error("Mois de fin invalide");
+  const months: string[] = [];
+  for (let m = month; m <= (through ?? month); m = addMonths(m + "-01", 1).slice(0, 7)) months.push(m);
+  return store.transaction(() => {
+    let saved = 0;
+    for (const e of entries) {
+      if (e.amount !== null && !(Number.isFinite(e.amount) && e.amount >= 0)) throw new Error("Montant invalide");
+      for (const m of months) {
+        if (e.amount === null) store.run("DELETE FROM budget_months WHERE category_id=? AND month=?", [e.category_id, m]);
+        else store.run("INSERT INTO budget_months(category_id,month,monthly_amount) VALUES(?,?,?) ON CONFLICT(category_id,month) DO UPDATE SET monthly_amount=excluded.monthly_amount", [e.category_id, m, e.amount]);
+      }
+      saved++;
+    }
+    return { saved, months: months.length };
+  });
+}
+
+/** Copie les budgets d'une année vers une autre, uniquement sur les catégories sans budget à l'arrivée. */
+export function copyBudgets(store: Store, fromYear: number, toYear: number): { copied: number; skipped: number } {
+  if (fromYear === toYear) return { copied: 0, skipped: 0 };
+  return store.transaction(() => {
+    const src = store.all<{ category_id: number; monthly_amount: number }>("SELECT category_id, monthly_amount FROM budgets WHERE year=?", [fromYear]);
+    const taken = new Set(store.all<{ category_id: number }>("SELECT category_id FROM budgets WHERE year=?", [toYear]).map((x) => x.category_id));
+    let copied = 0, skipped = 0;
+    for (const s of src) {
+      if (taken.has(s.category_id)) { skipped++; continue; }
+      store.run("INSERT INTO budgets(category_id,year,monthly_amount) VALUES(?,?,?)", [s.category_id, toYear, s.monthly_amount]);
+      copied++;
+    }
+    return { copied, skipped };
+  });
 }
 
 // ---------------------------------------------------------------- Patrimoine

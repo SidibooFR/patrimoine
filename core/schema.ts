@@ -70,6 +70,14 @@ CREATE TABLE IF NOT EXISTS budgets (
   PRIMARY KEY (category_id, year)
 );
 
+-- Budget d'un mois précis : prime sur le montant annuel (vue mensuelle, « Modifier »)
+CREATE TABLE IF NOT EXISTS budget_months (
+  category_id    INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  month          TEXT NOT NULL,                 -- AAAA-MM
+  monthly_amount REAL NOT NULL,
+  PRIMARY KEY (category_id, month)
+);
+
 CREATE TABLE IF NOT EXISTS snapshots (
   month      TEXT NOT NULL,                 -- YYYY-MM-01
   account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,

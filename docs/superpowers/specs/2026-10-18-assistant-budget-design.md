@@ -59,10 +59,12 @@ Dans tous les scénarios :
 | Scénario | Règle |
 |---|---|
 | **Ma moyenne** | `k = 1`. Toutes les catégories restent à leur moyenne. |
-| **Équilibré** | Cible : un taux d'au moins `max(t0, 20 %)`. `k` est la plus petite baisse qui atteint la cible, sans descendre sous `0,85` (−15 %). Si `t0 ≥ 20 %`, alors `k = 1`. |
-| **Économe** | Cible : un taux d'au moins `min(t0 + 10 pts, 30 %)`, sans être inférieur à `t0`. `k` est la plus petite baisse qui atteint la cible, sans descendre sous `0,75` (−25 %). |
+| **Équilibré** | Cible : un taux d'au moins `max(20 %, t0 + 5 pts)`. `k` est la plus petite baisse qui atteint la cible, sans descendre sous `0,85` (−15 %). *(révisé le 2026-10-19 : avec `max(t0, 20 %)`, un épargnant déjà au-dessus de 20 % obtenait le même budget que « Ma moyenne »)* |
+| **Économe** | Cible : un taux d'au moins `t0 + 10 pts`. `k` est la plus petite baisse qui atteint la cible, sans descendre sous `0,75` (−25 %). *(révisé le 2026-10-19 : le plafond de 30 % rendait le scénario inopérant au-dessus de 30 %)* |
 | **Loisirs** | `k = 1,15`, ramené à la baisse si besoin pour que le taux reste à au moins `max(min(t0, 10 %), 0)`. Le scénario ne fait jamais tomber le taux sous 10 %, et ne le dégrade pas si l'utilisateur est déjà en dessous. |
 | **Investissement** | Même `k` que Économe. Tout le surplus d'épargne va **uniquement** aux catégories d'épargne bourse et crypto. |
+
+Les objectifs de l'onglet Objectifs (ajout du 2026-10-19) imposent en plus un plancher `G / R` à la cible, `G` étant la somme des versements mensuels nécessaires ; ils sont servis en premier dans la répartition de l'épargne. Un scénario peut être **suivi** (réglage `budget_scenario`) : ses montants deviennent le budget des catégories sans montant saisi, recalculés à chaque lecture.
 
 Le surplus d'épargne correspond à `(1 − k) × V` :
 - Dans Équilibré et Économe, il est réparti entre les catégories d'épargne au prorata de leur moyenne.

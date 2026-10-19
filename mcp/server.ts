@@ -71,7 +71,7 @@ async function main() {
   server.registerTool("recategorize", { description: "Recalcule la catégorie de toutes les opérations non fixées à la main.", annotations: rw }, wrap(() => api.recategorize()));
 
   server.registerTool("get_budget", {
-    description: "Budget annuel : réel par catégorie et par mois, totaux, taux d'épargne, écart vs budget prévu.",
+    description: "Budget annuel : réel par catégorie et par mois, totaux, taux d'épargne, écart vs budget prévu (montants saisis, complétés par le scénario suivi : source 'auto').",
     inputSchema: { year: z.number().int().optional() }, annotations: ro,
   }, wrap(({ year }) => api.budget(year)));
   server.registerTool("set_budget", {
@@ -82,6 +82,26 @@ async function main() {
     description: "Propose 5 scénarios de budget (moyenne 12 mois, équilibré, économe, loisirs, investissement) calculés sur les 12 derniers mois complets ; les charges fixes ne bougent pas. Appliquer via set_budget.",
     inputSchema: { year: z.number().int().optional(), fixed: z.array(z.string()).optional() }, annotations: ro,
   }, wrap(({ year, fixed }) => api.budgetScenarios(year ?? new Date().getFullYear(), fixed)));
+  server.registerTool("set_budget_scenario", {
+    description: "Suit un scénario de budget (moyenne, equilibre, econome, loisirs, investissement) : les catégories sans budget saisi prennent automatiquement les montants du scénario, recalculés sur les 12 derniers mois complets et les objectifs. null = budget manuel.",
+    inputSchema: { scenario: z.enum(["moyenne", "equilibre", "econome", "loisirs", "investissement"]).nullable() }, annotations: rw,
+  }, wrap(({ scenario }) => api.setBudgetScenario(scenario)));
+  server.registerTool("get_budget_prepare", {
+    description: "À prévoir chaque mois : charges fixes et variables à garder sur le compte courant (contre le solde actuel), épargne à virer par catégorie avec les objectifs qu'elle finance, prélèvements attendus sous 30 jours.",
+    annotations: ro,
+  }, wrap(() => api.budgetPrepare()));
+  server.registerTool("get_budget_month", {
+    description: "Suivi du mois : réel contre budget pour chaque catégorie budgétée (reste, rythme, projection de fin de mois, statut ok/warn/over/under) et dépenses hors budget. Mois AAAA-MM, défaut : mois courant.",
+    inputSchema: { month: z.string().regex(/^\d{4}-\d{2}$/).optional() }, annotations: ro,
+  }, wrap(({ month }) => api.budgetMonth(month)));
+  server.registerTool("set_budget_month", {
+    description: "Budget propre à un mois (AAAA-MM) pour une ou plusieurs catégories, prioritaire sur le budget annuel ; reporté sur les mois suivants jusqu'à through si fourni ; amount null retire le montant propre.",
+    inputSchema: { month: z.string().regex(/^\d{4}-\d{2}$/), entries: z.array(z.object({ category_id: z.number(), amount: z.number().nullable() })), through: z.string().regex(/^\d{4}-\d{2}$/).optional() }, annotations: rw,
+  }, wrap(({ month, entries, through }) => api.saveBudgetMonth(month, entries, through)));
+  server.registerTool("copy_budgets", {
+    description: "Reprend les budgets d'une année sur une autre (ex. N−1 → N) sans écraser les montants déjà saisis.",
+    inputSchema: { from_year: z.number().int(), to_year: z.number().int() }, annotations: rw,
+  }, wrap(({ from_year, to_year }) => api.copyBudgets(from_year, to_year)));
 
   server.registerTool("get_networth", { description: "Patrimoine : relevés mensuels des soldes par compte, total, variations, répartition par classe d'actif.", annotations: ro }, wrap(() => api.networth()));
   server.registerTool("set_snapshot", {
