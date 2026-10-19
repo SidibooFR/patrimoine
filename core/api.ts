@@ -9,11 +9,11 @@ import type { Account, AssetRow, BankCategoryMapRow, Category, ImportAccountMapR
 import { buildCategorizer, recategorizeAll } from "./categorize.js";
 import { importFile, parseFile, type Source } from "./importers.js";
 import { refreshPrices, searchAssets } from "./prices.js";
-import { allocationReport, budgetMonthReport, budgetReport, copyBudgets, dashboard, envelopes, goals, networthReport, portfolioReport, projectionReport, recurring, setting, type ProjectionParams } from "./reports.js";
+import { allocationReport, budgetMonthReport, copyBudgets, dashboard, envelopes, goals, networthReport, portfolioReport, projectionReport, recurring, setting, type ProjectionParams } from "./reports.js";
 import { ENVELOPE_KINDS, ENVELOPE_KIND_NAMES, RATES_AS_OF, officialRate } from "./envelopes.js";
 import { saveGoal, GOAL_SOURCES, type GoalInput } from "./goals.js";
 import { linkRefund, refundsReport } from "./refunds.js";
-import { applyBudgetScenario, budgetScenarios, type ScenarioKey } from "./budgetPlan.js";
+import { applyBudgetScenario, autoBudgets, budgetPrepare, budgetScenarios, effectiveBudget, setBudgetScenario, type ScenarioKey } from "./budgetPlan.js";
 import { backfillPriceHistory, currencyOf, portfolioHistory, recordPrice } from "./history.js";
 import { lastStatementBalances } from "./balances.js";
 import { today } from "./finance.js";
@@ -171,14 +171,22 @@ export function createApi(store: Store) {
     },
 
     // ------------------------------------------------------------ budget
-    budget(year?: number) { return budgetReport(store, year ?? new Date().getFullYear()); },
+    /** Budget de l'année : montants saisis, complétés par le scénario suivi (budget automatique) sur les catégories vides. */
+    budget(year?: number) { return effectiveBudget(store, year ?? new Date().getFullYear()); },
     setBudget(category_id: number, year: number, monthly_amount: number | null) {
       if (monthly_amount === null) store.run("DELETE FROM budgets WHERE category_id=? AND year=?", [category_id, year]);
       else store.run("INSERT INTO budgets(category_id,year,monthly_amount) VALUES(?,?,?) ON CONFLICT(category_id,year) DO UPDATE SET monthly_amount=excluded.monthly_amount", [category_id, year, monthly_amount]);
       return true;
     },
     /** Suivi du mois : réel contre budget par catégorie budgétée, rythme et projection de fin de mois (mois « AAAA-MM », défaut : mois courant). */
-    budgetMonth(month?: string) { return budgetMonthReport(store, month ?? new Date().toISOString().slice(0, 7)); },
+    budgetMonth(month?: string) {
+      const m = month ?? new Date().toISOString().slice(0, 7);
+      return budgetMonthReport(store, m, undefined, autoBudgets(store, Number(m.slice(0, 4))));
+    },
+    /** Suit un scénario : le budget se recalcule à chaque lecture (12 derniers mois complets, objectifs, charges fixes). null = budget manuel. */
+    setBudgetScenario(key: ScenarioKey | null) { return setBudgetScenario(store, key); },
+    /** « À prévoir chaque mois » : à garder sur le compte courant, à virer vers l'épargne et les objectifs, prélèvements imminents. */
+    budgetPrepare() { return budgetPrepare(store); },
     /** Reprend les budgets d'une année sur une autre, sans écraser les montants déjà saisis. */
     copyBudgets(fromYear: number, toYear: number) { return copyBudgets(store, fromYear, toYear); },
     /** Assistant « Proposer un budget » : 5 scénarios calculés sur les 12 derniers mois complets. */

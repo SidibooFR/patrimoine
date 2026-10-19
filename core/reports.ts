@@ -36,6 +36,8 @@ export function budgetAmount(kind: string | null, amount: number): number {
 // ---------------------------------------------------------------- Budget
 export interface BudgetRow {
   category_id: number; name: string; kind: string; budget: number | null;
+  /** manuel = saisi dans la grille, auto = montant du scénario suivi, null = pas de budget. */
+  source: "manuel" | "auto" | null;
   months: number[]; total: number; average: number; gap: number | null;
   /** Remboursements rapprochés déduits de cette catégorie sur l'année (dépenses) ou retirés (catégorie Remboursements). */
   refunded: number;
@@ -48,10 +50,13 @@ export interface BudgetReport {
   plan: { income: number; expense: number; savings: number; remaining: number; rate: number | null; count: number };
   /** Nombre de budgets saisis l'année précédente (pour « Reprendre le budget N−1 »). */
   prevYearCount: number;
+  /** Scénario suivi dont viennent les montants automatiques, ou null. */
+  scenario: string | null;
   uncategorized: number;
 }
 
-export function budgetReport(store: Store, year: number): BudgetReport {
+/** `auto` : montants du scénario suivi, appliqués aux catégories sans budget saisi (voir `effectiveBudget` dans budgetPlan.ts). */
+export function budgetReport(store: Store, year: number, auto?: { scenario: string; amounts: Map<number, number> }): BudgetReport {
   const cats = store.all<{ id: number; name: string; kind: string }>("SELECT id, name, kind FROM categories ORDER BY sort, id");
   const budgets = new Map(store.all<{ category_id: number; monthly_amount: number }>("SELECT category_id, monthly_amount FROM budgets WHERE year=?", [year]).map((b) => [b.category_id, b.monthly_amount]));
   const sums = store.all<{ category_id: number; m: string; kind: string; total: number }>(
@@ -88,7 +93,9 @@ export function budgetReport(store: Store, year: number): BudgetReport {
   const rows: BudgetRow[] = cats.map((c) => {
     const months = (grid.get(c.id) ?? Array(12).fill(0)).map(round2);
     months.forEach((v, i) => { if (c.kind === "Revenu") income[i] += v; else if (c.kind === "Dépense") expense[i] += v; else if (c.kind === "Épargne") savings[i] += v; });
-    return { category_id: c.id, name: c.name, kind: c.kind, budget: budgets.get(c.id) ?? null, months, total: 0, average: 0, gap: null, refunded: round2(refunded.get(c.id) ?? 0) };
+    const manual = budgets.get(c.id);
+    const budget = manual ?? auto?.amounts.get(c.id) ?? null;
+    return { category_id: c.id, name: c.name, kind: c.kind, budget, source: manual !== undefined ? "manuel" : budget !== null ? "auto" : null, months, total: 0, average: 0, gap: null, refunded: round2(refunded.get(c.id) ?? 0) };
   });
   const withData = income.map((v, i) => v + expense[i] > 0).filter(Boolean).length;
   const n = Math.max(1, withData);
@@ -108,6 +115,7 @@ export function budgetReport(store: Store, year: number): BudgetReport {
     yearTotals: { income: round2(yi), expense: round2(ye), savings: round2(ys), remaining: round2(yi - ye), rate: yi > 0 ? (yi - ye) / yi : null, avgExpense: round2(ye / n) },
     plan: { income: round2(pi), expense: round2(pe), savings: round2(ps), remaining: round2(pi - pe), rate: pi > 0 ? (pi - pe) / pi : null, count: rows.filter((r) => r.budget !== null).length },
     prevYearCount: store.scalar<number>("SELECT COUNT(*) FROM budgets WHERE year=?", [year - 1]),
+    scenario: auto?.scenario ?? null,
     uncategorized: store.scalar<number>("SELECT COUNT(*) FROM transactions WHERE category_id IS NULL"),
   };
 }
@@ -144,10 +152,10 @@ export interface BudgetMonthReport {
 }
 
 /** Suivi mensuel : pour chaque catégorie budgétée, réel du mois contre budget, rythme et projection de fin de mois. */
-export function budgetMonthReport(store: Store, month: string, asOf = today()): BudgetMonthReport {
+export function budgetMonthReport(store: Store, month: string, asOf = today(), auto?: { scenario: string; amounts: Map<number, number> }): BudgetMonthReport {
   const ym = month.slice(0, 7);
   const year = Number(ym.slice(0, 4)), mi = Number(ym.slice(5, 7)) - 1;
-  const b = budgetReport(store, year);
+  const b = budgetReport(store, year, auto);
   const total = new Date(Date.UTC(year, mi + 1, 0)).getUTCDate();
   const cur = asOf.slice(0, 7);
   const elapsed = ym < cur ? total : ym > cur ? 0 : Math.min(total, Number(asOf.slice(8, 10)));

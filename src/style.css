@@ -84,6 +84,12 @@ td.over { background: var(--neg-soft); color: #601410; }
 td.under { background: var(--warn-soft); color: #5c2c00; }
 .track-bar { min-width: 140px; width: 22%; }
 .track-bar md-linear-progress { display: block; }
+/* Budget : « à prévoir chaque mois » */
+.prep ul { list-style: none; margin: 0; padding: 0; }
+.prep li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.prep li.sub { padding: 2px 0 2px 14px; border: 0; font-size: 12px; color: var(--muted); }
+.prep li.sum { font-weight: 600; border-bottom: 0; }
+.prep .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--surface-2); }
 .table-wrap { overflow: auto; max-height: calc(100vh - 260px); }
 td.ellipsis { max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -95,6 +101,7 @@ input:hover, select:hover, textarea:hover { border-color: var(--text); }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 input[type="number"] { text-align: right; }
 input.cell { width: 100%; padding: 4px 6px; border-color: transparent; background: var(--edit); text-align: right; border-radius: 6px; }
+input.cell.auto { background: var(--accent-tint); } input.cell.auto::placeholder { color: var(--on-accent-soft); font-style: italic; opacity: 1; }
 input.cell:hover, input.cell:focus { border-color: var(--outline); }
 label.field { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
 label.field > input, label.field > select { color: var(--text); }

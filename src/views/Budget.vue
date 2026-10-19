@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from "vue";
 import { api } from "../lib/api";
-import { eur0, pct, sign, monthLong } from "../lib/format";
+import { eur0, pct, sign, monthLong, date, month } from "../lib/format";
 import { guard, notify } from "../lib/toast";
 import type { BudgetReport, BudgetRow, BudgetMonthReport, BudgetMonthRow } from "../../core/reports";
+import type { PrepareReport, ScenarioKey } from "../../core/budgetPlan";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
 import ScenarioModal from "./budget/ScenarioModal.vue";
@@ -13,7 +14,10 @@ const curYear = now.getFullYear(), curMonth = now.getMonth();
 const year = ref(curYear);
 const b = ref<BudgetReport>();
 const m = ref<BudgetMonthReport>();
+const prep = ref<PrepareReport>();
 const MONTHS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+const LABELS: Record<ScenarioKey, string> = { moyenne: "Ma moyenne", equilibre: "Équilibré", econome: "Économe", loisirs: "Loisirs", investissement: "Investissement" };
+const scenarioLabel = computed(() => (b.value?.scenario ? LABELS[b.value.scenario as ScenarioKey] ?? b.value.scenario : null));
 
 /** Mois suivi (0-11) : mois courant pour l'année en cours, décembre pour une année passée, janvier pour une année future. */
 const defaultIdx = (y: number) => (y === curYear ? curMonth : y < curYear ? 11 : 0);
@@ -22,7 +26,8 @@ const trackMonth = computed(() => `${year.value}-${String(trackIdx.value + 1).pa
 
 async function loadYear() { b.value = await guard(() => api.budget(year.value)); }
 async function loadMonth() { m.value = await guard(() => api.budgetMonth(trackMonth.value)); }
-async function load() { await Promise.all([loadYear(), loadMonth()]); }
+async function loadPrep() { prep.value = await guard(() => api.budgetPrepare()); }
+async function load() { await Promise.all([loadYear(), loadMonth(), loadPrep()]); }
 onMounted(load);
 watch(year, (y) => { trackIdx.value = defaultIdx(y); loadYear(); });
 watch(trackMonth, loadMonth);
@@ -38,6 +43,11 @@ async function copyPrev() {
   notify(`${r.copied} budget(s) repris de ${year.value - 1}` + (r.skipped ? ` (${r.skipped} déjà renseigné(s), conservé(s))` : ""));
   await load();
 }
+async function stopAuto() {
+  if (await guard(() => api.setBudgetScenario(null)) === undefined) return;
+  notify("Budget automatique arrêté : seuls tes montants saisis restent.");
+  await load();
+}
 
 const groups = computed(() => {
   if (!b.value) return [];
@@ -47,6 +57,7 @@ const hiddenCount = computed(() => b.value ? b.value.rows.filter((r) => r.kind !
 const showAll = ref(false);
 const groupsShown = computed(() => showAll.value && b.value ? ["Revenu", "Dépense", "Épargne"].map((k) => ({ kind: k, rows: b.value!.rows.filter((r) => r.kind === k) })) : groups.value);
 const showPlan = ref(false);
+const autoCount = computed(() => b.value ? b.value.rows.filter((r) => r.source === "auto").length : 0);
 
 /** Mois terminé (passé) pour l'année affichée. */
 const monthDone = (i: number) => year.value < curYear || (year.value === curYear && i < curMonth);
@@ -85,12 +96,18 @@ const untrackedTitle = computed(() => m.value ? m.value.untracked.map((u) => `${
 </script>
 
 <template>
-  <PageHeader :title="`Budget ${year}`" sub="Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel dans la colonne jaune : les mois qui le dépassent sont surlignés et le suivi du mois t'indique où tu en es.">
-    <md-filled-button @click="showPlan = true">Proposer un budget</md-filled-button>
+  <PageHeader :title="`Budget ${year}`" sub="Réel par catégorie et par mois, calculé depuis les relevés. Suis un scénario pour un budget automatique, ou saisis tes montants dans la colonne jaune : ils restent prioritaires. Les mois hors budget sont surlignés.">
+    <md-filled-button @click="showPlan = true">{{ b?.scenario ? "Changer de scénario" : "Proposer un budget" }}</md-filled-button>
     <md-outlined-button v-if="b && b.prevYearCount" :title="`Copie les budgets de ${year - 1} dans les cases vides de ${year}`" @click="copyPrev">Reprendre {{ year - 1 }}</md-outlined-button>
     <md-outlined-button @click="year--">‹ {{ year - 1 }}</md-outlined-button><md-outlined-button @click="year++">{{ year + 1 }} ›</md-outlined-button><md-outlined-button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</md-outlined-button>
   </PageHeader>
   <ScenarioModal v-if="showPlan" :year="year" @close="showPlan = false" @applied="load" />
+
+  <p v-if="b && b.scenario" class="note mb-3" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span class="tag">Automatique · {{ scenarioLabel }}</span>
+    <span>{{ autoCount }} catégorie(s) suivent le scénario : montants recalculés sur les 12 derniers mois complets et tes objectifs, à chaque relevé importé. Saisis un montant pour le fixer, vide la case pour revenir à l'automatique.</span>
+    <md-text-button class="small" style="margin-left:auto" @click="stopAuto">Arrêter</md-text-button>
+  </p>
 
   <div v-if="b" class="grid c4 mb-3">
     <KpiCard :label="`Revenus ${year}`" :value="eur0(b.yearTotals.income)" tone="pos" card
@@ -107,9 +124,52 @@ const untrackedTitle = computed(() => m.value ? m.value.untracked.map((u) => `${
     </KpiCard>
   </div>
 
-  <p v-if="b && !b.plan.count" class="note mb-3">Aucun budget saisi pour {{ year }}. Clique sur « Proposer un budget » pour partir de tes moyennes{{ b.prevYearCount ? `, ou reprends le budget de ${year - 1}` : "" }} ; tu pourras retoucher chaque montant dans la colonne jaune.</p>
+  <p v-if="b && !b.plan.count" class="note mb-3">Aucun budget pour {{ year }}. Clique sur « Proposer un budget » et suis un scénario : le budget se calcule tout seul à partir de tes relevés et de tes objectifs{{ b.prevYearCount ? `, ou reprends le budget de ${year - 1}` : "" }}. Tu pourras fixer n'importe quel montant dans la colonne jaune.</p>
 
-  <div v-else-if="b && m" class="card mb-3">
+  <!-- À prévoir chaque mois : préparer les comptes (toujours sur l'année en cours) -->
+  <div v-if="prep && year === curYear && (prep.fixed.rows.length || prep.variable.rows.length || prep.savings.rows.length)" class="card prep mb-3">
+    <div class="card-title">
+      <h3>À prévoir chaque mois</h3>
+      <span class="help">Revenus budgétés {{ eur0(prep.income.budget) }} · moyenne {{ eur0(prep.income.average) }} / mois</span>
+    </div>
+    <div class="grid c3">
+      <div>
+        <h3>Compte courant</h3>
+        <ul>
+          <li v-for="r in prep.fixed.rows" :key="r.name"><span>{{ r.name }}</span><span class="num">{{ eur0(r.amount) }}</span></li>
+          <li><span>Charges fixes</span><span class="num">{{ eur0(prep.fixed.total) }}</span></li>
+          <li :title="prep.variable.rows.map((r) => `${r.name} : ${eur0(r.amount)}`).join('\n')"><span>Dépenses variables ({{ prep.variable.rows.length }} catégories)</span><span class="num">{{ eur0(prep.variable.total) }}</span></li>
+          <li class="sum"><span>À garder pour un mois</span><span class="num">{{ eur0(prep.checking.needed) }}</span></li>
+          <li v-if="prep.checking.total !== null" class="sub"><span>Solde actuel : {{ prep.checking.accounts.map((a) => `${a.name} ${eur0(a.balance)}`).join(" + ") }} ({{ date(prep.checking.accounts[0].date) }})</span></li>
+          <li v-if="prep.checking.margin !== null" class="sum"><span>{{ prep.checking.margin >= 0 ? "Marge après un mois de dépenses" : "Il manque pour un mois de dépenses" }}</span><span class="num" :class="sign(prep.checking.margin)">{{ eur0(Math.abs(prep.checking.margin)) }}</span></li>
+          <li v-else class="sub"><span>Solde des comptes courants inconnu : importe un relevé ou saisis un relevé de patrimoine.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Épargne &amp; objectifs à virer</h3>
+        <ul>
+          <template v-for="r in prep.savings.rows" :key="r.name">
+            <li><span>{{ r.name }} <span v-if="!r.covered" class="tag warn">objectifs non couverts</span></span><span class="num">{{ eur0(r.amount) }}</span></li>
+            <li v-for="g in r.goals" :key="g.name" class="sub"><span>↳ {{ g.name }}</span><span class="num">{{ eur0(g.monthly) }} / mois</span></li>
+          </template>
+          <li v-if="!prep.savings.rows.length" class="sub"><span>Aucune épargne budgétée.</span></li>
+          <li class="sum"><span>À virer chaque mois</span><span class="num">{{ eur0(prep.savings.total) }}</span></li>
+          <li v-if="prep.goals.shortfall > 0" class="sub warn"><span>Tes objectifs demandent {{ eur0(prep.goals.total) }} / mois : il manque {{ eur0(prep.goals.shortfall) }}. Choisis un scénario plus économe ou décale une échéance dans Objectifs.</span></li>
+          <li v-else-if="prep.goals.total > 0" class="sub"><span>Objectifs couverts : {{ eur0(prep.goals.total) }} / mois{{ prep.goals.rows[0].target_date ? `, prochaine échéance ${month(prep.goals.rows.map((g) => g.target_date).filter(Boolean).sort()[0])}` : "" }}.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Prélèvements sous {{ prep.upcoming.days }} jours</h3>
+        <ul>
+          <li v-for="u in prep.upcoming.rows" :key="u.label + u.date" :title="u.account"><span><span class="muted">{{ date(u.date).slice(0, 5) }}</span> {{ u.label }}</span><span class="num">{{ eur0(u.amount) }}</span></li>
+          <li v-if="!prep.upcoming.rows.length" class="sub"><span>Aucune charge récurrente attendue (onglet Récurrentes).</span></li>
+          <li v-else class="sum"><span>Total</span><span class="num">{{ eur0(prep.upcoming.total) }}</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="b && b.plan.count && m" class="card mb-3">
     <div class="card-title">
       <h3>Suivi · {{ monthLong(m.month) }}</h3>
       <div class="row-actions">
@@ -155,15 +215,15 @@ const untrackedTitle = computed(() => m.value ? m.value.untracked.map((u) => `${
             <tr><td colspan="17" style="background:var(--surface-2);font-weight:500;color:var(--text)">{{ g.kind === "Revenu" ? "Revenus" : g.kind === "Dépense" ? "Dépenses" : "Épargne & investissements placés" }}</td></tr>
             <tr v-for="r in g.rows" :key="r.category_id">
               <td>{{ r.name }} <span v-if="r.refunded" class="tag ok" :title="`Remboursements rapprochés : ${eur0(r.refunded)} sur l'année (onglet Remboursements)`">↺ {{ eur0(r.refunded) }}</span></td>
-              <td class="num"><input class="cell" type="number" step="10" :value="r.budget ?? ''" placeholder="–" @change="setBudget(r, ($event.target as HTMLInputElement).value)" /></td>
+              <td class="num"><input class="cell" :class="{ auto: r.source === 'auto' }" type="number" step="10" :value="r.source === 'manuel' ? r.budget : ''" :placeholder="r.source === 'auto' ? String(r.budget) : '–'" :title="r.source === 'auto' ? `Automatique (scénario ${scenarioLabel}) : saisis un montant pour le fixer` : ''" @change="setBudget(r, ($event.target as HTMLInputElement).value)" /></td>
               <td v-for="(v, i) in r.months" :key="i" class="num" :class="cellClass(r, i)">{{ v === 0 ? "–" : eur0(v) }}</td>
               <td class="num"><b>{{ eur0(r.total) }}</b></td><td class="num">{{ eur0(r.average) }}</td>
               <td class="num" :class="sign(r.gap)">{{ r.gap === null ? "–" : eur0(r.gap) }}</td>
             </tr>
           </template>
-          <tr class="total"><td>Total revenus</td><td class="num" title="Somme des budgets saisis">{{ b.plan.income ? eur0(b.plan.income) : "" }}</td><td v-for="(v, i) in b.totals.income" :key="i" class="num pos">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.income) }}</td><td class="num">{{ eur0(b.yearTotals.income / b.monthsWithData) }}</td><td></td></tr>
-          <tr class="total"><td>Total dépenses</td><td class="num" title="Somme des budgets saisis">{{ b.plan.expense ? eur0(b.plan.expense) : "" }}</td><td v-for="(v, i) in b.totals.expense" :key="i" class="num neg">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.expense) }}</td><td class="num">{{ eur0(b.yearTotals.avgExpense) }}</td><td></td></tr>
-          <tr class="total"><td>Épargne placée</td><td class="num" title="Somme des budgets saisis">{{ b.plan.savings ? eur0(b.plan.savings) : "" }}</td><td v-for="(v, i) in b.totals.savings" :key="i" class="num">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.savings) }}</td><td></td><td></td></tr>
+          <tr class="total"><td>Total revenus</td><td class="num" title="Somme des budgets">{{ b.plan.income ? eur0(b.plan.income) : "" }}</td><td v-for="(v, i) in b.totals.income" :key="i" class="num pos">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.income) }}</td><td class="num">{{ eur0(b.yearTotals.income / b.monthsWithData) }}</td><td></td></tr>
+          <tr class="total"><td>Total dépenses</td><td class="num" title="Somme des budgets">{{ b.plan.expense ? eur0(b.plan.expense) : "" }}</td><td v-for="(v, i) in b.totals.expense" :key="i" class="num neg">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.expense) }}</td><td class="num">{{ eur0(b.yearTotals.avgExpense) }}</td><td></td></tr>
+          <tr class="total"><td>Épargne placée</td><td class="num" title="Somme des budgets">{{ b.plan.savings ? eur0(b.plan.savings) : "" }}</td><td v-for="(v, i) in b.totals.savings" :key="i" class="num">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.savings) }}</td><td></td><td></td></tr>
           <tr class="total"><td>Reste</td><td class="num" :class="sign(b.plan.remaining)" title="Revenus − dépenses budgétés">{{ b.plan.income ? eur0(b.plan.remaining) : "" }}</td><td v-for="(v, i) in b.totals.remaining" :key="i" class="num" :class="sign(v)">{{ eur0(v) }}</td><td class="num" :class="sign(b.yearTotals.remaining)">{{ eur0(b.yearTotals.remaining) }}</td><td></td><td></td></tr>
           <tr class="total"><td>Taux d'épargne</td><td class="num" :class="sign(b.plan.rate)" title="Taux d'épargne prévu">{{ b.plan.rate === null ? "" : pct(b.plan.rate, 0) }}</td><td v-for="(v, i) in b.totals.rate" :key="i" class="num" :class="sign(v)">{{ pct(v, 0) }}</td><td class="num" :class="sign(b.yearTotals.rate)">{{ pct(b.yearTotals.rate) }}</td><td></td><td></td></tr>
         </tbody>
