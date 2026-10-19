@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Les autres graphiques, style C</title>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
+<style>
+  :root { --bg:#f8fafd; --panel:#fff; --line:#e1e3e1; --text:#1f1f1f; --muted:#5e5e5e; }
+  body { margin:0; padding:28px 32px 60px; font:14px/1.5 Roboto, "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  h1 { font-size:22px; font-weight:500; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 24px; max-width:900px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 18px; }
+  .card h3 { font-size:12px; font-weight:500; margin:0 0 4px; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; }
+  .card .where { font-size:12px; color:#8a8d8f; margin:0 0 6px; }
+  .wide { grid-column:1 / -1; }
+</style>
+</head>
+<body>
+<h1>Les autres graphiques dans l'esprit de la maquette C</h1>
+<p class="sub">Données fictives. Mêmes ingrédients partout : animation, coins arrondis, dégradés légers, grande infobulle, grille discrète, montants abrégés. Le zoom n'est mis que sur les courbes dans le temps (évolution, historique, projection).</p>
+
+<div class="grid">
+  <div class="card"><h3>Évolution du patrimoine</h3><p class="where">Tableau de bord · aussi : historique du portefeuille</p><div id="g1"></div></div>
+  <div class="card"><h3>Répartition actuelle</h3><p class="where">Tableau de bord · aussi : poids des lignes du portefeuille</p><div id="g2"></div></div>
+  <div class="card"><h3>Revenus vs dépenses</h3><p class="where">Tableau de bord</p><div id="g3"></div></div>
+  <div class="card"><h3>Taux d'épargne mensuel</h3><p class="where">Tableau de bord</p><div id="g4"></div></div>
+  <div class="card"><h3>Allocation actuelle vs cible</h3><p class="where">Allocation</p><div id="g5"></div></div>
+  <div class="card"><h3>Répartition par classe d'actif</h3><p class="where">Patrimoine</p><div id="g6"></div></div>
+</div>
+
+<script>
+  const eur = (v) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
+  const keur = (v) => Math.abs(v) >= 1000 ? Math.round(v / 1000) + " k€" : Math.round(v) + " €";
+  const pct = (v) => Math.round(v * 100) + " %";
+  const months = ["nov.", "déc.", "janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct."];
+  const CLS = { "Liquidités": "#12a4af", "Épargne sécurisée": "#1e8e3e", "Actions & ETF": "#0b57d0", "Crypto": "#e37400" };
+  const base = {
+    chart: { height: 260, fontFamily: "Roboto, 'Segoe UI', sans-serif", toolbar: { show: false }, zoom: { enabled: false }, animations: { enabled: true, easing: "easeinout", speed: 700 } },
+    grid: { borderColor: "#eceeee", strokeDashArray: 4 },
+    xaxis: { labels: { style: { colors: "#5e5e5e" } }, axisBorder: { show: false }, axisTicks: { show: false }, tooltip: { enabled: false } },
+    yaxis: { labels: { style: { colors: "#5e5e5e" }, formatter: keur } },
+    legend: { position: "top", horizontalAlign: "left", fontSize: "13px", markers: { size: 6, shape: "circle" } },
+    tooltip: { shared: true, intersect: false, y: { formatter: eur } },
+    dataLabels: { enabled: false },
+  };
+  const bars = { plotOptions: { bar: { borderRadius: 6, borderRadiusApplication: "end", columnWidth: "55%" } } };
+
+  new ApexCharts(document.querySelector("#g1"), { ...base,
+    chart: { ...base.chart, type: "area", toolbar: { show: true, tools: { download: false, pan: true, zoom: true, zoomin: true, zoomout: true, reset: true } }, zoom: { enabled: true, type: "x" } },
+    series: [{ name: "Patrimoine", data: [61200, 62100, 61800, 63900, 64700, 66100, 65400, 67900, 69200, 70100, 71800, 73400] }],
+    xaxis: { ...base.xaxis, categories: months }, colors: ["#0b57d0"], legend: { show: false },
+    stroke: { curve: "smooth", width: 3 }, fill: { type: "gradient", gradient: { opacityFrom: .3, opacityTo: 0, stops: [0, 95] } },
+    markers: { size: 0, hover: { size: 6 } },
+  }).render();
+
+  const cls = { "Liquidités": 8200, "Épargne sécurisée": 31500, "Actions & ETF": 29400, "Crypto": 4300 };
+  new ApexCharts(document.querySelector("#g2"), { ...base,
+    chart: { ...base.chart, type: "donut" }, series: Object.values(cls), labels: Object.keys(cls), colors: Object.values(CLS),
+    legend: { position: "right", fontSize: "13px", markers: { size: 6, shape: "circle" } }, stroke: { width: 3, colors: ["#fff"] },
+    plotOptions: { pie: { donut: { size: "68%", labels: { show: true, total: { show: true, label: "Total", formatter: (w) => eur(w.globals.seriesTotals.reduce((a, b) => a + b, 0)) }, value: { formatter: (v) => eur(Number(v)) } } } } },
+    tooltip: { y: { formatter: eur } },
+  }).render();
+
+  new ApexCharts(document.querySelector("#g3"), { ...base, ...bars,
+    chart: { ...base.chart, type: "bar" },
+    series: [{ name: "Revenus", data: [2850, 2850, 3400, 2850, 2900, 2850, 2850, 3100, 2850, 2850, 2900, 2850] }, { name: "Dépenses", data: [2210, 2980, 2450, 2120, 2390, 2260, 2510, 2700, 3050, 2180, 2240, 2330] }],
+    xaxis: { ...base.xaxis, categories: months }, colors: ["#1e8e3e", "#d93025"],
+    fill: { type: "gradient", gradient: { type: "vertical", shadeIntensity: 0, opacityFrom: 1, opacityTo: .75 } },
+  }).render();
+
+  const rates = [.22, -.05, .28, .26, .18, .21, .12, .13, -.07, .24, .23, .18];
+  new ApexCharts(document.querySelector("#g4"), { ...base, ...bars,
+    chart: { ...base.chart, type: "bar" }, series: [{ name: "Taux d'épargne", data: rates }],
+    xaxis: { ...base.xaxis, categories: months }, yaxis: { labels: { style: { colors: "#5e5e5e" }, formatter: pct }, min: -.2, max: .4, tickAmount: 6 },
+    colors: [({ value }) => value < 0 ? "#d93025" : "#0b57d0"], legend: { show: false }, tooltip: { y: { formatter: pct } },
+    plotOptions: { bar: { ...bars.plotOptions.bar, borderRadiusApplication: "around" } },
+  }).render();
+
+  new ApexCharts(document.querySelector("#g5"), { ...base, ...bars,
+    chart: { ...base.chart, type: "bar" },
+    series: [{ name: "Actuel", data: [.11, .43, .40, .06] }, { name: "Cible", data: [.10, .35, .45, .10] }],
+    xaxis: { ...base.xaxis, categories: Object.keys(CLS) }, yaxis: { labels: { style: { colors: "#5e5e5e" }, formatter: pct }, max: .6 },
+    colors: ["#0b57d0", "#c4d7f8"], tooltip: { shared: true, intersect: false, y: { formatter: pct } },
+  }).render();
+
+  const r = (a, s) => months.map((_, i) => Math.round(a + s * i + (Math.sin(i * 1.7) * a * .04)));
+  new ApexCharts(document.querySelector("#g6"), { ...base, ...bars,
+    chart: { ...base.chart, type: "bar", stacked: true },
+    series: [{ name: "Liquidités", data: r(7800, 40) }, { name: "Épargne sécurisée", data: r(27000, 400) }, { name: "Actions & ETF", data: r(23000, 580) }, { name: "Crypto", data: r(3400, 80) }],
+    xaxis: { ...base.xaxis, categories: months }, colors: Object.values(CLS),
+    plotOptions: { bar: { borderRadius: 6, borderRadiusApplication: "end", borderRadiusWhenStacked: "last", columnWidth: "55%" } },
+  }).render();
+</script>
+</body>
+</html>
