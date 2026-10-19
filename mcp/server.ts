@@ -78,6 +78,10 @@ async function main() {
     description: "Définit le budget mensuel prévu d'une catégorie pour une année (null pour supprimer).",
     inputSchema: { category_id: z.number(), year: z.number().int(), monthly_amount: z.number().nullable() }, annotations: rw,
   }, wrap(({ category_id, year, monthly_amount }) => api.setBudget(category_id, year, monthly_amount)));
+  server.registerTool("get_budget_scenarios", {
+    description: "Propose 5 scénarios de budget (moyenne 12 mois, équilibré, économe, loisirs, investissement) calculés sur les 12 derniers mois complets ; les charges fixes ne bougent pas. Appliquer via set_budget.",
+    inputSchema: { year: z.number().int().optional(), fixed: z.array(z.string()).optional() }, annotations: ro,
+  }, wrap(({ year, fixed }) => api.budgetScenarios(year ?? new Date().getFullYear(), fixed)));
 
   server.registerTool("get_networth", { description: "Patrimoine : relevés mensuels des soldes par compte, total, variations, répartition par classe d'actif.", annotations: ro }, wrap(() => api.networth()));
   server.registerTool("set_snapshot", {
