@@ -20,17 +20,17 @@ onMounted(async () => {
     <div class="bar">
       <div class="brand"><span class="logo">P</span>Patrimoine</div>
       <nav>
-        <router-link v-for="s in sections" :key="s.group" :to="s.path" :class="{ on: s.group === group }"><span class="ico">{{ s.icon }}</span>{{ s.title }}</router-link>
+        <router-link v-for="s in sections" :key="s.group" :to="s.path" :class="{ on: s.group === group }"><i class="ico fa-solid" :class="s.icon" aria-hidden="true"></i>{{ s.title }}</router-link>
       </nav>
       <div class="right">
-        <md-filled-button v-if="update.status === 'downloaded'" class="small" @click="installUpdate">⟳ Installer la version {{ update.version }}</md-filled-button>
-        <md-outlined-button v-else-if="update.status === 'portable'" class="small" @click="installUpdate">⇩ Version {{ update.version }} disponible</md-outlined-button>
+        <md-filled-button v-if="update.status === 'downloaded'" class="small" @click="installUpdate"><i slot="icon" class="fa-solid fa-rotate" aria-hidden="true"></i>Installer la version {{ update.version }}</md-filled-button>
+        <md-outlined-button v-else-if="update.status === 'portable'" class="small" @click="installUpdate"><i slot="icon" class="fa-solid fa-download" aria-hidden="true"></i>Version {{ update.version }} disponible</md-outlined-button>
         <span class="tag ok" title="Données locales uniquement · serveur MCP intégré pour Claude">● Local</span>
-        <router-link to="/parametres" class="gear" :class="{ on: group === 4 }" title="Paramètres">⚙</router-link>
+        <router-link to="/parametres" class="gear" :class="{ on: group === 4 }" title="Paramètres" aria-label="Paramètres"><i class="fa-solid fa-gear" aria-hidden="true"></i></router-link>
       </div>
     </div>
     <nav v-if="tabs.length" class="tabs">
-      <router-link v-for="r in tabs" :key="r.path" :to="r.path"><span class="ico">{{ r.icon }}</span>{{ r.name }}</router-link>
+      <router-link v-for="r in tabs" :key="r.path" :to="r.path"><i class="ico fa-solid" :class="r.icon" aria-hidden="true"></i>{{ r.name }}</router-link>
     </nav>
   </header>
   <main>

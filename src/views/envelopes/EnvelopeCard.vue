@@ -14,7 +14,7 @@ const threshold = 0.5;
   <div class="card env-card">
     <div class="head">
       <div><span class="tag">{{ row.kind }}</span><h2 style="margin-top:6px">{{ row.account }}</h2></div>
-      <md-outlined-button class="small" @click="$emit('edit')">✎ Modifier</md-outlined-button>
+      <md-outlined-button class="small" @click="$emit('edit')"><i slot="icon" class="fa-solid fa-pen" aria-hidden="true"></i>Modifier</md-outlined-button>
     </div>
 
     <template v-if="row.ceiling !== null">

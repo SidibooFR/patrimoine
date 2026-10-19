@@ -31,7 +31,7 @@ async function exportOps() {
             <td>{{ date(o.date) }}</td><td>{{ o.asset }}</td><td><span class="tag" :class="o.kind === 'Achat' ? '' : o.kind === 'Vente' ? 'warn' : 'ok'">{{ o.kind }}</span></td>
             <td class="num">{{ num(o.quantity) }}</td><td class="num">{{ eur(o.unit_price, o.unit_price < 1 ? 6 : 2) }}</td><td class="num">{{ eur(o.fees) }}</td>
             <td class="num" :class="sign(opTotal(o))">{{ eur(opTotal(o)) }}</td><td class="muted">{{ o.note }}</td>
-            <td><md-icon-button class="small" aria-label="Modifier l'opération" title="Modifier l'opération" @click="$emit('edit', o)">✎</md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer l'opération" title="Supprimer l'opération" @click="$emit('remove', o)">✕</md-icon-button></td>
+            <td><md-icon-button class="small" aria-label="Modifier l'opération" title="Modifier l'opération" @click="$emit('edit', o)"><i class="fa-solid fa-pen" aria-hidden="true"></i></md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer l'opération" title="Supprimer l'opération" @click="$emit('remove', o)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button></td>
           </tr>
         </tbody>
       </table>

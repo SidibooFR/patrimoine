@@ -73,7 +73,7 @@ async function remove(row: TransactionRow) {
     <md-outlined-text-field v-model="filter.search" placeholder="Rechercher un libellé…" style="width:220px"></md-outlined-text-field>
     <md-outlined-text-field v-model="filter.from" label="Du" type="date"></md-outlined-text-field> <span class="muted">→</span> <md-outlined-text-field v-model="filter.to" label="Au" type="date"></md-outlined-text-field>
     <SelectField v-model="filter.account_id" label="Compte"><md-select-option value=""><div slot="headline">Tous les comptes</div></md-select-option><md-select-option v-for="a in accounts" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
-    <SelectField v-model="filter.category" label="Catégorie"><md-select-option value=""><div slot="headline">Toutes les catégories</div></md-select-option><md-select-option value="none"><div slot="headline">⚠ Sans catégorie</div></md-select-option><md-select-option v-for="c in categories" :key="c.id" :value="String(c.id)"><div slot="headline">{{ c.name }}</div></md-select-option></SelectField>
+    <SelectField v-model="filter.category" label="Catégorie"><md-select-option value=""><div slot="headline">Toutes les catégories</div></md-select-option><md-select-option value="none"><div slot="headline"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Sans catégorie</div></md-select-option><md-select-option v-for="c in categories" :key="c.id" :value="String(c.id)"><div slot="headline">{{ c.name }}</div></md-select-option></SelectField>
     <SelectField v-model="filter.kind" label="Type"><md-select-option value=""><div slot="headline">Tous types</div></md-select-option><md-select-option v-for="k in ['Revenu', 'Dépense', 'Épargne', 'Transfert']" :key="k" :value="k"><div slot="headline">{{ k }}</div></md-select-option></SelectField>
     <SelectField v-model="filter.source" label="Source"><md-select-option value=""><div slot="headline">Toutes sources</div></md-select-option><md-select-option value="manuel"><div slot="headline">Manuel</div></md-select-option><md-select-option value="bnp"><div slot="headline">BNP</div></md-select-option><md-select-option value="boursobank"><div slot="headline">Boursobank</div></md-select-option><md-select-option value="revolut"><div slot="headline">Revolut</div></md-select-option></SelectField>
     <span class="muted ml-auto">{{ result.total }} opération(s) · total <b :class="sign(result.sum)">{{ eur(result.sum) }}</b></span>
@@ -87,9 +87,9 @@ async function remove(row: TransactionRow) {
           <tr v-for="r in result.rows" :key="r.id" :class="{ clickable: r.source === 'manuel' }" @dblclick="openEdit(r)">
             <td>{{ date(r.date) }}</td>
             <td class="muted">{{ r.account }}</td>
-            <td class="ellipsis" :title="r.raw_label"><router-link v-if="r.refund_expense_id || r.refund_category_id" to="/remboursements" class="tag ok" title="Remboursement rapproché : déduit de la dépense d'origine">↺ rapproché</router-link>
-              <router-link v-else-if="r.refunded" to="/remboursements" class="tag ok" :title="`Remboursé à hauteur de ${eur(r.refunded)}`">↺ remb. {{ eur(r.refunded) }}</router-link>
-              <router-link v-else-if="r.category === 'Remboursements'" to="/remboursements" class="tag warn" title="Remboursement non rapproché : compté comme revenu">↺ à rapprocher</router-link>
+            <td class="ellipsis" :title="r.raw_label"><router-link v-if="r.refund_expense_id || r.refund_category_id" to="/remboursements" class="tag ok" title="Remboursement rapproché : déduit de la dépense d'origine"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> rapproché</router-link>
+              <router-link v-else-if="r.refunded" to="/remboursements" class="tag ok" :title="`Remboursé à hauteur de ${eur(r.refunded)}`"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> remb. {{ eur(r.refunded) }}</router-link>
+              <router-link v-else-if="r.category === 'Remboursements'" to="/remboursements" class="tag warn" title="Remboursement non rapproché : compté comme revenu"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> à rapprocher</router-link>
               {{ r.label }} <span v-if="r.source === 'manuel'" class="tag" title="Saisie manuelle">M</span></td>
             <td class="muted ellipsis" style="max-width:200px">{{ r.bank_category }}</td>
             <td class="num" :class="sign(r.amount)">{{ eur(r.amount) }}</td>
@@ -98,11 +98,11 @@ async function remove(row: TransactionRow) {
                 <option value="">? Sans catégorie</option>
                 <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
               </select>
-              <span v-if="r.category_manual" class="muted" title="Catégorie fixée à la main"> ✎</span>
+              <span v-if="r.category_manual" class="muted" title="Catégorie fixée à la main"> <i class="fa-solid fa-pen" aria-hidden="true"></i></span>
             </td>
             <td class="nowrap">
               <md-outlined-button class="small" title="Créer une règle à partir de ce libellé" @click="ruleFrom(r)">+ règle</md-outlined-button>
-              <md-icon-button v-if="r.source === 'manuel'" class="small danger" aria-label="Supprimer" title="Supprimer" @click="remove(r)">✕</md-icon-button>
+              <md-icon-button v-if="r.source === 'manuel'" class="small danger" aria-label="Supprimer" title="Supprimer" @click="remove(r)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button>
             </td>
           </tr>
         </tbody>
@@ -111,7 +111,7 @@ async function remove(row: TransactionRow) {
     </div>
   </div>
   <div v-if="pages > 1" class="toolbar" style="margin-top:10px;justify-content:center">
-    <md-icon-button :disabled="page === 0" aria-label="Page précédente" title="Page précédente" @click="page--">‹</md-icon-button><span class="muted">Page {{ page + 1 }} / {{ pages }}</span><md-icon-button :disabled="page >= pages - 1" aria-label="Page suivante" title="Page suivante" @click="page++">›</md-icon-button>
+    <md-icon-button :disabled="page === 0" aria-label="Page précédente" title="Page précédente" @click="page--"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></md-icon-button><span class="muted">Page {{ page + 1 }} / {{ pages }}</span><md-icon-button :disabled="page >= pages - 1" aria-label="Page suivante" title="Page suivante" @click="page++"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></md-icon-button>
   </div>
 
   <RuleModal v-if="ruleModal" :rule="ruleModal" :categories="categories" @close="ruleModal = null" @saved="ruleModal = null; load()" />

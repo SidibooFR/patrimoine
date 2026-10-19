@@ -48,7 +48,7 @@ async function quickAdd(label: string) {
 
 <template>
   <PageHeader title="Règles de catégorisation" sub="1) Un mot-clé trouvé dans le libellé donne la catégorie (le mot-clé le plus long l'emporte). 2) Sinon, la catégorie proposée par la banque est convertie. 3) Sinon l'opération reste à catégoriser.">
-    <md-outlined-button @click="recat">↻ Recatégoriser tout</md-outlined-button>
+    <md-outlined-button @click="recat"><i slot="icon" class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>Recatégoriser tout</md-outlined-button>
   </PageHeader>
 
   <div v-if="unmapped.length" class="card mb-3">
@@ -73,7 +73,7 @@ async function quickAdd(label: string) {
           <tr v-for="r in filtered" :key="r.id">
             <td><input :value="r.keyword" class="cell cell-left" @change="setRuleKw(r, ($event.target as HTMLInputElement).value)" /></td>
             <td><select :value="r.category_id" @change="setRuleCat(r, ($event.target as HTMLSelectElement).value)" class="w-full"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
-            <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delRule(r)">✕</md-icon-button></td>
+            <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delRule(r)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button></td>
           </tr>
         </tbody>
       </table>
@@ -89,7 +89,7 @@ async function quickAdd(label: string) {
           <tr v-for="m in bankMap" :key="m.id">
             <td>{{ m.bank_label }}</td>
             <td><select :value="m.category_id" @change="setMapCat(m, ($event.target as HTMLSelectElement).value)" class="w-full"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
-            <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delMap(m)">✕</md-icon-button></td>
+            <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delMap(m)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button></td>
           </tr>
         </tbody>
       </table>

@@ -243,17 +243,17 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
     :sub="view === 'mois' ? sub : 'Réel par catégorie et par mois, calculé depuis les relevés. Suis un scénario pour un budget automatique, ou saisis tes montants dans la colonne jaune : ils restent prioritaires.'">
     <div class="seg"><button :class="{ on: view === 'mois' }" @click="view = 'mois'">Mois</button><button :class="{ on: view === 'annee' }" @click="view = 'annee'">Année</button></div>
     <template v-if="view === 'mois'">
-      <md-outlined-button :disabled="edit" @click="ym = shiftYm(ym, -1)">‹ {{ MONTHS[prevIdx] }}</md-outlined-button>
-      <md-outlined-button :disabled="edit" @click="ym = shiftYm(ym, 1)">{{ MONTHS[(mi + 1) % 12] }} ›</md-outlined-button>
+      <md-outlined-button :disabled="edit" @click="ym = shiftYm(ym, -1)"><i slot="icon" class="fa-solid fa-chevron-left" aria-hidden="true"></i>{{ MONTHS[prevIdx] }}</md-outlined-button>
+      <md-outlined-button :disabled="edit" trailing-icon @click="ym = shiftYm(ym, 1)">{{ MONTHS[(mi + 1) % 12] }}<i slot="icon" class="fa-solid fa-chevron-right" aria-hidden="true"></i></md-outlined-button>
       <template v-if="!edit">
-        <md-outlined-button @click="startEdit">✎ Modifier</md-outlined-button>
+        <md-outlined-button @click="startEdit"><i slot="icon" class="fa-solid fa-pen" aria-hidden="true"></i>Modifier</md-outlined-button>
         <md-filled-button @click="showPlan = true">Proposer un budget</md-filled-button>
       </template>
     </template>
     <template v-else>
       <md-filled-button @click="showPlan = true">{{ b?.scenario ? "Changer de scénario" : "Proposer un budget" }}</md-filled-button>
       <md-outlined-button v-if="b && b.prevYearCount" :title="`Copie les budgets de ${year - 1} dans les cases vides de ${year}`" @click="copyPrev">Reprendre {{ year - 1 }}</md-outlined-button>
-      <md-outlined-button @click="ym = shiftYm(ym, -12)">‹ {{ year - 1 }}</md-outlined-button><md-outlined-button @click="ym = shiftYm(ym, 12)">{{ year + 1 }} ›</md-outlined-button>
+      <md-outlined-button @click="ym = shiftYm(ym, -12)"><i slot="icon" class="fa-solid fa-chevron-left" aria-hidden="true"></i>{{ year - 1 }}</md-outlined-button><md-outlined-button trailing-icon @click="ym = shiftYm(ym, 12)">{{ year + 1 }}<i slot="icon" class="fa-solid fa-chevron-right" aria-hidden="true"></i></md-outlined-button>
       <md-outlined-button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</md-outlined-button>
     </template>
   </PageHeader>
@@ -445,7 +445,7 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
             <template v-for="g in groupsShown" :key="g.kind">
               <tr class="group"><td colspan="17">{{ GROUP_LABEL[g.kind] }}</td></tr>
               <tr v-for="r in g.rows" :key="r.category_id">
-                <td>{{ r.name }} <span v-if="r.refunded" class="tag ok" :title="`Remboursements rapprochés : ${eur0(r.refunded)} sur l'année (onglet Remboursements)`">↺ {{ eur0(r.refunded) }}</span><span v-if="r.overrides" class="tag" :title="`${r.overrides} mois avec un montant propre (vue Mois › Modifier)`">{{ r.overrides }} mois ajusté(s)</span></td>
+                <td>{{ r.name }} <span v-if="r.refunded" class="tag ok" :title="`Remboursements rapprochés : ${eur0(r.refunded)} sur l'année (onglet Remboursements)`"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> {{ eur0(r.refunded) }}</span><span v-if="r.overrides" class="tag" :title="`${r.overrides} mois avec un montant propre (vue Mois › Modifier)`">{{ r.overrides }} mois ajusté(s)</span></td>
                 <td class="num"><input class="cell" :class="{ auto: r.source === 'auto' }" type="number" step="10" :value="r.source === 'manuel' ? r.budget : ''" :placeholder="r.source === 'auto' ? String(r.budget) : '–'" :title="r.source === 'auto' ? `Automatique (scénario ${scenarioLabel}) : saisis un montant pour le fixer` : 'Budget mensuel prévu'" @change="setBudget(r, ($event.target as HTMLInputElement).value)" /></td>
                 <td class="num">{{ eur0(r.average) }}</td>
                 <td class="num gap" :class="sign(r.gap)">{{ gapText(r.gap) }}</td>

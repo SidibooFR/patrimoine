@@ -52,7 +52,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
             <td class="num"><input class="cell" type="number" min="0" max="100" step="1" :value="Math.round(r.target * 1000) / 10" @change="setTarget(r, ($event.target as HTMLInputElement).value)" /></td>
             <td class="num" :class="sign(r.gap)">{{ r.gap === null ? "–" : (r.gap > 0 ? "+" : "") + pct(r.gap) }}</td>
             <td class="num" :class="sign(r.gapEur)">{{ eur0(r.gapEur) }}</td>
-            <td><span v-if="r.action" class="tag" :class="actionClass(r.action)">{{ r.action === "Renforcer" ? "▲ Renforcer" : r.action === "Alléger" ? "▼ Alléger" : "✓ OK" }}</span></td>
+            <td><span v-if="r.action" class="tag" :class="actionClass(r.action)"><i class="fa-solid" :class="r.action === 'Renforcer' ? 'fa-caret-up' : r.action === 'Alléger' ? 'fa-caret-down' : 'fa-check'" aria-hidden="true"></i> {{ r.action === "Renforcer" ? "Renforcer" : r.action === "Alléger" ? "Alléger" : "OK" }}</span></td>
           </tr>
           <tr class="total"><td>Total</td><td class="num">{{ eur0(al.total) }}</td><td class="num">{{ al.total ? "100 %" : "–" }}</td>
             <td class="num" :class="Math.abs(al.targetSum - 1) > 1e-4 ? 'neg' : ''">{{ pct(al.targetSum, 0) }}</td><td colspan="3"><span v-if="Math.abs(al.targetSum - 1) > 1e-4" class="neg">La cible doit faire 100 %</span></td></tr>

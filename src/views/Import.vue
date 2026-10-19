@@ -89,7 +89,7 @@ async function setMapAccount(m: ImportAccountMapRow, v: string) { await guard(()
         <tr v-for="m in maps" :key="m.id">
           <td>{{ SOURCE_LABEL[m.source] ?? m.source }}</td><td><code>{{ m.key }}</code></td>
           <td><select :value="m.account_id" @change="setMapAccount(m, ($event.target as HTMLSelectElement).value)"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></td>
-          <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delMap(m.id)">✕</md-icon-button></td>
+          <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delMap(m.id)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button></td>
         </tr>
         <tr>
           <td><select v-model="newMap.source"><option value="bnp">BNP Paribas</option><option value="boursobank">Boursobank</option><option value="revolut">Revolut</option></select></td>
