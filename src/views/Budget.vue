@@ -129,18 +129,20 @@ const sub = computed(() => {
 });
 const emptyMsg = computed(() => (future.value ? "Mois à venir : clique sur « Modifier » pour préparer son budget." : "Aucune opération importée pour ce mois."));
 
-// Répartition des dépenses (anneau)
-const segs = computed(() => {
-  const sorted = exps.value.filter((x) => x.r > 0).slice().sort((a, c) => c.r - a.r);
-  const rest = sorted.slice(6).reduce((s, x) => s + x.r, 0);
-  const list = [...sorted.slice(0, 6).map((x) => ({ name: x.name, v: x.r })), ...(rest ? [{ name: "Autres", v: rest }] : [])];
-  return list.map((s, i) => ({ ...s, color: PALETTE[i % PALETTE.length], p: exp.value ? s.v / exp.value : 0 }));
-});
-const conic = computed(() => {
+// Répartition en anneau : six premières catégories + « Autres », couleurs de la palette commune
+interface Seg { name: string; v: number; color: string; p: number }
+function donut(items: { name: string; v: number }[]): { segs: Seg[]; conic: string } {
+  const sorted = items.filter((x) => x.v > 0).slice().sort((a, c) => c.v - a.v);
+  const total = sorted.reduce((s, x) => s + x.v, 0);
+  const rest = sorted.slice(6).reduce((s, x) => s + x.v, 0);
+  const list = [...sorted.slice(0, 6), ...(rest ? [{ name: "Autres", v: rest }] : [])];
+  const segs = list.map((s, i) => ({ ...s, color: PALETTE[i % PALETTE.length], p: total ? s.v / total : 0 }));
   let acc = 0;
-  if (!segs.value.length) return "conic-gradient(var(--surface-2) 0 100%)";
-  return "conic-gradient(" + segs.value.map((s) => { const a = acc * 100; acc += s.p; return `${s.color} ${a}% ${acc * 100}%`; }).join(",") + ")";
-});
+  const conic = segs.length ? "conic-gradient(" + segs.map((s) => { const a = acc * 100; acc += s.p; return `${s.color} ${a}% ${acc * 100}%`; }).join(",") + ")" : "conic-gradient(var(--surface-2) 0 100%)";
+  return { segs, conic };
+}
+const expDonut = computed(() => donut(exps.value.map((x) => ({ name: x.name, v: x.r }))));
+const incDonut = computed(() => donut(b.value ? b.value.rows.filter((r) => r.kind === "Revenu").map((r) => ({ name: r.name, v: r.months[mi.value] })) : []));
 // Écarts au budget (barres divergentes)
 const diverge = computed(() => {
   const dv = exps.value.filter((x) => x.b !== null).map((x) => ({ name: x.name, d: x.r - x.b! })).sort((a, c) => c.d - a.d);
@@ -272,13 +274,23 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
       </div>
 
       <template v-if="hasData">
-        <div class="grid c2 mb-3">
+        <div class="grid mb-3" style="grid-template-columns:repeat(auto-fit,minmax(380px,1fr))">
           <div class="card">
             <h2 class="card-h">Répartition des dépenses</h2>
             <div class="donut-wrap">
-              <div class="donut" :style="{ background: conic }"><div class="hole"><span class="help">Total</span><span style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums">{{ eur0(exp) }}</span></div></div>
+              <div class="donut" :style="{ background: expDonut.conic }"><div class="hole"><span class="help">Total</span><span style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums">{{ eur0(exp) }}</span></div></div>
               <div class="donut-legend">
-                <div v-for="s in segs" :key="s.name"><span class="sw" :style="{ background: s.color }"></span><span class="nm">{{ s.name }}</span><span style="font-weight:500">{{ eur0(s.v) }}</span><span class="muted" style="text-align:right">{{ Math.round(s.p * 100) }} %</span></div>
+                <div v-for="s in expDonut.segs" :key="s.name"><span class="sw" :style="{ background: s.color }"></span><span class="nm">{{ s.name }}</span><span style="font-weight:500">{{ eur0(s.v) }}</span><span class="muted" style="text-align:right">{{ Math.round(s.p * 100) }} %</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h2 class="card-h">Répartition des revenus</h2>
+            <div class="donut-wrap">
+              <div class="donut" :style="{ background: incDonut.conic }"><div class="hole"><span class="help">Total</span><span style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums">{{ eur0(inc) }}</span></div></div>
+              <div class="donut-legend">
+                <div v-for="s in incDonut.segs" :key="s.name"><span class="sw" :style="{ background: s.color }"></span><span class="nm">{{ s.name }}</span><span style="font-weight:500">{{ eur0(s.v) }}</span><span class="muted" style="text-align:right">{{ Math.round(s.p * 100) }} %</span></div>
+                <p v-if="!incDonut.segs.length" class="muted" style="margin:0">Aucun revenu ce mois.</p>
               </div>
             </div>
           </div>
