@@ -180,7 +180,7 @@ export function createApi(store: Store) {
     },
     /** Suivi du mois : réel contre budget par catégorie budgétée, rythme et projection de fin de mois (mois « AAAA-MM », défaut : mois courant). */
     budgetMonth(month?: string) {
-      const m = month ?? new Date().toISOString().slice(0, 7);
+      const m = month ?? today().slice(0, 7);
       return budgetMonthReport(store, m, undefined, autoBudgets(store, Number(m.slice(0, 4))));
     },
     /** Suit un scénario : le budget se recalcule à chaque lecture (12 derniers mois complets, objectifs, charges fixes). null = budget manuel. */
@@ -199,6 +199,7 @@ export function createApi(store: Store) {
     // ------------------------------------------------------------ patrimoine
     networth() { return networthReport(store); },
     setSnapshot(month: string, account_id: number, balance: number | null) {
+      if (!/^\d{4}-\d{2}/.test(month)) throw new Error("Mois attendu au format AAAA-MM");
       const m = month.slice(0, 7) + "-01";
       if (balance === null) store.run("DELETE FROM snapshots WHERE month=? AND account_id=?", [m, account_id]);
       else store.run("INSERT INTO snapshots(month,account_id,balance) VALUES(?,?,?) ON CONFLICT(month,account_id) DO UPDATE SET balance=excluded.balance", [m, account_id, balance]);

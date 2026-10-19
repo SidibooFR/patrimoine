@@ -119,6 +119,16 @@ describe("budget : suivi du mois", () => {
 
   it("api.budgetMonth sans argument : mois courant", async () => {
     const { api } = await setup();
-    expect(api.budgetMonth().month).toBe(new Date().toISOString().slice(0, 7));
+    const d = new Date();
+    expect(api.budgetMonth().month).toBe(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  });
+});
+
+describe("patrimoine : relevé du mois", () => {
+  it("refuse un mois mal formé (il passerait devant tous les vrais mois)", async () => {
+    const { api } = await setup();
+    const id = api.listAccounts()[0].id;
+    expect(() => api.setSnapshotMonth("octobre 2026", { [id]: 100 })).toThrow("AAAA-MM");
+    expect(api.networth().last).toBeNull();
   });
 });

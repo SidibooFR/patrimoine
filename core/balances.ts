@@ -3,7 +3,7 @@
  * ou valeur du portefeuille) et reconstitution du solde jour par jour.
  */
 import type { Store } from "./db.js";
-import { round2 } from "./finance.js";
+import { round2, today } from "./finance.js";
 
 export interface CurrentBalance { balance: number; date: string; source: "relevé" | "patrimoine" | "portefeuille" }
 
@@ -62,7 +62,7 @@ export function currentBalances(store: Store): Map<number, CurrentBalance> {
     const pv = portfolio.get(id);
     const st = statements.get(id);
     const sn = snapBy.get(id);
-    if (pv !== undefined) out.set(id, { balance: pv, date: new Date().toISOString().slice(0, 10), source: "portefeuille" });
+    if (pv !== undefined) out.set(id, { balance: pv, date: today(), source: "portefeuille" });
     else if (st && (!sn || st.date >= sn.month)) out.set(id, { ...st, source: "relevé" });
     else if (sn) out.set(id, { balance: sn.balance, date: sn.month, source: "patrimoine" });
   }

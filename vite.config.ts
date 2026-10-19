@@ -18,6 +18,9 @@ function devApi(): Plugin {
       const api = createApi(store) as Record<string, (...args: unknown[]) => unknown>;
       server.middlewares.use(async (req, res, next) => {
         if (!req.url?.startsWith("/__api/")) return next();
+        // Refuse les appels venus d'un autre site (POST « simple » sans pré-vérification CORS)
+        const site = req.headers["sec-fetch-site"];
+        if (site && site !== "same-origin") { res.statusCode = 403; res.end(); return; }
         const method = req.url.slice(7).split("?")[0];
         let body = "";
         req.on("data", (c) => (body += c));
