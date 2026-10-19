@@ -1,7 +1,8 @@
 // Assistant de budgétisation : propose des budgets mensuels par scénario à partir des moyennes réelles.
 import type { Store } from "./db.js";
 import { round2, today } from "./finance.js";
-import { budgetAmount, setting } from "./reports.js";
+import { budgetAmount, fixedCategories } from "./reports.js";
+export { DEFAULT_FIXED, fixedCategories } from "./reports.js";
 import { refundAllocations } from "./refunds.js";
 
 export type ScenarioKey = "moyenne" | "equilibre" | "econome" | "loisirs" | "investissement";
@@ -20,9 +21,6 @@ export interface Scenario {
   /** Montants mensuels arrondis à 10 €, uniquement > 0. */
   amounts: { category_id: number; amount: number }[];
 }
-
-/** Charges pré-cochées quand le réglage `budget_fixed_categories` est absent. */
-export const DEFAULT_FIXED = ["Loyer & charges", "Énergie, internet & téléphone", "Assurances", "Abonnements", "Crédits", "Impôts & taxes", "Frais bancaires"];
 
 const SCENARIOS: { key: ScenarioKey; label: string; hint: string }[] = [
   { key: "moyenne", label: "Ma moyenne", hint: "12 derniers mois" },
@@ -135,13 +133,6 @@ export function categoryAverages(store: Store, asOf: string): { period: { from: 
     else if (c.kind === "Épargne") rows.push({ category_id: c.id, name: c.name, kind: c.kind, average: 0 });
   }
   return { period: { from, to }, rows };
-}
-
-/** Charges fixes cochées (réglage `budget_fixed_categories`, noms séparés par « | »). Réglage absent → DEFAULT_FIXED, vide → aucune. */
-export function fixedCategories(store: Store): string[] {
-  const raw = setting(store, "budget_fixed_categories", "\u0000");
-  if (raw === "\u0000") return DEFAULT_FIXED;
-  return raw.split("|").map((x) => x.trim()).filter(Boolean);
 }
 
 export function budgetScenarios(store: Store, year: number, fixed?: string[], asOf = today()): BudgetScenarios {
