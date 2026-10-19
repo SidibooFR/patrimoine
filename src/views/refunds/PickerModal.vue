@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from "vue";
 import { api } from "../../lib/api";
+import { guard } from "../../lib/toast";
 import { eur, date } from "../../lib/format";
 import Modal from "../../components/Modal.vue";
 import SelectField from "../../components/SelectField.vue";
@@ -13,10 +14,20 @@ const emit = defineEmits<{ close: []; pick: [target: { expense_id?: number; cate
 // État local : la modale est recréée à chaque ouverture (v-if).
 const picker = ref<{ row: RefundRow; tab: "expense" | "category"; search: string; results: TransactionRow[]; category_id: number | ""; remember: boolean }>({ row: props.row, tab: "expense", search: "", results: [], category_id: "", remember: false });
 const shift = (d: string, n: number) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+// Recherche différée de 250 ms après la frappe ; pas de requête si le terme (sans espaces autour)
+// n'a pas changé, et une réponse arrivée après une plus récente est ignorée.
+let lastTerm: string | undefined;
+let seq = 0;
 async function searchExpenses() {
   const p = picker.value;
-  const r = await api.listTransactions({ kind: "Dépense", from: shift(p.row.date, -90), to: shift(p.row.date, 7), search: p.search || undefined, limit: 60 });
-  p.results = r.rows;
+  const term = p.search.trim();
+  if (term === lastTerm) return;
+  lastTerm = term;
+  const id = ++seq;
+  const r = await guard(() => api.listTransactions({ kind: "Dépense", from: shift(p.row.date, -90), to: shift(p.row.date, 7), search: term || undefined, limit: 60 }));
+  if (id !== seq) return;
+  if (r) p.results = r.rows;
+  else lastTerm = undefined; // échec : la même recherche pourra être relancée
 }
 searchExpenses();
 let t: ReturnType<typeof setTimeout> | undefined;

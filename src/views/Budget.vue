@@ -6,6 +6,7 @@ import { guard } from "../lib/toast";
 import type { BudgetReport, BudgetRow } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
+import ScenarioModal from "./budget/ScenarioModal.vue";
 
 const year = ref(new Date().getFullYear());
 const b = ref<BudgetReport>();
@@ -28,12 +29,14 @@ const hiddenCount = computed(() => b.value ? b.value.rows.filter((r) => r.kind !
 const showAll = ref(false);
 const groupsShown = computed(() => showAll.value && b.value ? ["Revenu", "Dépense", "Épargne"].map((k) => ({ kind: k, rows: b.value!.rows.filter((r) => r.kind === k) })) : groups.value);
 const curMonth = new Date().getMonth();
+const showPlan = ref(false);
 </script>
 
 <template>
   <PageHeader :title="`Budget ${year}`" sub="Réel par catégorie et par mois, calculé depuis les relevés. Saisis un budget mensuel prévu dans la colonne jaune pour suivre l'écart.">
-    <md-outlined-button @click="year--">‹ {{ year - 1 }}</md-outlined-button><md-outlined-button @click="year++">{{ year + 1 }} ›</md-outlined-button><md-outlined-button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</md-outlined-button>
+    <md-filled-button @click="showPlan = true">Proposer un budget</md-filled-button><md-outlined-button @click="year--">‹ {{ year - 1 }}</md-outlined-button><md-outlined-button @click="year++">{{ year + 1 }} ›</md-outlined-button><md-outlined-button @click="showAll = !showAll">{{ showAll ? "Masquer les catégories vides" : `Afficher tout (${hiddenCount} vides)` }}</md-outlined-button>
   </PageHeader>
+  <ScenarioModal v-if="showPlan" :year="year" @close="showPlan = false" @applied="load" />
 
   <div v-if="b" class="grid c4 mb-3">
     <KpiCard :label="`Revenus ${year}`" :value="eur0(b.yearTotals.income)" tone="pos" card />

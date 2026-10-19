@@ -1,5 +1,24 @@
 # Journal des versions
 
+## [1.7.0](https://github.com/SidibooFR/patrimoine/compare/v1.6.0...v1.7.0) (2026-10-18)
+
+### Nouveautés
+
+* **budget:** base glissante sur 12 mois et application des scénarios ([3b559d0](https://github.com/SidibooFR/patrimoine/commit/3b559d0a8fb5fe3ed8e25aa5952aaf52df3811e7))
+* **budget:** bouton « Proposer un budget » et modale de scénarios ([97e06b8](https://github.com/SidibooFR/patrimoine/commit/97e06b8ba264a1ea33a5efd3368ed8578e30eb68))
+* **budget:** calcul des scénarios de budget ([8aa68d7](https://github.com/SidibooFR/patrimoine/commit/8aa68d7a02aa8ec72c24a0a825e282007ab6b2d5))
+* **mcp:** outil get_budget_scenarios ([87e2432](https://github.com/SidibooFR/patrimoine/commit/87e24326aa3f78565215e0216bbd829e4dffe4ce))
+
+### Corrections
+
+* **budget:** pas de proposition sans revenus, dénominateur commun, cibles bourse/crypto sans historique ([88d65a0](https://github.com/SidibooFR/patrimoine/commit/88d65a08e208f09127d9924d7ba7056c126c8dfb))
+
+## [1.6.0](https://github.com/SidibooFR/patrimoine/compare/v1.5.0...v1.6.0) (2026-10-18)
+
+### Nouveautés
+
+* **abonnements:** calendrier des prélèvements avec popover par jour ([0f2ed7c](https://github.com/SidibooFR/patrimoine/commit/0f2ed7ceecd547b473af72e63f07764644d7cec5))
+
 ## [1.5.0](https://github.com/SidibooFR/patrimoine/compare/v1.4.0...v1.5.0) (2026-10-16)
 
 ### Nouveautés

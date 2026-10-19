@@ -17,7 +17,7 @@ export function settingNum(store: Store, key: string, def: number): number {
 }
 
 /** Montant « budget » d'une opération : revenus positifs, dépenses/épargne positives aussi (valeur absolue), transferts 0. */
-function budgetAmount(kind: string | null, amount: number): number {
+export function budgetAmount(kind: string | null, amount: number): number {
   if (kind === "Revenu") return amount;
   if (kind === "Dépense" || kind === "Épargne") return -amount;
   return 0;
