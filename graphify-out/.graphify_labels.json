@@ -1,0 +1,23 @@
+{
+  "6": "Règles de catégorisation",
+  "7": "Configuration electron-builder",
+  "8": "Vue Transactions",
+  "10": "Dépendances de développement",
+  "12": "Métadonnées package.json",
+  "14": "Vue Objectifs",
+  "17": "Release et gitflow",
+  "25": "Scripts npm",
+  "28": "Configuration TypeScript",
+  "31": "Dépendances runtime",
+  "32": "Principes Vue (skill)",
+  "33": "Serveur MCP",
+  "36": "Animations, slots, composables",
+  "37": "Flux de données Vue",
+  "39": "Async, SSR et état global",
+  "40": "KeepAlive, Suspense, Transition",
+  "41": "SFC et TransitionGroup",
+  "42": "Directives et rendu",
+  "43": "Performance des listes",
+  "45": "Réactivité et animations",
+  "46": "Dépôt git (package.json)"
+}
