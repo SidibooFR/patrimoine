@@ -3,6 +3,8 @@ import { onMounted, ref, watch, computed } from "vue";
 import { api } from "../lib/api";
 import { eur0, pct, sign, date, month } from "../lib/format";
 import { PALETTE } from "../lib/charts";
+import type { ApexOptions } from "apexcharts";
+import ApexChart from "../components/ApexChart.vue";
 import { guard, notify } from "../lib/toast";
 import type { BudgetReport, BudgetRow } from "../../core/reports";
 import type { PrepareReport, ScenarioKey } from "../../core/budgetPlan";
@@ -128,29 +130,62 @@ const emptyMsg = computed(() => (future.value ? "Mois à venir : clique sur « M
 
 // Répartition en anneau : six premières catégories + « Autres », couleurs de la palette commune
 interface Seg { name: string; v: number; color: string; p: number }
-function donut(items: { name: string; v: number }[]): { segs: Seg[]; conic: string } {
+function donut(items: { name: string; v: number }[]): { segs: Seg[] } {
   const sorted = items.filter((x) => x.v > 0).slice().sort((a, c) => c.v - a.v);
   const total = sorted.reduce((s, x) => s + x.v, 0);
   const rest = sorted.slice(6).reduce((s, x) => s + x.v, 0);
   const list = [...sorted.slice(0, 6), ...(rest ? [{ name: "Autres", v: rest }] : [])];
-  const segs = list.map((s, i) => ({ ...s, color: PALETTE[i % PALETTE.length], p: total ? s.v / total : 0 }));
-  let acc = 0;
-  const conic = segs.length ? "conic-gradient(" + segs.map((s) => { const a = acc * 100; acc += s.p; return `${s.color} ${a}% ${acc * 100}%`; }).join(",") + ")" : "conic-gradient(var(--surface-2) 0 100%)";
-  return { segs, conic };
+  return { segs: list.map((s, i) => ({ ...s, color: PALETTE[i % PALETTE.length], p: total ? s.v / total : 0 })) };
 }
 const expDonut = computed(() => donut(exps.value.map((x) => ({ name: x.name, v: x.r }))));
 const incDonut = computed(() => donut(b.value ? b.value.rows.filter((r) => r.kind === "Revenu").map((r) => ({ name: r.name, v: r.months[mi.value] })) : []));
-// Écarts au budget (barres divergentes)
-const diverge = computed(() => {
-  const dv = exps.value.filter((x) => x.b !== null).map((x) => ({ name: x.name, d: x.r - x.b! })).sort((a, c) => c.d - a.d);
-  const dmax = Math.max(...dv.map((x) => Math.abs(x.d)), 1);
-  return dv.map((x) => ({ name: x.name, txt: sgn(x.d), tone: x.d > 0 ? "neg" : x.d < 0 ? "pos" : "", lw: x.d < 0 ? (-x.d / dmax) * 100 : 0, rw: x.d > 0 ? (x.d / dmax) * 100 : 0 }));
+const donutOptions = (d: { segs: Seg[] }, total: number): ApexOptions => ({
+  labels: d.segs.map((s) => s.name), colors: d.segs.map((s) => s.color), legend: { show: false },
+  plotOptions: { pie: { donut: { size: "70%", labels: { show: true, total: { show: true, label: "Total", formatter: () => eur0(total) } } } } },
+  tooltip: { y: { formatter: (v: number) => `${eur0(v)} · ${Math.round((v / total) * 100)} %` } },
 });
-// Taux d'épargne par mois (ligne)
-const ratePts = computed(() => (b.value ? b.value.totals.rate.map((r, i) => (r === null ? null : { i, r })).filter((p): p is { i: number; r: number } => p !== null) : []));
-const rmax = computed(() => Math.max(...ratePts.value.map((p) => p.r), 0.3) * 1.2);
-const RX = (i: number) => (i / 11) * 600, RY = (r: number) => 100 - (Math.max(r, 0) / rmax.value) * 90;
-const ratePath = computed(() => ratePts.value.map((p, j) => `${j ? "L" : "M"}${RX(p.i).toFixed(1)},${RY(p.r).toFixed(1)}`).join(" "));
+const expDonutOpts = computed(() => donutOptions(expDonut.value, exp.value));
+const incDonutOpts = computed(() => donutOptions(incDonut.value, inc.value));
+// Couleurs sémantiques lues sur :root au rendu
+const cssVar = (n: string) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// Écarts au budget (barres divergentes)
+const diverge = computed(() => exps.value.filter((x) => x.b !== null).map((x) => ({ name: x.name, d: x.r - x.b!, b: x.b!, r: x.r })).sort((a, c) => c.d - a.d));
+const divergeOptions = computed<ApexOptions>(() => {
+  const dv = diverge.value, lim = Math.max(...dv.map((x) => Math.abs(x.d)), 1) * 1.35;
+  const neg = cssVar("--neg"), pos = cssVar("--pos");
+  return {
+    colors: [({ value }: { value: number }) => (value > 0 ? neg : pos)],
+    plotOptions: { bar: { horizontal: true, barHeight: "55%", borderRadius: 4, borderRadiusApplication: "end", dataLabels: { position: "top" } } },
+    dataLabels: { enabled: true, formatter: (v: number) => sgn(v), textAnchor: "start", style: { fontSize: "12px", fontWeight: 500, colors: [cssVar("--text")] } },
+    xaxis: { categories: dv.map((x) => x.name), labels: { show: false }, min: -lim, max: lim },
+    yaxis: { labels: { maxWidth: 120, formatter: (v: number | string) => String(v) } }, // remplace le formateur monétaire : l'axe porte des noms
+    grid: { xaxis: { lines: { show: false } }, yaxis: { lines: { show: false } }, padding: { right: 10 } },
+    annotations: { xaxis: [{ x: 0, borderColor: cssVar("--outline"), strokeDashArray: 0 }] },
+    legend: { show: false },
+    tooltip: { shared: false, y: { formatter: (v: number, o?: { dataPointIndex: number }) => { const x = dv[o?.dataPointIndex ?? 0]; return `${sgn(v)} (budget ${eur0(x.b)}, réel ${eur0(x.r)})`; } } },
+  };
+});
+// Taux d'épargne par mois : null = mois sans relevé (trou dans la courbe)
+const rateOptions = computed<ApexOptions>(() => {
+  const rates = b.value?.totals.rate ?? [];
+  const vals = rates.filter((r): r is number => r !== null);
+  const accent = cssVar("--accent"), muted = cssVar("--muted");
+  return {
+    colors: [accent],
+    stroke: { width: 3 },
+    markers: {
+      size: 5, colors: ["#fff"], strokeColors: accent, strokeWidth: 2, hover: { size: 7 },
+      discrete: rates[mi.value] === null ? [] : [{ seriesIndex: 0, dataPointIndex: mi.value, fillColor: accent, strokeColor: "#fff", size: 7 }],
+    },
+    dataLabels: { enabled: true, offsetY: -8, formatter: (v: unknown) => (typeof v === "number" ? Math.round(v * 100) + " %" : ""), background: { enabled: false }, style: { fontSize: "11.5px", fontWeight: 500, colors: [muted] } },
+    xaxis: { categories: MONTHS, labels: { style: { colors: MONTHS.map((_, i) => (i === mi.value ? accent : muted)), fontWeight: 500 } }, tooltip: { enabled: false } },
+    yaxis: { show: false, min: Math.min(...vals, 0) - 0.1, max: Math.max(...vals, 0.3) * 1.2 },
+    grid: { yaxis: { lines: { show: false } }, xaxis: { lines: { show: false } }, padding: { left: 16, right: 16 } },
+    annotations: { yaxis: [{ y: 0, borderColor: cssVar("--outline"), strokeDashArray: 0 }], xaxis: [{ x: MONTHS[mi.value], borderColor: accent, strokeDashArray: 3, opacity: 0.5 }] },
+    legend: { show: false },
+    tooltip: { shared: false, y: { formatter: (v: unknown) => (typeof v === "number" ? Math.round(v * 100) + " %" : "–") } },
+  };
+});
 
 // Opérations d'une catégorie
 const tx = ref<CatMonth | null>(null);
@@ -275,7 +310,7 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
           <div class="card">
             <h2 class="card-h">Répartition des dépenses</h2>
             <div class="donut-wrap">
-              <div class="donut" :style="{ background: expDonut.conic }"><div class="hole"><span class="help">Total</span><span style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums">{{ eur0(exp) }}</span></div></div>
+              <ApexChart v-if="expDonut.segs.length" type="donut" :height="210" :series="expDonut.segs.map((s) => s.v)" :options="expDonutOpts" style="flex:0 0 210px" />
               <div class="donut-legend">
                 <div v-for="s in expDonut.segs" :key="s.name"><span class="sw" :style="{ background: s.color }"></span><span class="nm">{{ s.name }}</span><span style="font-weight:500">{{ eur0(s.v) }}</span><span class="muted" style="text-align:right">{{ Math.round(s.p * 100) }} %</span></div>
               </div>
@@ -284,7 +319,7 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
           <div class="card">
             <h2 class="card-h">Répartition des revenus</h2>
             <div class="donut-wrap">
-              <div class="donut" :style="{ background: incDonut.conic }"><div class="hole"><span class="help">Total</span><span style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums">{{ eur0(inc) }}</span></div></div>
+              <ApexChart v-if="incDonut.segs.length" type="donut" :height="210" :series="incDonut.segs.map((s) => s.v)" :options="incDonutOpts" style="flex:0 0 210px" />
               <div class="donut-legend">
                 <div v-for="s in incDonut.segs" :key="s.name"><span class="sw" :style="{ background: s.color }"></span><span class="nm">{{ s.name }}</span><span style="font-weight:500">{{ eur0(s.v) }}</span><span class="muted" style="text-align:right">{{ Math.round(s.p * 100) }} %</span></div>
                 <p v-if="!incDonut.segs.length" class="muted" style="margin:0">Aucun revenu ce mois.</p>
@@ -293,15 +328,8 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
           </div>
           <div class="card">
             <div class="card-title" style="align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-bottom:10px"><h2 class="card-h" style="margin:0">Écart au budget</h2><div class="help" style="display:flex;gap:14px"><span class="pos">← sous le budget</span><span class="neg">au-dessus →</span></div></div>
-            <div class="diverge">
-              <div v-for="x in diverge" :key="x.name">
-                <span class="nm">{{ x.name }}</span>
-                <div class="l"><i :style="{ width: x.lw + '%' }"></i></div>
-                <div class="r"><i :style="{ width: x.rw + '%' }"></i></div>
-                <span class="v" :class="x.tone">{{ x.txt }}</span>
-              </div>
-              <p v-if="!diverge.length" class="muted" style="margin:0">Aucune catégorie budgétée ce mois : clique sur « Modifier » ou « Proposer un budget ».</p>
-            </div>
+            <ApexChart v-if="diverge.length" type="bar" :height="Math.max(diverge.length * 30 + 30, 160)" :series="[{ name: 'Écart', data: diverge.map((x) => x.d) }]" :options="divergeOptions" />
+            <p v-else class="muted" style="margin:0">Aucune catégorie budgétée ce mois : clique sur « Modifier » ou « Proposer un budget ».</p>
           </div>
         </div>
 
@@ -321,16 +349,8 @@ const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") +
         </div>
 
         <div class="card mb-3">
-          <h2 class="card-h" style="margin-bottom:20px">Taux d'épargne par mois</h2>
-          <div class="rate-chart">
-            <svg viewBox="0 0 600 100" preserveAspectRatio="none"><path :d="ratePath" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg>
-            <template v-for="p in ratePts" :key="p.i">
-              <span class="dot" :class="{ on: p.i === mi }" :style="{ left: (p.i / 11) * 100 + '%', top: RY(p.r) + '%' }"></span>
-              <span class="lbl" :class="{ on: p.i === mi }" :style="{ left: (p.i / 11) * 100 + '%', top: RY(p.r) + '%' }">{{ Math.round(p.r * 100) }} %</span>
-            </template>
-            <div class="axis"></div>
-          </div>
-          <div class="rate-months"><span v-for="(mo, i) in MONTHS" :key="mo" :class="{ on: i === mi }" :style="{ left: (i / 11) * 100 + '%' }">{{ mo }}</span></div>
+          <h2 class="card-h" style="margin-bottom:8px">Taux d'épargne par mois</h2>
+          <ApexChart type="area" :height="200" :series="[{ name: 'Taux d\'épargne', data: b.totals.rate }]" :options="rateOptions" />
         </div>
       </template>
       <div v-else class="empty-box mb-3">{{ emptyMsg }}</div>
