@@ -119,20 +119,22 @@ L'application et le serveur MCP partagent le fichier SQLite : chaque processus r
 
 ## Fonctionnement
 
+La barre supérieure regroupe les onglets en quatre rubriques : Vue d'ensemble, Opérations (Relevés, Import, Règles de tri, Remboursements), Budget (Suivi mensuel, Abonnements, Objectifs) et Placements (Bilan global, Livrets & PEA, Bourse & crypto, Répartition, Projection) ; Paramètres est accessible par l'engrenage à droite.
+
 | Onglet | Ce qu'il fait |
 |---|---|
-| Tableau de bord | Patrimoine, budget du mois, performance des investissements, alertes, 4 graphiques |
+| Vue d'ensemble | Patrimoine, budget du mois, performance des investissements, alertes, 4 graphiques |
 | Relevés | Toutes les opérations (importées + manuelles), filtres, changement de catégorie en ligne, création de règle en un clic |
 | Remboursements | Rapproche chaque remboursement de la dépense d'origine (suggestions notées : montant total ou part 1/2…1/6, proximité de date, historique du payeur) ou d'une catégorie ; règles « payeur → catégorie » pour les contributions régulières. Un remboursement rapproché est déduit de la dépense dans le budget au lieu de compter comme revenu |
-| Importer | Exports BNP (.xls), Boursobank (.xlsx, tous comptes), Revolut (.csv). Détection automatique, aperçu, déduplication par empreinte, correspondance export → compte |
-| Règles | Mots-clés → catégorie (le plus long l'emporte), correspondance des catégories bancaires, catégories bancaires non mappées |
-| Budget | Vue du mois : phrase de synthèse (reste à dépenser, rythme par jour), revenus / dépenses / épargne / taux avec variation vs mois précédent, répartition des dépenses, écarts au budget, cartes par catégorie triées par dépassement (clic → opérations du mois), taux d'épargne par mois ; « Modifier » pour saisir le budget du mois (reportable jusqu'à décembre, prioritaire sur l'annuel). Vue de l'année : réel par catégorie et par mois, budget prévu (totaux, reste et taux d'épargne prévus), écarts, mois hors budget surlignés ; budget automatique en suivant un scénario (recalculé sur les 12 derniers mois et les objectifs, les montants saisis restent prioritaires) ; « À prévoir chaque mois » (compte courant vs solde, épargne et objectifs à virer, prélèvements sous 30 jours) ; suivi du mois (réel vs budget, rythme, projection de fin de mois, dépenses hors budget) ; reprise du budget N−1 ; assistant « Proposer un budget » (5 scénarios, objectifs servis en premier) |
+| Import | Exports BNP (.xls), Boursobank (.xlsx, tous comptes), Revolut (.csv). Détection automatique, aperçu, déduplication par empreinte, correspondance export → compte |
+| Règles de tri | Mots-clés → catégorie (le plus long l'emporte), correspondance des catégories bancaires, catégories bancaires non mappées |
+| Suivi mensuel | Vue du mois : phrase de synthèse (reste à dépenser, rythme par jour), revenus / dépenses / épargne / taux avec variation vs mois précédent, répartition des dépenses, écarts au budget, cartes par catégorie triées par dépassement (clic → opérations du mois), taux d'épargne par mois ; « Modifier » pour saisir le budget du mois (reportable jusqu'à décembre, prioritaire sur l'annuel). Vue de l'année : réel par catégorie et par mois, budget prévu (totaux, reste et taux d'épargne prévus), écarts, mois hors budget surlignés ; budget automatique en suivant un scénario (recalculé sur les 12 derniers mois et les objectifs, les montants saisis restent prioritaires) ; « À prévoir chaque mois » (compte courant vs solde, épargne et objectifs à virer, prélèvements sous 30 jours) ; suivi du mois (réel vs budget, rythme, projection de fin de mois, dépenses hors budget) ; reprise du budget N−1 ; assistant « Proposer un budget » (5 scénarios, objectifs servis en premier) |
 | Abonnements | Charges récurrentes détectées (hebdomadaires à annuelles), coût mensuel et annuel, prochaine échéance, hausses de prix ; confirmer, ignorer, renommer |
 | Objectifs | Montant + échéance ; avancement suivi sur un compte, une classe d'actif, l'épargne de précaution ou un montant saisi ; versement mensuel nécessaire (intérêts du livret compris), rythme constaté, date d'atteinte, comparaison avec la capacité d'épargne |
-| Patrimoine | Relevé mensuel des soldes (pré-rempli depuis les relevés importés), évolution, répartition par classe |
+| Bilan global | Relevé mensuel des soldes (pré-rempli depuis les relevés importés), évolution, répartition par classe |
 | Livrets & PEA | Plafond, place restante, taux net (officiel avec historique JO, saisi, ou constaté sur les intérêts versés), intérêts perçus et estimés (règle des quinzaines), ancienneté fiscale du PEA, transferts conseillés vers les livrets mieux rémunérés avec le gain annuel |
-| Portefeuille | Actifs, opérations (achat/vente/dividende/frais), PRU, plus-values latentes et réalisées, TRI (XIRR) avec indicateur de fiabilité, cours Yahoo Finance / CoinGecko avec cours manuel de secours, historique des cours, courbe valeur / montant investi, performance pondérée par le temps (1 mois, 3 mois, depuis le 1er janvier, 1 an, depuis le début) |
-| Allocation | Réel vs cible par classe, action (renforcer/alléger), répartition du prochain versement, épargne de précaution |
+| Bourse & crypto | Actifs, opérations (achat/vente/dividende/frais), PRU, plus-values latentes et réalisées, TRI (XIRR) avec indicateur de fiabilité, cours Yahoo Finance / CoinGecko avec cours manuel de secours, historique des cours, courbe valeur / montant investi, performance pondérée par le temps (1 mois, 3 mois, depuis le 1er janvier, 1 an, depuis le début) |
+| Répartition | Réel vs cible par classe, action (renforcer/alléger), répartition du prochain versement, épargne de précaution |
 | Projection | 3 scénarios à intérêts composés, en euros constants, année d'atteinte de l'objectif |
 | Paramètres | Comptes, catégories, réglages, export Excel, configuration MCP |
 

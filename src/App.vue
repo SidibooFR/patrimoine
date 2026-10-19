@@ -1,29 +1,38 @@
 <script setup lang="ts">
-import { routes } from "./router";
+import { routes, sections } from "./router";
 import { toast } from "./lib/toast";
-import { ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { api } from "./lib/api";
 import { applyAppearance, fromSettings } from "./lib/appearance";
 import { update, installUpdate } from "./lib/update";
-const version = ref("");
+const route = useRoute();
+const group = computed(() => routes.find((r) => r.path === route.path)?.group ?? 0);
+/* Les onglets d'une rubrique ; la vue d'ensemble et les paramètres n'en ont pas. */
+const tabs = computed(() => (group.value >= 1 && group.value <= 3 ? routes.filter((r) => r.group === group.value) : []));
 onMounted(async () => {
-  try { version.value = (await api.meta()).version; applyAppearance(fromSettings(await api.settings())); } catch { /* hors Electron sans API */ }
+  try { applyAppearance(fromSettings(await api.settings())); } catch { /* hors Electron sans API */ }
 });
 </script>
 
 <template>
-  <aside class="sidebar">
-    <div class="brand">Patrimoine<small>Budget · Bourse · Crypto</small></div>
-    <nav>
-      <template v-for="(r, i) in routes" :key="r.path">
-        <div v-if="i > 0 && r.group !== routes[i - 1].group" class="sep"></div>
-        <router-link :to="r.path"><span style="width:16px;text-align:center">{{ r.icon }}</span>{{ r.name }}</router-link>
-      </template>
+  <header class="topbar">
+    <div class="bar">
+      <div class="brand"><span class="logo">P</span>Patrimoine</div>
+      <nav>
+        <router-link v-for="s in sections" :key="s.group" :to="s.path" :class="{ on: s.group === group }"><span class="ico">{{ s.icon }}</span>{{ s.title }}</router-link>
+      </nav>
+      <div class="right">
+        <md-filled-button v-if="update.status === 'downloaded'" class="small" @click="installUpdate">⟳ Installer la version {{ update.version }}</md-filled-button>
+        <md-outlined-button v-else-if="update.status === 'portable'" class="small" @click="installUpdate">⇩ Version {{ update.version }} disponible</md-outlined-button>
+        <span class="tag ok" title="Données locales uniquement · serveur MCP intégré pour Claude">● Local</span>
+        <router-link to="/parametres" class="gear" :class="{ on: group === 4 }" title="Paramètres">⚙</router-link>
+      </div>
+    </div>
+    <nav v-if="tabs.length" class="tabs">
+      <router-link v-for="r in tabs" :key="r.path" :to="r.path"><span class="ico">{{ r.icon }}</span>{{ r.name }}</router-link>
     </nav>
-    <div class="foot">Données locales uniquement.<br />Serveur MCP intégré pour Claude.<br /><span v-if="version">Version {{ version }}</span>
-      <md-filled-button v-if="update.status === 'downloaded'" class="small update-btn" @click="installUpdate">⟳ Installer la version {{ update.version }}</md-filled-button>
-      <md-outlined-button v-else-if="update.status === 'portable'" class="small update-btn" @click="installUpdate">⇩ Version {{ update.version }} disponible</md-outlined-button></div>
-  </aside>
+  </header>
   <main>
     <router-view v-slot="{ Component }">
       <component :is="Component" :key="$route.path" />
