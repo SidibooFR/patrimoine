@@ -17,8 +17,9 @@ onMounted(async () => { d.value = await guard(() => api.dashboard()); });
 const moisNw = computed(() => d.value!.series.months.map((m) => new Date(m + "T00:00:00").toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })));
 const budgetMois = computed(() => d.value!.budgetSeries.months.map((m) => new Date(m + "-01T00:00:00").toLocaleDateString("fr-FR", { month: "short" })));
 
-const nwSeries = computed(() => [{ name: "Patrimoine", data: d.value!.series.total }]);
-const nwOptions = computed<ApexOptions>(() => ({ colors: [theme.navy], xaxis: { categories: moisNw.value }, legend: { show: false } }));
+// Les mois sans relevé (null) sont retirés : la courbe les enjambe, comme spanGaps
+const nwSeries = computed(() => [{ name: "Patrimoine", data: d.value!.series.total.map((y, i) => ({ x: moisNw.value[i], y })).filter((p) => p.y !== null) }]);
+const nwOptions = computed<ApexOptions>(() => ({ colors: [theme.navy], legend: { show: false } }));
 
 const classEntries = computed(() => Object.entries(d.value!.byClass).filter(([, v]) => v > 0));
 const classSeries = computed(() => classEntries.value.map((e) => e[1]));
@@ -107,7 +108,7 @@ const rateOptions = computed<ApexOptions>(() => ({
 
     <div class="grid c2 mt-3">
       <div class="card"><h3>Évolution du patrimoine</h3><ApexChart type="area" :series="nwSeries" :options="nwOptions" zoom /></div>
-      <div class="card"><h3>Répartition actuelle</h3><ApexChart type="donut" :series="classSeries" :options="classOptions" /></div>
+      <div class="card"><h3>Répartition actuelle</h3><ApexChart v-if="classSeries.length" type="donut" :series="classSeries" :options="classOptions" /></div>
       <div class="card"><h3>Revenus vs dépenses</h3><ApexChart type="bar" :series="budgetSeries" :options="budgetOptions" /></div>
       <div class="card"><h3>Taux d'épargne mensuel</h3><ApexChart type="bar" :series="rateSeries" :options="rateOptions" /></div>
     </div>

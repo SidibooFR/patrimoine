@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { appearance } from "../src/lib/appearance";
+import { eur0 } from "../src/lib/format";
 import { moneyAxis, mergeOptions, styleC } from "../src/lib/charts";
 
 // l'Intl français utilise des espaces insécables
@@ -32,6 +33,8 @@ describe("styleC", () => {
   it("arrondit les barres et règle les anneaux", () => {
     expect(styleC("bar", false, ui).plotOptions?.bar).toMatchObject({ borderRadius: 6, borderRadiusApplication: "end", columnWidth: "55%" });
     expect(styleC("donut", false, ui).plotOptions?.pie?.donut?.size).toBe("68%");
+    const fmt = styleC("donut", false, ui).plotOptions?.pie?.donut?.labels?.value?.formatter as (v: string) => string;
+    expect(fmt("12345.67")).toBe(eur0(12345.67));
   });
   it("applique police, animation et infobulle partagée", () => {
     const o = styleC("line", false, ui);

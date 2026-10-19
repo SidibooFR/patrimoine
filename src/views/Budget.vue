@@ -142,7 +142,7 @@ const incDonut = computed(() => donut(b.value ? b.value.rows.filter((r) => r.kin
 const donutOptions = (d: { segs: Seg[] }, total: number): ApexOptions => ({
   labels: d.segs.map((s) => s.name), colors: d.segs.map((s) => s.color), legend: { show: false },
   plotOptions: { pie: { donut: { size: "70%", labels: { show: true, total: { show: true, label: "Total", formatter: () => eur0(total) } } } } },
-  tooltip: { y: { formatter: (v: number) => `${eur0(v)} · ${Math.round((v / total) * 100)} %` } },
+  tooltip: { y: { formatter: (v: number) => `${eur0(v)} · ${Math.round((v / d.segs.reduce((s, x) => s + x.v, 0)) * 100)} %` } }, // même diviseur que la légende
 });
 const expDonutOpts = computed(() => donutOptions(expDonut.value, exp.value));
 const incDonutOpts = computed(() => donutOptions(incDonut.value, inc.value));
@@ -174,8 +174,8 @@ const rateOptions = computed<ApexOptions>(() => {
     colors: [accent],
     stroke: { width: 3 },
     markers: {
-      size: 5, colors: ["#fff"], strokeColors: accent, strokeWidth: 2, hover: { size: 7 },
-      discrete: rates[mi.value] === null ? [] : [{ seriesIndex: 0, dataPointIndex: mi.value, fillColor: accent, strokeColor: "#fff", size: 7 }],
+      size: 5, colors: [cssVar("--panel")], strokeColors: accent, strokeWidth: 2, hover: { size: 7 },
+      discrete: rates[mi.value] === null ? [] : [{ seriesIndex: 0, dataPointIndex: mi.value, fillColor: accent, strokeColor: cssVar("--panel"), size: 7 }],
     },
     dataLabels: { enabled: true, offsetY: -8, formatter: (v: unknown) => (typeof v === "number" ? Math.round(v * 100) + " %" : ""), background: { enabled: false }, style: { fontSize: "11.5px", fontWeight: 500, colors: [muted] } },
     xaxis: { categories: MONTHS, labels: { style: { colors: MONTHS.map((_, i) => (i === mi.value ? accent : muted)), fontWeight: 500 } }, tooltip: { enabled: false } },

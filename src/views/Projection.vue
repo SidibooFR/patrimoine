@@ -45,15 +45,17 @@ const series = computed(() => {
 });
 const options = computed<ApexOptions>(() => {
   const hit = pr.value!.rows.find((r) => r.mid >= p.goal);
+  const panel = getComputedStyle(document.documentElement).getPropertyValue("--panel").trim();
   return {
     colors: [PALETTE[2], theme.accent, PALETTE[1], PALETTE[6]],
+    yaxis: { max: (m: number) => Math.max(m, p.goal * 1.05) }, // garde la ligne d'objectif dans l'échelle s'il est hors d'atteinte
     xaxis: { type: "numeric", labels: { formatter: (v: string) => String(Math.round(Number(v))) } },
     fill: { gradient: { opacityFrom: [0.10, 0.28, 0.10, 0] } },
     stroke: { width: [2, 3.5, 2, 2], dashArray: [0, 0, 0, 6] },
     tooltip: { x: { formatter: (v: number) => `Année ${Math.round(v)}` } },
     annotations: {
-      yaxis: [{ y: p.goal, borderColor: PALETTE[4], strokeDashArray: 5, label: { text: `Objectif ${eur0(p.goal)}`, position: "left", textAnchor: "start", offsetX: 6, borderColor: "transparent", style: { background: PALETTE[4], color: "#fff", fontSize: "12px" } } }],
-      points: hit ? [{ x: hit.year, y: hit.mid, marker: { size: 7, fillColor: "#fff", strokeColor: theme.accent, strokeWidth: 3 }, label: { text: `Objectif atteint en ${hit.year}`, borderColor: theme.accent, offsetY: -8, style: { background: theme.accent, color: "#fff", fontSize: "12px" } } }] : [],
+      yaxis: [{ y: p.goal, borderColor: PALETTE[4], strokeDashArray: 5, label: { text: `Objectif ${eur0(p.goal)}`, position: "left", textAnchor: "start", offsetX: 6, borderColor: "transparent", style: { background: PALETTE[4], color: panel, fontSize: "12px" } } }],
+      points: hit ? [{ x: hit.year, y: hit.mid, marker: { size: 7, fillColor: panel, strokeColor: theme.accent, strokeWidth: 3 }, label: { text: `Objectif atteint en ${hit.year}`, borderColor: theme.accent, offsetY: -8, style: { background: theme.accent, color: panel, fontSize: "12px" } } }] : [],
     },
   };
 });

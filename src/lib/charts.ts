@@ -52,7 +52,7 @@ export function styleC(type: "area" | "line" | "bar" | "donut" | "rangeArea", zo
   if (type === "donut") {
     o.stroke = { width: 3, colors: ["#ffffff"] }; // liseré = fond des cartes (blanc)
     o.legend = { ...o.legend, position: "right" };
-    o.plotOptions = { pie: { donut: { size: "68%", labels: { show: true, total: { show: true, formatter: (w) => eur0((w.globals.seriesTotals as number[]).reduce((a, b) => a + b, 0)) } } } } };
+    o.plotOptions = { pie: { donut: { size: "68%", labels: { show: true, value: { formatter: (v) => eur0(Number(v)) }, total: { show: true, formatter: (w) => eur0((w.globals.seriesTotals as number[]).reduce((a, b) => a + b, 0)) } } } } };
   }
   return o;
 }

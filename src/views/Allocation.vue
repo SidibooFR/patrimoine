@@ -31,6 +31,7 @@ const series = computed(() => [
   { name: "Cible", data: al.value!.rows.map((r) => r.target) }]);
 const options = computed<ApexOptions>(() => ({
   colors: [({ dataPointIndex }: { dataPointIndex: number }) => CLASS_COLORS[al.value!.rows[dataPointIndex].asset_class] ?? PALETTE[6], rgba(theme.navy, .25)],
+  legend: { markers: { fillColors: [theme.navy, rgba(theme.navy, .25)] } }, // la fonction colors donnerait à « Actuel » la couleur de la 1re classe
   fill: { type: "solid", opacity: 1 },
   stroke: { show: true, width: [0, 1], colors: ["transparent", theme.navy] },
   xaxis: { categories: al.value!.rows.map((r) => r.asset_class) },
