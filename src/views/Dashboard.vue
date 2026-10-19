@@ -84,7 +84,7 @@ const rateOptions = computed<ApexOptions>(() => ({
         <KpiCard :hint="`${d.recurring.count} prélèvement(s) · ${eur0(d.recurring.annual)} par an`">
           {{ eur(d.recurring.monthly) }}<small class="muted" style="font-size:13px;font-weight:400"> / mois</small>
         </KpiCard>
-        <div v-for="i in d.recurring.increases" :key="i.label" class="tag neg mt-1">▲ {{ i.label }} +{{ pct(i.pct, 0) }}</div>
+        <div v-for="i in d.recurring.increases" :key="i.label" class="tag neg mt-1"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> {{ i.label }} +{{ pct(i.pct, 0) }}</div>
       </router-link>
       <router-link to="/enveloppes" class="card link-card">
         <h3>Livrets &amp; PEA</h3>
@@ -103,7 +103,7 @@ const rateOptions = computed<ApexOptions>(() => ({
 
     <div class="card mt-3">
       <h3>Points d'attention</h3>
-      <ul class="alerts"><li v-for="a in d.alerts" :key="a.text" :class="a.level">{{ a.level === "ok" ? "✓" : "⚠" }} {{ a.text }}</li></ul>
+      <ul class="alerts"><li v-for="a in d.alerts" :key="a.text" :class="a.level"><i class="fa-solid" :class="a.level === 'ok' ? 'fa-check' : 'fa-triangle-exclamation'" aria-hidden="true"></i> {{ a.text }}</li></ul>
     </div>
 
     <div class="grid c2 mt-3">

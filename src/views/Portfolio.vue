@@ -69,8 +69,8 @@ async function deleteOp(o: OperationRow) { if (!window.confirm("Supprimer cette 
 
 <template>
   <PageHeader title="Portefeuille" sub="ETF, actions et cryptos. Les cours viennent de Yahoo Finance et CoinGecko ; sans connexion, le cours manuel de secours est utilisé.">
-    <md-outlined-button :disabled="refreshing" @click="refresh">{{ refreshing ? "Actualisation…" : "↻ Actualiser les cours" }}</md-outlined-button>
-    <md-outlined-button :disabled="backfilling" title="Télécharge les cours quotidiens depuis le premier achat (courbe et performances par période)" @click="backfill">{{ backfilling ? "Téléchargement…" : "⇩ Historique des cours" }}</md-outlined-button>
+    <md-outlined-button :disabled="refreshing" @click="refresh"><i slot="icon" class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>{{ refreshing ? "Actualisation…" : "Actualiser les cours" }}</md-outlined-button>
+    <md-outlined-button :disabled="backfilling" title="Télécharge les cours quotidiens depuis le premier achat (courbe et performances par période)" @click="backfill"><i slot="icon" class="fa-solid fa-download" aria-hidden="true"></i>{{ backfilling ? "Téléchargement…" : "Historique des cours" }}</md-outlined-button>
     <md-outlined-button @click="newAsset">+ Actif</md-outlined-button><md-filled-button :disabled="!assets.length" @click="newOp()">+ Opération</md-filled-button>
   </PageHeader>
 

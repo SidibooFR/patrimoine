@@ -47,7 +47,7 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
     </div>
 
     <div v-for="i in rep.increases" :key="'inc' + i.key" class="note warn" style="margin-bottom:8px">
-      ⚠ <b>{{ i.label }}</b> est passé de {{ eur(i.change!.from) }} à {{ eur(i.change!.to) }} (+{{ pct(i.change!.pct, 0) }}) depuis le {{ date(i.change!.since) }}, soit <b>+{{ eur((i.change!.to - i.change!.from) * i.perYear) }} par an</b>. Vérifie ton offre ou résilie si tu ne t'en sers plus.
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> <b>{{ i.label }}</b> est passé de {{ eur(i.change!.from) }} à {{ eur(i.change!.to) }} (+{{ pct(i.change!.pct, 0) }}) depuis le {{ date(i.change!.since) }}, soit <b>+{{ eur((i.change!.to - i.change!.from) * i.perYear) }} par an</b>. Vérifie ton offre ou résilie si tu ne t'en sers plus.
     </div>
 
     <RecurringCalendar v-if="mode === 'calendrier'" :items="rep.items" style="margin-top:8px" />
@@ -59,20 +59,20 @@ const freq = (f: string) => ({ hebdomadaire: "Hebdo", mensuel: "Mensuel", bimest
             <tbody>
               <template v-for="i in rows" :key="i.key">
                 <tr class="clickable" :class="{ muted: !i.active || i.status === 'ignored' }" @click="open = open === i.key ? null : i.key">
-                  <td style="max-width:230px"><b class="nowrap">{{ i.label }}</b> <span v-if="i.status === 'confirmed'" class="tag ok" title="Confirmé">✓</span><span v-if="i.status === 'ignored'" class="tag">ignoré</span><span v-if="!i.active" class="tag warn" title="Plus de prélèvement depuis plus d'une période et demie">arrêté ?</span><div class="help ellipsis" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ i.account }} · {{ i.count }} paiements</div></td>
+                  <td style="max-width:230px"><b class="nowrap">{{ i.label }}</b> <span v-if="i.status === 'confirmed'" class="tag ok" title="Confirmé"><i class="fa-solid fa-check" aria-hidden="true"></i></span><span v-if="i.status === 'ignored'" class="tag">ignoré</span><span v-if="!i.active" class="tag warn" title="Plus de prélèvement depuis plus d'une période et demie">arrêté ?</span><div class="help ellipsis" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ i.account }} · {{ i.count }} paiements</div></td>
                   <td class="muted ellipsis" style="max-width:120px" :title="i.category ?? ''">{{ i.category ?? "–" }}</td>
                   <td class="nowrap">{{ freq(i.frequency) }}</td>
-                  <td class="num">{{ eur(i.lastAmount) }}<div v-if="i.change" :class="i.change.kind === 'hausse' ? 'neg' : 'pos'" style="font-size:11px;font-weight:500;line-height:1.2;margin-top:2px">{{ i.change.kind === "hausse" ? "▲" : "▼" }} {{ pct(Math.abs(i.change.pct), 0) }}</div></td>
+                  <td class="num">{{ eur(i.lastAmount) }}<div v-if="i.change" :class="i.change.kind === 'hausse' ? 'neg' : 'pos'" style="font-size:11px;font-weight:500;line-height:1.2;margin-top:2px"><i class="fa-solid" :class="i.change.kind === 'hausse' ? 'fa-caret-up' : 'fa-caret-down'" aria-hidden="true"></i> {{ pct(Math.abs(i.change.pct), 0) }}</div></td>
                   <td class="num"><b>{{ eur0(i.annual) }}</b></td>
                   <td class="nowrap">{{ date(i.last) }}</td>
                   <td :class="{ muted: !i.active }" class="nowrap">{{ i.active ? date(i.next) : "–" }}</td>
                 </tr>
                 <tr v-if="open === i.key"><td colspan="7" style="background:var(--surface-2)">
                   <div class="row-actions mb-1">
-                    <md-outlined-button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')">✓ Confirmer</md-outlined-button>
-                    <md-outlined-button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')">✕ Ignorer (pas un abonnement)</md-outlined-button>
-                    <md-outlined-button v-if="i.status !== 'auto'" class="small" @click="setStatus(i, 'auto')">↶ Annuler ma décision</md-outlined-button>
-                    <md-outlined-button class="small" @click="rename = { item: i, label: i.label }">✎ Renommer</md-outlined-button>
+                    <md-outlined-button v-if="i.status !== 'confirmed'" class="small" @click="setStatus(i, 'confirmed')"><i slot="icon" class="fa-solid fa-check" aria-hidden="true"></i>Confirmer</md-outlined-button>
+                    <md-outlined-button v-if="i.status !== 'ignored'" class="small" @click="setStatus(i, 'ignored')"><i slot="icon" class="fa-solid fa-xmark" aria-hidden="true"></i>Ignorer (pas un abonnement)</md-outlined-button>
+                    <md-outlined-button v-if="i.status !== 'auto'" class="small" @click="setStatus(i, 'auto')"><i slot="icon" class="fa-solid fa-rotate-left" aria-hidden="true"></i>Annuler ma décision</md-outlined-button>
+                    <md-outlined-button class="small" @click="rename = { item: i, label: i.label }"><i slot="icon" class="fa-solid fa-pen" aria-hidden="true"></i>Renommer</md-outlined-button>
                   </div>
                   <div class="help" style="margin-bottom:4px">Paiements détectés :</div>
                   <span v-for="o in i.occurrences" :key="o.id" class="tag" style="margin:2px 6px 2px 0">{{ date(o.date) }} · {{ eur(o.amount) }}</span>

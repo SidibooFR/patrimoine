@@ -67,9 +67,9 @@ async function follow() {
         <input v-model="choice" type="radio" name="scenario" :value="s.key" />
         <span class="head">
           {{ s.label }}
-          <md-icon-button v-if="s.key === 'moyenne'" class="small" aria-label="Pourquoi ce chiffre peut différer de la grille" :aria-expanded="showWhy" @click.prevent.stop="showWhy = !showWhy">ⓘ</md-icon-button>
+          <md-icon-button v-if="s.key === 'moyenne'" class="small" aria-label="Pourquoi ce chiffre peut différer de la grille" :aria-expanded="showWhy" @click.prevent.stop="showWhy = !showWhy"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></md-icon-button>
           <span v-if="data.followed === s.key" class="badge">Suivi</span>
-          <span v-else-if="choice === s.key" class="badge">✓ Choisi</span>
+          <span v-else-if="choice === s.key" class="badge"><i class="fa-solid fa-check" aria-hidden="true"></i> Choisi</span>
         </span>
         <span class="line">{{ s.hint }}</span>
         <span class="line" style="margin-top:4px">Épargne</span>
@@ -77,7 +77,7 @@ async function follow() {
         <span><span class="tag" :class="rateTone(s.rate)">{{ pct(s.rate, 0) }} d'épargne</span></span>
         <span class="line">Dépenses : {{ eur0(s.expense) }} / mois</span>
         <span class="line" :title="`Somme des budgets proposés pour les catégories d'épargne ; le reste (${eur0(s.savings - s.placed)}) demeure sur le compte courant`">Placé : {{ eur0(s.placed) }} / mois{{ s.key === 'investissement' ? ` · bourse & crypto ${eur0(s.invest)}` : "" }}</span>
-        <span v-if="s.goalsMonthly" class="line" :class="{ warn: s.goalsShortfall > 0 }">Objectifs : {{ eur0(s.goalsMonthly) }} / mois{{ s.goalsShortfall > 0 ? ` · il manque ${eur0(s.goalsShortfall)}` : " ✓" }}</span>
+        <span v-if="s.goalsMonthly" class="line" :class="{ warn: s.goalsShortfall > 0 }">Objectifs : {{ eur0(s.goalsMonthly) }} / mois{{ s.goalsShortfall > 0 ? ` · il manque ${eur0(s.goalsShortfall)}` : "" }}<template v-if="!(s.goalsShortfall > 0)"> <i class="fa-solid fa-check" aria-hidden="true"></i></template></span>
       </label>
     </div>
     <p v-if="showWhy" class="note" style="margin-top:12px">Cette moyenne couvre les 12 derniers mois complets. La colonne « Moy. / mois » de la grille ne compte que l'année affichée, mois en cours compris : les deux chiffres peuvent donc différer.</p>

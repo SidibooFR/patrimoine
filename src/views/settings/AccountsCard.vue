@@ -25,12 +25,12 @@ function addAcc() { if (!newAcc.value.name) return; emit("add", { ...newAcc.valu
           <td style="min-width:160px"><input class="cell cell-left" :value="a.institution" @change="emit('save', a, { institution: ($event.target as HTMLInputElement).value })" /></td>
           <td><select :value="a.type" @change="emit('save', a, { type: ($event.target as HTMLSelectElement).value })"><option v-for="t in accountTypes" :key="t">{{ t }}</option></select></td>
           <td><select :value="a.asset_class" @change="emit('save', a, { asset_class: ($event.target as HTMLSelectElement).value })"><option v-for="c in assetClasses" :key="c">{{ c }}</option></select></td>
-          <td class="nowrap"><md-icon-button class="small" :aria-label="a.archived ? 'Réactiver' : 'Archiver'" :title="a.archived ? 'Réactiver' : 'Archiver'" @click="emit('save', a, { archived: a.archived ? 0 : 1 })">{{ a.archived ? "↶" : "▣" }}</md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="emit('remove', a)">✕</md-icon-button></td>
+          <td class="nowrap"><md-icon-button class="small" :aria-label="a.archived ? 'Réactiver' : 'Archiver'" :title="a.archived ? 'Réactiver' : 'Archiver'" @click="emit('save', a, { archived: a.archived ? 0 : 1 })"><i class="fa-solid" :class="a.archived ? 'fa-rotate-left' : 'fa-box-archive'" aria-hidden="true"></i></md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="emit('remove', a)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button></td>
         </tr>
         <tr><td><input v-model="newAcc.name" placeholder="Nouveau compte" @keyup.enter="addAcc" class="w-full" /></td><td><input v-model="newAcc.institution" placeholder="Banque" class="w-full" /></td>
           <td><select v-model="newAcc.type"><option v-for="t in accountTypes" :key="t">{{ t }}</option></select></td>
           <td><select v-model="newAcc.asset_class"><option v-for="c in assetClasses" :key="c">{{ c }}</option></select></td>
-          <td><md-icon-button class="small" aria-label="Ajouter" title="Ajouter" @click="addAcc">+</md-icon-button></td></tr>
+          <td><md-icon-button class="small" aria-label="Ajouter" title="Ajouter" @click="addAcc"><i class="fa-solid fa-plus" aria-hidden="true"></i></md-icon-button></td></tr>
       </tbody>
     </table>
     <p class="help">La classe d'actif sert au suivi du patrimoine et à l'allocation. Pour qu'un export bancaire alimente un compte, ajoute la correspondance dans Importer.</p>

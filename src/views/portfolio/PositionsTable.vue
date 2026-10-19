@@ -17,11 +17,11 @@ defineEmits<{ newOp: [assetId: number]; edit: [assetId: number]; remove: [assetI
             <td class="muted nowrap">{{ p.account }}</td>
             <td class="num">{{ num(p.qty) }}</td><td class="num">{{ p.pru === null ? "–" : eur(p.pru, p.pru < 1 ? 6 : 2) }}</td>
             <td class="num">{{ p.price === null ? "–" : eur(p.price, p.price < 1 ? 6 : 2) }}</td>
-            <td><span class="tag" :class="p.priceSource === 'Manuel' ? 'warn' : p.priceSource ? 'ok' : 'neg'" :title="p.priceUpdatedAt ? 'Mis à jour le ' + new Date(p.priceUpdatedAt).toLocaleString('fr-FR') : ''">{{ p.priceSource || "⚠ aucun" }}</span></td>
+            <td><span class="tag" :class="p.priceSource === 'Manuel' ? 'warn' : p.priceSource ? 'ok' : 'neg'" :title="p.priceUpdatedAt ? 'Mis à jour le ' + new Date(p.priceUpdatedAt).toLocaleString('fr-FR') : ''"><template v-if="p.priceSource">{{ p.priceSource }}</template><template v-else><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> aucun</template></span></td>
             <td class="num"><b>{{ eur(p.value) }}</b></td>
             <td class="num" :class="sign(p.unrealized)">{{ eur(p.unrealized) }}</td><td class="num" :class="sign(p.unrealizedPct)">{{ pct(p.unrealizedPct) }}</td>
             <td class="num">{{ pct(p.weight) }}</td>
-            <td class="nowrap"><md-outlined-button class="small" @click="$emit('newOp', p.asset_id)">+ op</md-outlined-button> <md-icon-button class="small" aria-label="Modifier l'actif" title="Modifier l'actif" @click="$emit('edit', p.asset_id)">✎</md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer l'actif" title="Supprimer l'actif" @click="$emit('remove', p.asset_id)">✕</md-icon-button></td>
+            <td class="nowrap"><md-outlined-button class="small" @click="$emit('newOp', p.asset_id)">+ op</md-outlined-button> <md-icon-button class="small" aria-label="Modifier l'actif" title="Modifier l'actif" @click="$emit('edit', p.asset_id)"><i class="fa-solid fa-pen" aria-hidden="true"></i></md-icon-button> <md-icon-button class="small danger" aria-label="Supprimer l'actif" title="Supprimer l'actif" @click="$emit('remove', p.asset_id)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></md-icon-button></td>
           </tr>
         </tbody>
       </table>

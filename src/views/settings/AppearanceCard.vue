@@ -14,7 +14,7 @@ const emit = defineEmits<{ setLook: [key: string, value: string]; reset: [] }>()
         <div class="swatches">
           <button v-for="c in ACCENT_PRESETS" :key="c.color" class="swatch" :class="{ on: appearance.accent.toLowerCase() === c.color }" :style="{ background: c.color }" :title="c.name" @click="emit('setLook', 'ui_accent', c.color)"></button>
           <label class="swatch custom" title="Couleur personnalisée" :class="{ on: !ACCENT_PRESETS.some((c) => c.color === appearance.accent.toLowerCase()) }" :style="{ background: appearance.accent }">
-            <input type="color" :value="appearance.accent" @change="emit('setLook', 'ui_accent', ($event.target as HTMLInputElement).value)" />✎</label>
+            <input type="color" :value="appearance.accent" @change="emit('setLook', 'ui_accent', ($event.target as HTMLInputElement).value)" /><i class="fa-solid fa-pen" aria-hidden="true"></i></label>
         </div>
       </div>
       <SelectField :model-value="appearance.font" label="Police" @update:model-value="(v) => emit('setLook', 'ui_font', String(v))"><md-select-option v-for="f in FONTS" :key="f.id" :value="f.id"><div slot="headline" :style="{ fontFamily: f.stack }">{{ f.name }}</div></md-select-option></SelectField>
