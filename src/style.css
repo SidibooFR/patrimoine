@@ -99,6 +99,56 @@ td.under { background: var(--warn-soft); color: #5c2c00; }
 .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--line); vertical-align: -2px; margin-right: 6px; }
 .track-bar { min-width: 140px; width: 22%; }
 .track-bar md-linear-progress { display: block; }
+/* Budget : vue du mois */
+.card-h { font-size: 16px; font-weight: 500; margin: 0 0 16px; color: var(--text); letter-spacing: 0; }
+.hero { font-size: 24px; line-height: 1.35; margin: 0 0 20px; text-wrap: pretty; max-width: 820px; }
+.hero b { font-weight: 500; }
+.edit-banner { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 8px 8px 8px 20px; border-radius: 24px; background: var(--accent-soft); color: var(--on-accent-soft); margin-bottom: 20px; }
+.edit-banner label { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.edit-banner .solde { margin-left: auto; font-size: 13px; font-variant-numeric: tabular-nums; }
+.bgrid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.bgrid.edit { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.bcard { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; transition: background-color .15s; }
+.bcard.clickable { cursor: pointer; } .bcard.clickable:hover { background: var(--surface-2); }
+.bcard.over { border-color: color-mix(in srgb, var(--neg) 35%, var(--panel)); }
+.bcard .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 24px; }
+.bcard .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bcard .amounts { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+.bcard .amounts .real { font-size: 22px; } .bcard .amounts .of { color: var(--muted); font-size: 13px; }
+.bcard .foot { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { position: relative; height: 8px; background: var(--surface-2); border-radius: 99px; }
+.bar > i { display: block; height: 100%; border-radius: 99px; background: var(--pos); }
+.bar.over > i { background: var(--neg); } .bar.near > i { background: var(--warn); }
+.bar .pace { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); border-radius: 1px; }
+.bcard input.amount { font: inherit; font-size: 18px; width: 100%; padding: 6px 10px; border: 1px solid var(--outline); background: var(--edit); text-align: right; border-radius: 8px; color: var(--text); }
+.bcard input.amount:focus { outline: none; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.bcard .chips { display: flex; gap: 6px; }
+.bcard .chips button { flex: 1; height: 28px; padding: 0 8px; font-size: 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); justify-content: center; }
+.bcard .chips button:hover { border-color: var(--outline); background: var(--surface-2); }
+.donut-wrap { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.donut { position: relative; width: 176px; height: 176px; border-radius: 50%; flex-shrink: 0; }
+.donut .hole { position: absolute; inset: 26px; border-radius: 50%; background: var(--panel); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donut-legend { flex: 1 1 200px; min-width: 200px; display: flex; flex-direction: column; }
+.donut-legend > div { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 38px; gap: 8px; align-items: center; padding: 4px 0; font-size: 13px; font-variant-numeric: tabular-nums; }
+.donut-legend .sw { width: 10px; height: 10px; border-radius: 3px; }
+.donut-legend .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.diverge { display: flex; flex-direction: column; gap: 3px; }
+.diverge > div { display: grid; grid-template-columns: minmax(80px, 140px) minmax(0, 1fr) minmax(0, 1fr) 58px; align-items: center; font-size: 12px; height: 20px; }
+.diverge .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); padding-right: 8px; }
+.diverge .l { display: flex; justify-content: flex-end; height: 12px; border-right: 1px solid var(--outline); } .diverge .l i { background: var(--pos); border-radius: 3px 0 0 3px; }
+.diverge .r { display: flex; height: 12px; } .diverge .r i { background: var(--neg); border-radius: 0 3px 3px 0; }
+.diverge .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+.rate-chart { position: relative; height: 100px; margin: 0 16px; }
+.rate-chart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.rate-chart .dot { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); }
+.rate-chart .dot.on { background: var(--accent); }
+.rate-chart .lbl { position: absolute; transform: translate(-50%, -24px); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rate-chart .lbl.on { color: var(--accent); font-weight: 600; }
+.rate-chart .axis { position: absolute; left: -16px; right: -16px; bottom: 0; border-bottom: 1px solid var(--line); }
+.rate-months { position: relative; height: 18px; margin: 8px 16px 0; }
+.rate-months span { position: absolute; transform: translateX(-50%); font-size: 11.5px; color: var(--muted); }
+.rate-months span.on { color: var(--accent); font-weight: 600; }
+.empty-box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 40px; text-align: center; color: var(--muted); }
 /* Budget : « à prévoir chaque mois » */
 .prep ul { list-style: none; margin: 0; padding: 0; }
 .prep li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; }

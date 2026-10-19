@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PageHeader from "../components/PageHeader.vue";
 import { onMounted, ref, reactive, watch, computed } from "vue";
+import { useRoute } from "vue-router";
 import { api } from "../lib/api";
 import { eur, date, sign, todayIso } from "../lib/format";
 import { guard } from "../lib/toast";
@@ -27,8 +28,14 @@ async function load() {
   const r = await guard(() => api.listTransactions(f));
   if (r) result.value = r;
 }
+const route = useRoute();
 onMounted(async () => {
   [accounts.value, categories.value] = await Promise.all([api.listAccounts(), api.listCategories()]);
+  // Filtres passés par l'URL (ex. « Ouvrir dans Relevés » depuis l'onglet Budget) : #/releves?category_id=9&from=…&to=…
+  const q = route.query;
+  if (typeof q.category_id === "string") filter.category = q.category_id;
+  if (typeof q.from === "string") filter.from = q.from;
+  if (typeof q.to === "string") filter.to = q.to;
   await load();
 });
 let t: ReturnType<typeof setTimeout> | undefined;

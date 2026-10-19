@@ -94,6 +94,10 @@ async function main() {
     description: "Suivi du mois : réel contre budget pour chaque catégorie budgétée (reste, rythme, projection de fin de mois, statut ok/warn/over/under) et dépenses hors budget. Mois AAAA-MM, défaut : mois courant.",
     inputSchema: { month: z.string().regex(/^\d{4}-\d{2}$/).optional() }, annotations: ro,
   }, wrap(({ month }) => api.budgetMonth(month)));
+  server.registerTool("set_budget_month", {
+    description: "Budget propre à un mois (AAAA-MM) pour une ou plusieurs catégories, prioritaire sur le budget annuel ; reporté sur les mois suivants jusqu'à through si fourni ; amount null retire le montant propre.",
+    inputSchema: { month: z.string().regex(/^\d{4}-\d{2}$/), entries: z.array(z.object({ category_id: z.number(), amount: z.number().nullable() })), through: z.string().regex(/^\d{4}-\d{2}$/).optional() }, annotations: rw,
+  }, wrap(({ month, entries, through }) => api.saveBudgetMonth(month, entries, through)));
   server.registerTool("copy_budgets", {
     description: "Reprend les budgets d'une année sur une autre (ex. N−1 → N) sans écraser les montants déjà saisis.",
     inputSchema: { from_year: z.number().int(), to_year: z.number().int() }, annotations: rw,

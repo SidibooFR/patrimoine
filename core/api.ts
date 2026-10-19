@@ -9,7 +9,7 @@ import type { Account, AssetRow, BankCategoryMapRow, Category, ImportAccountMapR
 import { buildCategorizer, recategorizeAll } from "./categorize.js";
 import { importFile, parseFile, type Source } from "./importers.js";
 import { refreshPrices, searchAssets } from "./prices.js";
-import { allocationReport, budgetMonthReport, copyBudgets, dashboard, envelopes, goals, networthReport, portfolioReport, projectionReport, recurring, setting, type ProjectionParams } from "./reports.js";
+import { allocationReport, budgetMonthReport, copyBudgets, saveBudgetMonth, dashboard, envelopes, goals, networthReport, portfolioReport, projectionReport, recurring, setting, type ProjectionParams } from "./reports.js";
 import { ENVELOPE_KINDS, ENVELOPE_KIND_NAMES, RATES_AS_OF, officialRate } from "./envelopes.js";
 import { saveGoal, GOAL_SOURCES, type GoalInput } from "./goals.js";
 import { linkRefund, refundsReport } from "./refunds.js";
@@ -187,6 +187,8 @@ export function createApi(store: Store) {
     setBudgetScenario(key: ScenarioKey | null) { return setBudgetScenario(store, key); },
     /** « À prévoir chaque mois » : à garder sur le compte courant, à virer vers l'épargne et les objectifs, prélèvements imminents. */
     budgetPrepare() { return budgetPrepare(store); },
+    /** Budget propre à un mois (vue mensuelle) pour plusieurs catégories, reporté jusqu'à `through` si fourni ; null retire le montant propre. */
+    saveBudgetMonth(month: string, entries: { category_id: number; amount: number | null }[], through?: string) { return saveBudgetMonth(store, month, entries, through); },
     /** Reprend les budgets d'une année sur une autre, sans écraser les montants déjà saisis. */
     copyBudgets(fromYear: number, toYear: number) { return copyBudgets(store, fromYear, toYear); },
     /** Assistant « Proposer un budget » : 5 scénarios calculés sur les 12 derniers mois complets. */
