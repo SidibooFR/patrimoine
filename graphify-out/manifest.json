@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "src/views/Projection.vue": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "d191c0001cae4de158b1a3b79ca65b34",
+    "mtime": 1792417734.7488482,
+    "seen": 1792417760.1560574,
+    "ast_hash": "1d28bfce73063159528561f55d165395",
     "semantic_hash": ""
   },
   "src/views/Recurring.vue": {

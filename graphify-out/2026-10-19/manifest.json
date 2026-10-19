@@ -6,14 +6,14 @@
     "semantic_hash": "fb5d0b31176ff65853f5c588600c90be"
   },
   "core/api.ts": {
-    "mtime": 1792412230.047963,
-    "seen": 1792412276.3522618,
+    "mtime": 1792413859.7115216,
+    "seen": 1792417566.0849361,
     "ast_hash": "75a70f9748ac0b8927b17bcc926a80f4",
     "semantic_hash": ""
   },
   "core/balances.ts": {
-    "mtime": 1792412232.3263123,
-    "seen": 1792412276.3522618,
+    "mtime": 1792413859.7115216,
+    "seen": 1792417566.0849361,
     "ast_hash": "3f62487a7f5664bf89ba1ea47258d301",
     "semantic_hash": ""
   },
@@ -48,8 +48,8 @@
     "semantic_hash": "b137edd444f6ac32efb29fb87341ed56"
   },
   "core/finance.ts": {
-    "mtime": 1792412227.784176,
-    "seen": 1792412276.3522618,
+    "mtime": 1792413859.7171147,
+    "seen": 1792417566.0849361,
     "ast_hash": "d41a7fd375e07da80899803a625a2e6a",
     "semantic_hash": ""
   },
@@ -96,14 +96,14 @@
     "semantic_hash": "2784cac359646d7c56aeb8abeb959b1e"
   },
   "core/reports.ts": {
-    "mtime": 1792411200.289032,
-    "seen": 1792411250.8382306,
+    "mtime": 1792413859.7241955,
+    "seen": 1792417566.0849361,
     "ast_hash": "e96ec127664174fa37f908f442558af3",
     "semantic_hash": ""
   },
   "core/schema.ts": {
-    "mtime": 1792411200.2689147,
-    "seen": 1792411250.8382306,
+    "mtime": 1792413859.724902,
+    "seen": 1792417566.0849361,
     "ast_hash": "87f1916ae32290761b9618816863f40e",
     "semantic_hash": ""
   },
@@ -144,15 +144,15 @@
     "semantic_hash": ""
   },
   "mcp/server.ts": {
-    "mtime": 1792411200.2952392,
-    "seen": 1792411250.8382306,
+    "mtime": 1792413859.7284055,
+    "seen": 1792417566.0849361,
     "ast_hash": "4f6eb50f4c006bfec95cfb42dd9c2ddb",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792397929.7670965,
-    "seen": 1792397959.9642107,
-    "ast_hash": "3b2cbd8860295a3713fe0d71e8c470f6",
+    "mtime": 1792417192.2672453,
+    "seen": 1792417566.0849361,
+    "ast_hash": "8df5e22975ace2e7e09ebeb678c6964a",
     "semantic_hash": ""
   },
   "scripts/copy-wasm.mjs": {
@@ -186,9 +186,9 @@
     "semantic_hash": "7c70dfc46352f85f7c08c79bfff1097c"
   },
   "src/App.vue": {
-    "mtime": 1792413185.881499,
-    "seen": 1792413256.1518745,
-    "ast_hash": "06acc9ece6445cee36d769109adc317b",
+    "mtime": 1792413859.768953,
+    "seen": 1792417566.0849361,
+    "ast_hash": "eef91e91551e55789ff23b9e1a9a0615",
     "semantic_hash": ""
   },
   "src/components/Chart.vue": {
@@ -234,10 +234,10 @@
     "semantic_hash": "65dec99658c1afb355b2a6fc95de0a5a"
   },
   "src/lib/charts.ts": {
-    "mtime": 1792392690.7625802,
-    "seen": 1792394658.2720919,
-    "ast_hash": "3ea1189a29e310e23c1b51d89a1d1a3c",
-    "semantic_hash": "3ea1189a29e310e23c1b51d89a1d1a3c"
+    "mtime": 1792417432.6185496,
+    "seen": 1792417566.0849361,
+    "ast_hash": "e50af5f89073f05871248212455f4111",
+    "semantic_hash": ""
   },
   "src/lib/format.ts": {
     "mtime": 1792392690.7625802,
@@ -258,15 +258,15 @@
     "semantic_hash": "033caadd073f5dffcdbc948ecb32aaf4"
   },
   "src/main.ts": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "c39c8672a7d9f20c6603825a3b7dbd00",
+    "mtime": 1792417337.3800576,
+    "seen": 1792417566.0849361,
+    "ast_hash": "ac648d77a8e6df8745b93454c2b8fc45",
     "semantic_hash": ""
   },
   "src/router.ts": {
-    "mtime": 1792413184.6052408,
-    "seen": 1792413256.1518745,
-    "ast_hash": "a8faeb6ecd38fb49f50b50e31ba67f0b",
+    "mtime": 1792413859.7717214,
+    "seen": 1792417566.0849361,
+    "ast_hash": "855551f41ddf1248e699c32ea63e9f6e",
     "semantic_hash": ""
   },
   "src/views/Allocation.vue": {
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "src/views/Budget.vue": {
-    "mtime": 1792411642.7069478,
-    "seen": 1792412276.3522618,
-    "ast_hash": "bd78519c1af3e950f977715fe03f7869",
+    "mtime": 1792413859.7804203,
+    "seen": 1792417566.0849361,
+    "ast_hash": "73923e3588c74ebca10f382e2b9751a7",
     "semantic_hash": ""
   },
   "src/views/Dashboard.vue": {
@@ -324,8 +324,8 @@
     "semantic_hash": ""
   },
   "src/views/Recurring.vue": {
-    "mtime": 1792398579.2702773,
-    "seen": 1792398596.499897,
+    "mtime": 1792413859.8166282,
+    "seen": 1792417566.0849361,
     "ast_hash": "099b3d85027c0cafa2c7dbca69d0b9f5",
     "semantic_hash": ""
   },
@@ -348,8 +348,8 @@
     "semantic_hash": ""
   },
   "src/views/Transactions.vue": {
-    "mtime": 1792411200.3053334,
-    "seen": 1792411250.8382306,
+    "mtime": 1792413859.8208778,
+    "seen": 1792417566.0849361,
     "ast_hash": "d67c7e1689b70061610398aacf3e3db3",
     "semantic_hash": ""
   },
@@ -498,8 +498,8 @@
     "semantic_hash": "a3b73b736edc03a5e029b0415aee254f"
   },
   "vite.config.ts": {
-    "mtime": 1792412233.4402232,
-    "seen": 1792412276.3522618,
+    "mtime": 1792413859.8412292,
+    "seen": 1792417566.0849361,
     "ast_hash": "0a3021e9ca05f8a2a9a3bed4e9ec1533",
     "semantic_hash": ""
   },
@@ -690,15 +690,15 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792397930.9188633,
-    "seen": 1792397959.9642107,
+    "mtime": 1792413859.699904,
+    "seen": 1792417566.0849361,
     "ast_hash": "b6055899b25a5520f7792159fcd5f2e4",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792413249.124676,
-    "seen": 1792413256.1518745,
-    "ast_hash": "fcbf496fe5c80af1fb1d46432ba8454c",
+    "mtime": 1792413859.7085435,
+    "seen": 1792417566.0849361,
+    "ast_hash": "c9285e9e17fe77b322d456ee68ad81b4",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-17-refactor-composants-ui.md": {
@@ -720,20 +720,20 @@
     "semantic_hash": "0ba72d0ca6fd209009d05b659d87a9fc"
   },
   "core/budgetPlan.ts": {
-    "mtime": 1792401290.577271,
-    "seen": 1792401352.6248457,
-    "ast_hash": "f70118becd10d766529f6eb5ca09096f",
+    "mtime": 1792413859.7171147,
+    "seen": 1792417566.0849361,
+    "ast_hash": "4f0610b03bfa030c66e9e886f485574f",
     "semantic_hash": ""
   },
   "src/views/budget/ScenarioModal.vue": {
-    "mtime": 1792401291.627718,
-    "seen": 1792401352.6248457,
-    "ast_hash": "2ad101470592fda9805b756296dc5939",
+    "mtime": 1792413859.8251693,
+    "seen": 1792417566.0849361,
+    "ast_hash": "250216b54401555fcc63bcb52421f533",
     "semantic_hash": ""
   },
   "tests/budgetPlan.test.ts": {
-    "mtime": 1792401304.4742396,
-    "seen": 1792401352.6248457,
+    "mtime": 1792413859.839198,
+    "seen": 1792417566.0849361,
     "ast_hash": "74aeb0602e07a2486abf34cc829c5fe8",
     "semantic_hash": ""
   },
@@ -744,8 +744,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-10-18-assistant-budget-design.md": {
-    "mtime": 1792401304.4591925,
-    "seen": 1792401352.6248457,
+    "mtime": 1792413859.7284055,
+    "seen": 1792417566.0849361,
     "ast_hash": "408a5e8460b141f15ab4bb3feab82753",
     "semantic_hash": ""
   },
@@ -756,39 +756,87 @@
     "semantic_hash": ""
   },
   "scripts/seed-dev.ts": {
-    "mtime": 1792397916.2232106,
-    "seen": 1792397959.9642107,
-    "ast_hash": "a935be53b07d12d0e450f66bd870146d",
+    "mtime": 1792413859.764479,
+    "seen": 1792417566.0849361,
+    "ast_hash": "a8df55fd3eecd38dc17a25ff19d1a6fd",
     "semantic_hash": ""
   },
   ".claude/settings.json": {
-    "mtime": 1792398743.8583655,
-    "seen": 1792399859.466176,
-    "ast_hash": "cd47f163c99fa7c2122c4aa27566784d",
+    "mtime": 1792417192.5211215,
+    "seen": 1792417566.0849361,
+    "ast_hash": "0d7aad3c99659b178ace41ed830ab248",
     "semantic_hash": ""
   },
   "tests/budgetMonth.test.ts": {
-    "mtime": 1792412248.2422118,
-    "seen": 1792412276.3522618,
-    "ast_hash": "3d1545c510c944354a2550c26d8dc2c0",
+    "mtime": 1792413859.833147,
+    "seen": 1792417566.0849361,
+    "ast_hash": "46ec430f106c9b1d828f0458203d4a71",
     "semantic_hash": ""
   },
   "tests/budgetAuto.test.ts": {
-    "mtime": 1792411643.8046432,
-    "seen": 1792412276.3522618,
-    "ast_hash": "37862d40744706f666fe21dbc59cf587",
+    "mtime": 1792413859.8315022,
+    "seen": 1792417566.0849361,
+    "ast_hash": "4c75bedffe3811ddb21d05b8a38ce3f1",
     "semantic_hash": ""
   },
   "src/views/budget/TransactionsModal.vue": {
-    "mtime": 1792411042.4313602,
-    "seen": 1792411250.8382306,
-    "ast_hash": "d15e25da812af59d9fd89b9559589a00",
+    "mtime": 1792413859.8290005,
+    "seen": 1792417566.0849361,
+    "ast_hash": "c8967417aa3afdc2ddf7e0837054cb54",
     "semantic_hash": ""
   },
   "tests/budgetMonths.test.ts": {
-    "mtime": 1792411043.5351946,
-    "seen": 1792411250.8382306,
-    "ast_hash": "13a737b67c748179b681a31a2e0a3189",
+    "mtime": 1792413859.8355339,
+    "seen": 1792417566.0849361,
+    "ast_hash": "bc754130962758fb04e44f262ed39400",
+    "semantic_hash": ""
+  },
+  "src/components/ApexChart.vue": {
+    "mtime": 1792417343.2563157,
+    "seen": 1792417566.0849361,
+    "ast_hash": "139194cca5bdd624f69b7de64af47af6",
+    "semantic_hash": ""
+  },
+  "tests/charts.test.ts": {
+    "mtime": 1792417540.7664208,
+    "seen": 1792417566.0849361,
+    "ast_hash": "52f0a8843ab28fd27bc8ba4c557ff5d6",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-19-graphiques-apexcharts.md": {
+    "mtime": 1792416119.387,
+    "seen": 1792417566.0849361,
+    "ast_hash": "dc103810f994da5ba4b6cf60cb457581",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-design.md": {
+    "mtime": 1792415956.376592,
+    "seen": 1792417566.0849361,
+    "ast_hash": "a58fa17157a0edaecd476867f997ec50",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/autres-graphiques.html": {
+    "mtime": 1792415920.971803,
+    "seen": 1792417566.0849361,
+    "ast_hash": "8e79c9580571e5eb6f4f6e5b4876130c",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/budget-anneaux-ecarts.html": {
+    "mtime": 1792415920.9809055,
+    "seen": 1792417566.0849361,
+    "ast_hash": "415a613a68091107068f37d92f6726cf",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/budget-taux-epargne.html": {
+    "mtime": 1792415920.975395,
+    "seen": 1792417566.0849361,
+    "ast_hash": "9fce2afc94173c8ba1eb2e0cff43b29b",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/projection-styles.html": {
+    "mtime": 1792415920.9658387,
+    "seen": 1792417566.0849361,
+    "ast_hash": "b2bf5f68f2b0f88c835df3ec3ba67cc3",
     "semantic_hash": ""
   }
 }

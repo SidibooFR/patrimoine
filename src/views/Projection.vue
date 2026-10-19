@@ -5,9 +5,9 @@ import { api } from "../lib/api";
 import { eur0, cur } from "../lib/format";
 import { theme } from "../lib/appearance";
 import { guard } from "../lib/toast";
-import Chart from "../components/Chart.vue";
-import type { ChartConfiguration } from "chart.js";
-import { PALETTE, eurTick, eurTip } from "../lib/charts";
+import ApexChart from "../components/ApexChart.vue";
+import type { ApexOptions } from "apexcharts";
+import { PALETTE } from "../lib/charts";
 import type { ProjectionReport } from "../../core/reports";
 import type { GoalsReport } from "../../core/goals";
 
@@ -34,16 +34,29 @@ async function compute() {
   pr.value = await guard(() => api.projection({ initial, monthly: p.monthly, rateLow: p.rateLow / 100, rateMid: p.rateMid / 100, rateHigh: p.rateHigh / 100, inflation: p.inflation / 100, goal: p.goal, years: p.years }));
   for (const [k, v] of [["projection_monthly", p.monthly], ["projection_rate_low", p.rateLow / 100], ["projection_rate_mid", p.rateMid / 100], ["projection_rate_high", p.rateHigh / 100], ["projection_inflation", p.inflation / 100], ["projection_goal", p.goal]] as const) api.setSetting(k, String(v));
 }
-const chart = computed<ChartConfiguration<"line">>(() => ({
-  type: "line",
-  data: { labels: pr.value!.rows.map((r) => r.year), datasets: [
-    { label: "Total versé", data: pr.value!.rows.map((r) => r.paid), borderColor: PALETTE[6], borderDash: [4, 4], pointRadius: 0 },
-    { label: `Prudent ${p.rateLow} %`, data: pr.value!.rows.map((r) => r.low), borderColor: PALETTE[1], pointRadius: 0 },
-    { label: `Central ${p.rateMid} %`, data: pr.value!.rows.map((r) => r.mid), borderColor: theme.accent, borderWidth: 3, pointRadius: 0 },
-    { label: `Dynamique ${p.rateHigh} %`, data: pr.value!.rows.map((r) => r.high), borderColor: PALETTE[2], pointRadius: 0 },
-    { label: "Objectif", data: pr.value!.rows.map(() => p.goal), borderColor: PALETTE[4], borderDash: [2, 4], pointRadius: 0, borderWidth: 1 }] },
-  options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } }, interaction: { mode: "index", intersect: false } },
-}));
+const series = computed(() => {
+  const pts = (k: "high" | "mid" | "low" | "paid") => pr.value!.rows.map((r) => ({ x: r.year, y: r[k] }));
+  return [
+    { name: `Dynamique ${p.rateHigh} %`, data: pts("high") },
+    { name: `Central ${p.rateMid} %`, data: pts("mid") },
+    { name: `Prudent ${p.rateLow} %`, data: pts("low") },
+    { name: "Total versé", data: pts("paid") },
+  ];
+});
+const options = computed<ApexOptions>(() => {
+  const hit = pr.value!.rows.find((r) => r.mid >= p.goal);
+  return {
+    colors: [PALETTE[2], theme.accent, PALETTE[1], PALETTE[6]],
+    xaxis: { type: "numeric", labels: { formatter: (v: string) => String(Math.round(Number(v))) } },
+    fill: { gradient: { opacityFrom: [0.10, 0.28, 0.10, 0] } },
+    stroke: { width: [2, 3.5, 2, 2], dashArray: [0, 0, 0, 6] },
+    tooltip: { x: { formatter: (v: number) => `Année ${Math.round(v)}` } },
+    annotations: {
+      yaxis: [{ y: p.goal, borderColor: PALETTE[4], strokeDashArray: 5, label: { text: `Objectif ${eur0(p.goal)}`, position: "left", textAnchor: "start", offsetX: 6, borderColor: "transparent", style: { background: PALETTE[4], color: "#fff", fontSize: "12px" } } }],
+      points: hit ? [{ x: hit.year, y: hit.mid, marker: { size: 7, fillColor: "#fff", strokeColor: theme.accent, strokeWidth: 3 }, label: { text: `Objectif atteint en ${hit.year}`, borderColor: theme.accent, offsetY: -8, style: { background: theme.accent, color: "#fff", fontSize: "12px" } } }] : [],
+    },
+  };
+});
 </script>
 
 <template>
@@ -72,7 +85,7 @@ const chart = computed<ChartConfiguration<"line">>(() => ({
         <router-link to="/objectifs">Voir les objectifs</router-link>
       </div>
     </div>
-    <div class="card"><Chart :config="chart" :height="380" /></div>
+    <div class="card"><ApexChart type="area" :series="series" :options="options" :height="380" zoom /></div>
   </div>
   <div v-if="pr" class="card pad0 mt-3">
     <div class="table-wrap" style="max-height:420px">
