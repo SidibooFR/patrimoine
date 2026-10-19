@@ -13,7 +13,8 @@ export default defineConfig([
     extends: ["js/recommended", tseslint.configs.recommended, pluginVue.configs["flat/essential"]],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
     // Pages du routeur (Dashboard, Budget…) et composants de base (Chart, Modal) : noms d'un seul mot assumés
-    rules: { "vue/multi-word-component-names": "off" },
+    // `slot="…"` est ici l'attribut HTML natif des composants web @material/web, pas l'ancienne syntaxe Vue 2
+    rules: { "vue/multi-word-component-names": "off", "vue/no-deprecated-slot-attribute": "off" },
   },
   { files: ["**/*.vue"], languageOptions: { parserOptions: { parser: tseslint.parser } } },
   {

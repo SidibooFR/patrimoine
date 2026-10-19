@@ -10,6 +10,7 @@ import { api } from "../../lib/api";
 import { cur } from "../../lib/format";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import SelectField from "../../components/SelectField.vue";
 import type { Account, Category } from "../../../core/schema";
 
 const props = defineProps<{ tx: TransactionDraft; accounts: Account[]; categories: Category[] }>();
@@ -33,14 +34,14 @@ async function save() {
 <template>
   <Modal :title="draft.id ? 'Modifier l\'opération' : 'Saisie manuelle'" @close="emit('close')">
     <div class="form">
-      <label class="field">Date<input v-model="draft.date" type="date" /></label>
-      <label class="field">Compte<select v-model="draft.account_id"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label class="field">Sens<select v-model="draft.direction"><option value="-">Sortie (dépense)</option><option value="+">Entrée (revenu)</option></select></label>
-      <label class="field">Montant ({{ cur() }})<input v-model.number="draft.amount" type="number" step="0.01" min="0" /></label>
-      <label class="field full">Libellé<input v-model="draft.label" placeholder="ex. Marché, espèces" /></label>
-      <label class="field">Catégorie<select v-model="draft.category_id"><option value="">Automatique (règles)</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></label>
-      <label class="field">Note<input v-model="draft.note" /></label>
+      <md-outlined-text-field v-model="draft.date" label="Date" type="date"></md-outlined-text-field>
+      <SelectField v-model="draft.account_id" label="Compte"><md-select-option v-for="a in accounts" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
+      <SelectField v-model="draft.direction" label="Sens"><md-select-option value="-"><div slot="headline">Sortie (dépense)</div></md-select-option><md-select-option value="+"><div slot="headline">Entrée (revenu)</div></md-select-option></SelectField>
+      <md-outlined-text-field v-model.number="draft.amount" :label="`Montant (${cur()})`" type="number" step="0.01" min="0"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.label" class="full" label="Libellé" placeholder="ex. Marché, espèces"></md-outlined-text-field>
+      <SelectField v-model="draft.category_id" label="Catégorie"><md-select-option value=""><div slot="headline">Automatique (règles)</div></md-select-option><md-select-option v-for="c in categories" :key="c.id" :value="c.id"><div slot="headline">{{ c.name }}</div></md-select-option></SelectField>
+      <md-outlined-text-field v-model="draft.note" label="Note"></md-outlined-text-field>
     </div>
-    <template #foot><button @click="emit('close')">Annuler</button><button class="primary" :disabled="!draft.label || !draft.amount" @click="save">Enregistrer</button></template>
+    <template #foot><md-text-button @click="emit('close')">Annuler</md-text-button><md-filled-button :disabled="!draft.label || !draft.amount" @click="save">Enregistrer</md-filled-button></template>
   </Modal>
 </template>

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { api } from "../../lib/api";
 import { guard, notify } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import SelectField from "../../components/SelectField.vue";
 import type { Category } from "../../../core/schema";
 
 const props = defineProps<{ rule: { keyword: string; category_id: number | ""; label: string }; categories: Category[] }>();
@@ -26,9 +27,9 @@ async function saveRule() {
   <Modal title="Nouvelle règle de catégorisation" @close="emit('close')">
     <p class="help">Toute opération dont le libellé contient ce mot-clé prendra cette catégorie, maintenant et pour les prochains imports. Raccourcis le mot-clé à la partie stable du libellé (ex. « CARREFOUR »).</p>
     <div class="form">
-      <label class="field">Mot-clé<input v-model="draft.keyword" /></label>
-      <label class="field">Catégorie<select v-model="draft.category_id"><option value="" disabled>Choisir…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></label>
+      <md-outlined-text-field v-model="draft.keyword" label="Mot-clé"></md-outlined-text-field>
+      <SelectField v-model="draft.category_id" label="Catégorie"><md-select-option v-for="c in categories" :key="c.id" :value="c.id"><div slot="headline">{{ c.name }}</div></md-select-option></SelectField>
     </div>
-    <template #foot><button @click="emit('close')">Annuler</button><button class="primary" :disabled="!draft.keyword || draft.category_id === ''" @click="saveRule">Créer la règle</button></template>
+    <template #foot><md-text-button @click="emit('close')">Annuler</md-text-button><md-filled-button :disabled="!draft.keyword || draft.category_id === ''" @click="saveRule">Créer la règle</md-filled-button></template>
   </Modal>
 </template>

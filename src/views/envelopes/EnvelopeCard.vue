@@ -14,12 +14,12 @@ const threshold = 0.5;
   <div class="card env-card">
     <div class="head">
       <div><span class="tag">{{ row.kind }}</span><h2 style="margin-top:6px">{{ row.account }}</h2></div>
-      <button class="small" @click="$emit('edit')">✎ Modifier</button>
+      <md-outlined-button class="small" @click="$emit('edit')">✎ Modifier</md-outlined-button>
     </div>
 
     <template v-if="row.ceiling !== null">
       <div>
-        <div class="gauge" :class="{ low: row.ceilingOn === 'balance' && (row.fill ?? 0) < threshold }"><span :style="{ width: Math.max(1.5, (row.fill ?? 0) * 100) + '%' }"></span></div>
+        <md-linear-progress class="gauge" :class="{ low: row.ceilingOn === 'balance' && (row.fill ?? 0) < threshold }" :value="Math.min(1, Math.max(0.015, row.fill ?? 0))"></md-linear-progress>
         <div class="gauge-legend">
           <span>{{ row.ceilingOn === "deposits" ? "Versements" : "Solde" }} : <b>{{ eur(row.used) }}</b> sur {{ eur0(row.ceiling) }} ({{ pct(row.fill, 0) }})</span>
           <span>reste <b>{{ eur0(row.room) }}</b></span>

@@ -65,7 +65,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
     <div>
       <div class="card">
         <h2>Où placer mon prochain versement ?</h2>
-        <label class="field">Montant à placer ce mois-ci ({{ cur() }})<input v-model.number="deposit" type="number" step="50" min="0" /></label>
+        <md-outlined-text-field v-model.number="deposit" :label="`Montant à placer ce mois-ci (${cur()})`" type="number" step="50" min="0"></md-outlined-text-field>
         <table class="mt-1">
           <thead><tr><th>Classe</th><th class="num">À placer</th></tr></thead>
           <tbody>
@@ -78,7 +78,7 @@ const actionClass = (a: string | null) => (a === "Renforcer" ? "warn" : a === "A
         <h2>Épargne de précaution</h2>
         <KpiCard label="Disponible (liquidités + épargne sécurisée)" :value="eur0(al.emergency.available)" small />
         <KpiCard class="mt-1" :label="`Objectif : ${al.emergency.months} mois × ${eur0(al.emergency.avgExpense)} de dépenses moyennes`" :value="eur0(al.emergency.goal)" small />
-        <div class="progress" style="margin:10px 0 6px"><span :style="{ width: Math.min(100, al.emergency.goal ? (al.emergency.available / al.emergency.goal) * 100 : 0) + '%', background: al.emergency.available >= al.emergency.goal ? 'var(--pos)' : 'var(--warn)' }"></span></div>
+        <md-linear-progress style="margin:10px 0 6px" :class="al.emergency.available >= al.emergency.goal ? 'ok' : 'low'" :value="Math.min(1, al.emergency.goal ? al.emergency.available / al.emergency.goal : 0)"></md-linear-progress>
         <div :class="al.emergency.available >= al.emergency.goal ? 'pos' : 'warn'"><b>{{ al.emergency.status }}</b> · couverture : {{ al.emergency.coverage === null ? "–" : al.emergency.coverage.toFixed(1) + " mois" }}</div>
       </div>
     </div>

@@ -51,7 +51,7 @@ async function apply() {
         <input v-model="choice" type="radio" name="scenario" :value="s.key" />
         <span class="head">
           {{ s.label }}
-          <button v-if="s.key === 'moyenne'" type="button" class="icon-btn" aria-label="Pourquoi ce chiffre peut différer de la grille" :aria-expanded="showWhy" @click.prevent.stop="showWhy = !showWhy">ⓘ</button>
+          <md-icon-button v-if="s.key === 'moyenne'" class="small" aria-label="Pourquoi ce chiffre peut différer de la grille" :aria-expanded="showWhy" @click.prevent.stop="showWhy = !showWhy">ⓘ</md-icon-button>
           <span v-if="choice === s.key" class="badge">✓ Choisi</span>
         </span>
         <span class="line">{{ s.hint }}</span>
@@ -67,14 +67,14 @@ async function apply() {
     <fieldset v-if="data" class="charge-list">
       <legend>Charges fixes : elles gardent leur moyenne dans tous les scénarios</legend>
       <label v-for="c in data.fixedCandidates" :key="c.name">
-        <input type="checkbox" :checked="c.checked" @change="toggleCharge(c.name, ($event.target as HTMLInputElement).checked)" /> {{ c.name }}
+        <md-checkbox :checked="c.checked" @change="toggleCharge(c.name, ($event.target as HTMLInputElement).checked)"></md-checkbox> {{ c.name }}
       </label>
     </fieldset>
 
     <template #foot>
       <span v-if="chosen" class="muted" style="margin-right:auto;align-self:center;font-size:13px">{{ chosen.fillable }} catégorie(s) seront remplies · tes montants déjà saisis sont conservés</span>
-      <button @click="emit('close')">Annuler</button>
-      <button class="primary" :disabled="!chosen || empty || chosen.fillable === 0 || busy" @click="apply">Appliquer</button>
+      <md-text-button @click="emit('close')">Annuler</md-text-button>
+      <md-filled-button :disabled="!chosen || empty || chosen.fillable === 0 || busy" @click="apply">Appliquer</md-filled-button>
     </template>
   </Modal>
 </template>

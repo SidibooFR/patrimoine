@@ -48,7 +48,7 @@ async function quickAdd(label: string) {
 
 <template>
   <PageHeader title="Règles de catégorisation" sub="1) Un mot-clé trouvé dans le libellé donne la catégorie (le mot-clé le plus long l'emporte). 2) Sinon, la catégorie proposée par la banque est convertie. 3) Sinon l'opération reste à catégoriser.">
-    <button @click="recat">↻ Recatégoriser tout</button>
+    <md-outlined-button @click="recat">↻ Recatégoriser tout</md-outlined-button>
   </PageHeader>
 
   <div v-if="unmapped.length" class="card mb-3">
@@ -63,17 +63,17 @@ async function quickAdd(label: string) {
 
   <div class="grid c2">
     <div class="card">
-      <div class="card-title"><h2>Mots-clés ({{ rules.length }})</h2><input v-model="search" placeholder="Filtrer…" /></div>
+      <div class="card-title"><h2>Mots-clés ({{ rules.length }})</h2><md-outlined-text-field v-model="search" placeholder="Filtrer…"></md-outlined-text-field></div>
       <table>
         <thead><tr><th>Mot-clé</th><th>Catégorie</th><th></th></tr></thead>
         <tbody>
           <tr><td><input v-model="newRule.keyword" placeholder="Nouveau mot-clé" @keyup.enter="addRule" class="w-full" /></td>
             <td><select v-model="newRule.category_id" class="w-full"><option value="" disabled>Catégorie…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
-            <td><button class="small primary" @click="addRule">+</button></td></tr>
+            <td><md-filled-button class="small" title="Ajouter la règle" @click="addRule">+</md-filled-button></td></tr>
           <tr v-for="r in filtered" :key="r.id">
             <td><input :value="r.keyword" class="cell cell-left" @change="setRuleKw(r, ($event.target as HTMLInputElement).value)" /></td>
             <td><select :value="r.category_id" @change="setRuleCat(r, ($event.target as HTMLSelectElement).value)" class="w-full"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
-            <td><button class="small danger" @click="delRule(r)">✕</button></td>
+            <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delRule(r)">✕</md-icon-button></td>
           </tr>
         </tbody>
       </table>
@@ -85,11 +85,11 @@ async function quickAdd(label: string) {
         <tbody>
           <tr><td><input v-model="newMap.bank_label" placeholder="Libellé exact de la banque" class="w-full" /></td>
             <td><select v-model="newMap.category_id" class="w-full"><option value="" disabled>Catégorie…</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
-            <td><button class="small primary" @click="addMap()">+</button></td></tr>
+            <td><md-filled-button class="small" title="Ajouter la correspondance" @click="addMap()">+</md-filled-button></td></tr>
           <tr v-for="m in bankMap" :key="m.id">
             <td>{{ m.bank_label }}</td>
             <td><select :value="m.category_id" @change="setMapCat(m, ($event.target as HTMLSelectElement).value)" class="w-full"><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></td>
-            <td><button class="small danger" @click="delMap(m)">✕</button></td>
+            <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delMap(m)">✕</md-icon-button></td>
           </tr>
         </tbody>
       </table>

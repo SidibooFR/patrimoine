@@ -4,6 +4,7 @@ import { onMounted, ref, reactive, watch, computed } from "vue";
 import { api } from "../lib/api";
 import { eur, date, sign, todayIso } from "../lib/format";
 import { guard } from "../lib/toast";
+import SelectField from "../components/SelectField.vue";
 import RuleModal from "./transactions/RuleModal.vue";
 import TransactionModal from "./transactions/TransactionModal.vue";
 import type { TransactionDraft } from "./transactions/TransactionModal.vue";
@@ -58,16 +59,16 @@ async function remove(row: TransactionRow) {
 
 <template>
   <PageHeader title="Relevés" sub="Toutes les opérations : exports bancaires importés et saisies manuelles. Change une catégorie directement dans la liste.">
-    <button class="primary" @click="openNew">+ Saisie manuelle</button>
+    <md-filled-button @click="openNew">+ Saisie manuelle</md-filled-button>
   </PageHeader>
 
   <div class="toolbar">
-    <input v-model="filter.search" placeholder="Rechercher un libellé…" style="width:220px" />
-    <input v-model="filter.from" type="date" /> <span class="muted">→</span> <input v-model="filter.to" type="date" />
-    <select v-model="filter.account_id"><option value="">Tous les comptes</option><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select>
-    <select v-model="filter.category"><option value="">Toutes les catégories</option><option value="none">⚠ Sans catégorie</option><option v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.name }}</option></select>
-    <select v-model="filter.kind"><option value="">Tous types</option><option>Revenu</option><option>Dépense</option><option>Épargne</option><option>Transfert</option></select>
-    <select v-model="filter.source"><option value="">Toutes sources</option><option value="manuel">Manuel</option><option value="bnp">BNP</option><option value="boursobank">Boursobank</option><option value="revolut">Revolut</option></select>
+    <md-outlined-text-field v-model="filter.search" placeholder="Rechercher un libellé…" style="width:220px"></md-outlined-text-field>
+    <md-outlined-text-field v-model="filter.from" label="Du" type="date"></md-outlined-text-field> <span class="muted">→</span> <md-outlined-text-field v-model="filter.to" label="Au" type="date"></md-outlined-text-field>
+    <SelectField v-model="filter.account_id" label="Compte"><md-select-option value=""><div slot="headline">Tous les comptes</div></md-select-option><md-select-option v-for="a in accounts" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
+    <SelectField v-model="filter.category" label="Catégorie"><md-select-option value=""><div slot="headline">Toutes les catégories</div></md-select-option><md-select-option value="none"><div slot="headline">⚠ Sans catégorie</div></md-select-option><md-select-option v-for="c in categories" :key="c.id" :value="String(c.id)"><div slot="headline">{{ c.name }}</div></md-select-option></SelectField>
+    <SelectField v-model="filter.kind" label="Type"><md-select-option value=""><div slot="headline">Tous types</div></md-select-option><md-select-option v-for="k in ['Revenu', 'Dépense', 'Épargne', 'Transfert']" :key="k" :value="k"><div slot="headline">{{ k }}</div></md-select-option></SelectField>
+    <SelectField v-model="filter.source" label="Source"><md-select-option value=""><div slot="headline">Toutes sources</div></md-select-option><md-select-option value="manuel"><div slot="headline">Manuel</div></md-select-option><md-select-option value="bnp"><div slot="headline">BNP</div></md-select-option><md-select-option value="boursobank"><div slot="headline">Boursobank</div></md-select-option><md-select-option value="revolut"><div slot="headline">Revolut</div></md-select-option></SelectField>
     <span class="muted ml-auto">{{ result.total }} opération(s) · total <b :class="sign(result.sum)">{{ eur(result.sum) }}</b></span>
   </div>
 
@@ -93,8 +94,8 @@ async function remove(row: TransactionRow) {
               <span v-if="r.category_manual" class="muted" title="Catégorie fixée à la main"> ✎</span>
             </td>
             <td class="nowrap">
-              <button class="small" title="Créer une règle à partir de ce libellé" @click="ruleFrom(r)">+ règle</button>
-              <button v-if="r.source === 'manuel'" class="small danger" @click="remove(r)">✕</button>
+              <md-outlined-button class="small" title="Créer une règle à partir de ce libellé" @click="ruleFrom(r)">+ règle</md-outlined-button>
+              <md-icon-button v-if="r.source === 'manuel'" class="small danger" aria-label="Supprimer" title="Supprimer" @click="remove(r)">✕</md-icon-button>
             </td>
           </tr>
         </tbody>
@@ -103,7 +104,7 @@ async function remove(row: TransactionRow) {
     </div>
   </div>
   <div v-if="pages > 1" class="toolbar" style="margin-top:10px;justify-content:center">
-    <button :disabled="page === 0" @click="page--">‹</button><span class="muted">Page {{ page + 1 }} / {{ pages }}</span><button :disabled="page >= pages - 1" @click="page++">›</button>
+    <md-icon-button :disabled="page === 0" aria-label="Page précédente" title="Page précédente" @click="page--">‹</md-icon-button><span class="muted">Page {{ page + 1 }} / {{ pages }}</span><md-icon-button :disabled="page >= pages - 1" aria-label="Page suivante" title="Page suivante" @click="page++">›</md-icon-button>
   </div>
 
   <RuleModal v-if="ruleModal" :rule="ruleModal" :categories="categories" @close="ruleModal = null" @saved="ruleModal = null; load()" />

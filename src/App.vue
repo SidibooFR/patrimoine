@@ -21,13 +21,14 @@ onMounted(async () => {
       </template>
     </nav>
     <div class="foot">Données locales uniquement.<br />Serveur MCP intégré pour Claude.<br /><span v-if="version">Version {{ version }}</span>
-      <button v-if="update.status === 'downloaded'" class="small primary update-btn" @click="installUpdate">⟳ Installer la version {{ update.version }}</button>
-      <button v-else-if="update.status === 'portable'" class="small update-btn" @click="installUpdate">⇩ Version {{ update.version }} disponible</button></div>
+      <md-filled-button v-if="update.status === 'downloaded'" class="small update-btn" @click="installUpdate">⟳ Installer la version {{ update.version }}</md-filled-button>
+      <md-outlined-button v-else-if="update.status === 'portable'" class="small update-btn" @click="installUpdate">⇩ Version {{ update.version }} disponible</md-outlined-button></div>
   </aside>
   <main>
     <router-view v-slot="{ Component }">
       <component :is="Component" :key="$route.path" />
     </router-view>
   </main>
-  <div v-if="toast.visible" class="toast" :class="{ err: toast.err }">{{ toast.text }}</div>
+  <!-- Popover : passe au-dessus des md-dialog ouverts (couche supérieure). -->
+  <div v-if="toast.visible" :ref="(el) => (el as HTMLElement | null)?.showPopover()" popover="manual" class="toast" :class="{ err: toast.err }">{{ toast.text }}</div>
 </template>

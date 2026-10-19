@@ -52,16 +52,15 @@ const chart = computed<ChartConfiguration<"line">>(() => ({
     <div class="card">
       <h2>Hypothèses</h2>
       <div class="form" style="grid-template-columns: 1fr">
-        <label class="field">Capital de départ ({{ cur() }})
-          <input v-model.number="p.initial" type="number" step="100" :disabled="p.useNetworth" />
-          <span class="help"><input v-model="p.useNetworth" type="checkbox" /> Patrimoine actuel ({{ eur0(nwTotal) }})</span></label>
-        <label class="field">Versement mensuel ({{ cur() }})<input v-model.number="p.monthly" type="number" step="50" /></label>
-        <label class="field">Rendement prudent (%/an)<input v-model.number="p.rateLow" type="number" step="0.5" /></label>
-        <label class="field">Rendement central (%/an)<input v-model.number="p.rateMid" type="number" step="0.5" /></label>
-        <label class="field">Rendement dynamique (%/an)<input v-model.number="p.rateHigh" type="number" step="0.5" /></label>
-        <label class="field">Inflation (%/an)<input v-model.number="p.inflation" type="number" step="0.5" /></label>
-        <label class="field">Objectif de patrimoine ({{ cur() }})<input v-model.number="p.goal" type="number" step="10000" /></label>
-        <label class="field">Horizon (années)<input v-model.number="p.years" type="number" min="1" max="50" /></label>
+        <md-outlined-text-field v-model.number="p.initial" :label="`Capital de départ (${cur()})`" type="number" step="100" :disabled="p.useNetworth"></md-outlined-text-field>
+        <label class="check help"><md-checkbox :checked="p.useNetworth" @change="p.useNetworth = ($event.target as HTMLInputElement).checked"></md-checkbox>Patrimoine actuel ({{ eur0(nwTotal) }})</label>
+        <md-outlined-text-field v-model.number="p.monthly" :label="`Versement mensuel (${cur()})`" type="number" step="50"></md-outlined-text-field>
+        <md-outlined-text-field v-model.number="p.rateLow" label="Rendement prudent (%/an)" type="number" step="0.5"></md-outlined-text-field>
+        <md-outlined-text-field v-model.number="p.rateMid" label="Rendement central (%/an)" type="number" step="0.5"></md-outlined-text-field>
+        <md-outlined-text-field v-model.number="p.rateHigh" label="Rendement dynamique (%/an)" type="number" step="0.5"></md-outlined-text-field>
+        <md-outlined-text-field v-model.number="p.inflation" label="Inflation (%/an)" type="number" step="0.5"></md-outlined-text-field>
+        <md-outlined-text-field v-model.number="p.goal" :label="`Objectif de patrimoine (${cur()})`" type="number" step="10000"></md-outlined-text-field>
+        <md-outlined-text-field v-model.number="p.years" label="Horizon (années)" type="number" min="1" max="50"></md-outlined-text-field>
       </div>
       <div class="note mt-2">
         <b>Objectif {{ eur0(p.goal) }}</b> atteint en <b>{{ pr.goalYears === null ? "jamais" : pr.goalYears.toFixed(1) + " ans" }}</b><span v-if="pr.goalYear"> (vers {{ pr.goalYear }})</span> dans le scénario central.

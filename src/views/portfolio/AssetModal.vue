@@ -9,6 +9,7 @@ import { cur } from "../../lib/format";
 import { appearance } from "../../lib/appearance";
 import { guard } from "../../lib/toast";
 import Modal from "../../components/Modal.vue";
+import SelectField from "../../components/SelectField.vue";
 import type { Account } from "../../../core/schema";
 import type { AssetSuggestion } from "../../../core/prices";
 
@@ -50,23 +51,26 @@ async function saveAsset() {
 
 <template>
   <Modal :title="draft.id ? 'Modifier l\'actif' : 'Nouvel actif'" @close="emit('close')">
-    <label class="field">🔍 Rechercher (nom ou ISIN)<input v-model="query" placeholder="ex. amundi msci world, LU1681043599, bitcoin" /></label>
+    <md-outlined-text-field v-model="query" class="w-full" label="🔍 Rechercher (nom ou ISIN)" placeholder="ex. amundi msci world, LU1681043599, bitcoin"></md-outlined-text-field>
     <div v-if="query.trim().length >= 2" class="suggest">
-      <p v-if="searching" class="help" role="status"><span class="spinner" />Recherche…</p>
+      <p v-if="searching" class="help" role="status"><md-circular-progress indeterminate class="inline"></md-circular-progress>Recherche…</p>
       <p v-else-if="!results.length" class="help">Aucun résultat (ou pas de connexion) : remplis les champs à la main.</p>
-      <button v-for="s in results" v-else :key="s.asset_class + s.symbol" type="button" @click="pick(s)">
-        <span><b>{{ s.name }}</b><br /><span class="muted">{{ s.symbol }}</span></span>
-        <span class="tag" :class="{ ok: s.asset_class !== 'Crypto' && s.currency === appearance.currency }">{{ s.asset_class === "Crypto" ? "Crypto" : [s.exchange, s.currency].filter(Boolean).join(" · ") }}</span>
-      </button>
+      <md-list v-else>
+        <md-list-item v-for="s in results" :key="s.asset_class + s.symbol" type="button" @click="pick(s)">
+          <div slot="headline">{{ s.name }}</div>
+          <div slot="supporting-text">{{ s.symbol }}</div>
+          <span slot="end" class="tag" :class="{ ok: s.asset_class !== 'Crypto' && s.currency === appearance.currency }">{{ s.asset_class === "Crypto" ? "Crypto" : [s.exchange, s.currency].filter(Boolean).join(" · ") }}</span>
+        </md-list-item>
+      </md-list>
     </div>
     <div class="form">
-      <label class="field full">Nom<input v-model="draft.name" placeholder="ex. Vanguard S&P 500 (VUAA)" /></label>
-      <label class="field">Classe<select v-model="draft.asset_class"><option v-for="c in classes" :key="c">{{ c }}</option></select></label>
-      <label class="field">Compte<select v-model="draft.account_id"><option value="">–</option><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></label>
-      <label class="field">Symbole de cotation<input v-model="draft.symbol" :placeholder="draft.asset_class === 'Crypto' ? 'id CoinGecko, ex. bitcoin' : 'symbole Yahoo, ex. VUAA.DE'" /></label>
-      <label class="field">Cours manuel de secours ({{ cur() }})<input v-model="draft.manual_price" type="number" step="any" /></label>
+      <md-outlined-text-field v-model="draft.name" class="full" label="Nom" placeholder="ex. Vanguard S&P 500 (VUAA)"></md-outlined-text-field>
+      <SelectField v-model="draft.asset_class" label="Classe"><md-select-option v-for="c in classes" :key="c" :value="c"><div slot="headline">{{ c }}</div></md-select-option></SelectField>
+      <SelectField v-model="draft.account_id" label="Compte"><md-select-option value=""><div slot="headline">–</div></md-select-option><md-select-option v-for="a in accounts" :key="a.id" :value="a.id"><div slot="headline">{{ a.name }}</div></md-select-option></SelectField>
+      <md-outlined-text-field v-model="draft.symbol" label="Symbole de cotation" :placeholder="draft.asset_class === 'Crypto' ? 'id CoinGecko, ex. bitcoin' : 'symbole Yahoo, ex. VUAA.DE'"></md-outlined-text-field>
+      <md-outlined-text-field v-model="draft.manual_price" :label="`Cours manuel de secours (${cur()})`" type="number" step="any"></md-outlined-text-field>
     </div>
     <p class="help">ETF / actions : symbole Yahoo Finance (suffixe .DE pour Xetra, .PA pour Paris). Cryptos : identifiant CoinGecko, visible dans l'adresse de la page coingecko.com (ex. « bitcoin », « ethereum », « polygon-ecosystem-token »).</p>
-    <template #foot><button @click="emit('close')">Annuler</button><button class="primary" :disabled="!draft.name" @click="saveAsset">Enregistrer</button></template>
+    <template #foot><md-text-button @click="emit('close')">Annuler</md-text-button><md-filled-button :disabled="!draft.name" @click="saveAsset">Enregistrer</md-filled-button></template>
   </Modal>
 </template>

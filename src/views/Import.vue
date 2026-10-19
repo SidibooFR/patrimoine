@@ -45,7 +45,7 @@ async function setMapAccount(m: ImportAccountMapRow, v: string) { await guard(()
 
 <template>
   <PageHeader title="Importer des relevés" sub="Exports BNP Paribas (.xls), Boursobank (.xlsx) et Revolut (.csv). La banque est détectée automatiquement, les doublons ignorés, les opérations catégorisées selon tes règles.">
-    <button class="primary" @click="choose">Choisir des fichiers…</button><button v-if="previews.length" @click="clear">Vider</button>
+    <md-filled-button @click="choose">Choisir des fichiers…</md-filled-button><md-outlined-button v-if="previews.length" @click="clear">Vider</md-outlined-button>
   </PageHeader>
 
   <div v-if="!previews.length" class="card">
@@ -77,7 +77,7 @@ async function setMapAccount(m: ImportAccountMapRow, v: string) { await guard(()
     </template>
   </div>
   <div v-if="previews.some((p) => p.preview && !p.result)" class="toolbar">
-    <button class="primary" :disabled="busy" @click="importAll">{{ busy ? "Import en cours…" : "Importer dans la base" }}</button>
+    <md-filled-button :disabled="busy" @click="importAll">{{ busy ? "Import en cours…" : "Importer dans la base" }}</md-filled-button>
   </div>
 
   <div class="card" style="margin-top:20px">
@@ -89,13 +89,13 @@ async function setMapAccount(m: ImportAccountMapRow, v: string) { await guard(()
         <tr v-for="m in maps" :key="m.id">
           <td>{{ SOURCE_LABEL[m.source] ?? m.source }}</td><td><code>{{ m.key }}</code></td>
           <td><select :value="m.account_id" @change="setMapAccount(m, ($event.target as HTMLSelectElement).value)"><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></td>
-          <td><button class="small danger" @click="delMap(m.id)">✕</button></td>
+          <td><md-icon-button class="small danger" aria-label="Supprimer" title="Supprimer" @click="delMap(m.id)">✕</md-icon-button></td>
         </tr>
         <tr>
           <td><select v-model="newMap.source"><option value="bnp">BNP Paribas</option><option value="boursobank">Boursobank</option><option value="revolut">Revolut</option></select></td>
           <td><input v-model="newMap.key" placeholder="ex. LIVRET A" /></td>
           <td><select v-model="newMap.account_id"><option value="" disabled>Compte…</option><option v-for="a in accounts" :key="a.id" :value="a.id">{{ a.name }}</option></select></td>
-          <td><button class="small primary" @click="addMap">Ajouter</button></td>
+          <td><md-filled-button class="small" @click="addMap">Ajouter</md-filled-button></td>
         </tr>
       </tbody>
     </table>

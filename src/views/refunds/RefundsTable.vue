@@ -24,16 +24,19 @@ const VIA: Record<string, string> = { expense: "dépense", category: "catégorie
                 <span v-if="r.link.expense_id">{{ r.link.expense_label }} · {{ eur(r.link.expense_amount) }} · {{ date(r.link.expense_date) }}</span>
                 <span v-else>{{ r.link.category }}</span>
                 <span class="muted">→ déduit de « {{ r.link.category }} »</span>
-                <button v-if="r.link.via !== 'rule'" class="small" @click="$emit('unlink', r)">Annuler</button>
+                <md-outlined-button v-if="r.link.via !== 'rule'" class="small" @click="$emit('unlink', r)">Annuler</md-outlined-button>
               </div>
               <div v-else class="sugg">
-                <button v-for="s in r.suggestions" :key="(s.expense_id ?? 'c') + '-' + s.category_id" class="small" @click="$emit('link', r, s.type === 'expense' ? { expense_id: s.expense_id } : { category_id: s.category_id })">
-                  <span v-if="s.type === 'expense'">↳ <b>{{ s.label }}</b> · {{ eur(s.amount) }} · {{ date(s.date) }} <span class="muted">({{ s.reason }})</span></span>
-                  <span v-else>↳ catégorie <b>{{ s.category }}</b> <span class="muted">({{ s.reason }})</span></span>
-                  <span class="score">{{ Math.round(s.score * 100) }} %</span>
-                </button>
+                <md-list v-if="r.suggestions.length">
+                  <md-list-item v-for="s in r.suggestions" :key="(s.expense_id ?? 'c') + '-' + s.category_id" type="button" @click="$emit('link', r, s.type === 'expense' ? { expense_id: s.expense_id } : { category_id: s.category_id })">
+                    <div v-if="s.type === 'expense'" slot="headline">↳ <b>{{ s.label }}</b> · {{ eur(s.amount) }} · {{ date(s.date) }}</div>
+                    <div v-else slot="headline">↳ catégorie <b>{{ s.category }}</b></div>
+                    <div slot="supporting-text">{{ s.reason }}</div>
+                    <div slot="trailing-supporting-text" class="score">{{ Math.round(s.score * 100) }} %</div>
+                  </md-list-item>
+                </md-list>
                 <div v-if="r.hint" class="help">ℹ {{ r.hint }}</div>
-                <div><button class="small" @click="$emit('openPicker', r)">Choisir la dépense ou la catégorie…</button></div>
+                <div><md-outlined-button class="small" @click="$emit('openPicker', r)">Choisir la dépense ou la catégorie…</md-outlined-button></div>
               </div>
             </td>
           </tr>
