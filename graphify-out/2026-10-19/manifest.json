@@ -1,0 +1,836 @@
+{
+  ".releaserc.json": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "fb5d0b31176ff65853f5c588600c90be",
+    "semantic_hash": "fb5d0b31176ff65853f5c588600c90be"
+  },
+  "core/api.ts": {
+    "mtime": 1792413859.7115216,
+    "seen": 1792417566.0849361,
+    "ast_hash": "75a70f9748ac0b8927b17bcc926a80f4",
+    "semantic_hash": ""
+  },
+  "core/balances.ts": {
+    "mtime": 1792413859.7115216,
+    "seen": 1792417566.0849361,
+    "ast_hash": "3f62487a7f5664bf89ba1ea47258d301",
+    "semantic_hash": ""
+  },
+  "core/calendar.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "d31daabdd3618ff691c6dec031126c83",
+    "semantic_hash": "d31daabdd3618ff691c6dec031126c83"
+  },
+  "core/categorize.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "2892d8a0429fe1066737dacc3560fe63",
+    "semantic_hash": "2892d8a0429fe1066737dacc3560fe63"
+  },
+  "core/db.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "e6093f4b004e9769e393c30426b83cc1",
+    "semantic_hash": "e6093f4b004e9769e393c30426b83cc1"
+  },
+  "core/envelopes.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "905e53adb4ecafa231bbce326d39ac8d",
+    "semantic_hash": "905e53adb4ecafa231bbce326d39ac8d"
+  },
+  "core/export.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "b137edd444f6ac32efb29fb87341ed56",
+    "semantic_hash": "b137edd444f6ac32efb29fb87341ed56"
+  },
+  "core/finance.ts": {
+    "mtime": 1792413859.7171147,
+    "seen": 1792417566.0849361,
+    "ast_hash": "d41a7fd375e07da80899803a625a2e6a",
+    "semantic_hash": ""
+  },
+  "core/goals.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "81e65f6eeee0c63c3d9471bae531e472",
+    "semantic_hash": "81e65f6eeee0c63c3d9471bae531e472"
+  },
+  "core/history.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "6856a12463d80d17735d589e54308ffa",
+    "semantic_hash": "6856a12463d80d17735d589e54308ffa"
+  },
+  "core/importers.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "41fc75b78582ed6e3a275bcb3ed98aaa",
+    "semantic_hash": "41fc75b78582ed6e3a275bcb3ed98aaa"
+  },
+  "core/migrate.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "5747abef8b1d9239062451f1318ff495",
+    "semantic_hash": "5747abef8b1d9239062451f1318ff495"
+  },
+  "core/prices.ts": {
+    "mtime": 1792397492.495103,
+    "seen": 1792397959.9642107,
+    "ast_hash": "04822462140e9ee931f37e07166e7f05",
+    "semantic_hash": ""
+  },
+  "core/recurring.ts": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "692c11baeff767aeb4840e13d26cb46d",
+    "semantic_hash": "692c11baeff767aeb4840e13d26cb46d"
+  },
+  "core/refunds.ts": {
+    "mtime": 1792392690.7505755,
+    "seen": 1792394658.2720919,
+    "ast_hash": "2784cac359646d7c56aeb8abeb959b1e",
+    "semantic_hash": "2784cac359646d7c56aeb8abeb959b1e"
+  },
+  "core/reports.ts": {
+    "mtime": 1792413859.7241955,
+    "seen": 1792417566.0849361,
+    "ast_hash": "e96ec127664174fa37f908f442558af3",
+    "semantic_hash": ""
+  },
+  "core/schema.ts": {
+    "mtime": 1792413859.724902,
+    "seen": 1792417566.0849361,
+    "ast_hash": "87f1916ae32290761b9618816863f40e",
+    "semantic_hash": ""
+  },
+  "core/seed.ts": {
+    "mtime": 1792392690.7515824,
+    "seen": 1792394658.2720919,
+    "ast_hash": "24f12e1878d4e2b7c89a39802d3fc834",
+    "semantic_hash": "24f12e1878d4e2b7c89a39802d3fc834"
+  },
+  "core/version.ts": {
+    "mtime": 1792392690.7515824,
+    "seen": 1792394658.2720919,
+    "ast_hash": "40fd2937452629f3ae162827facc9834",
+    "semantic_hash": "40fd2937452629f3ae162827facc9834"
+  },
+  "electron/main.ts": {
+    "mtime": 1792392690.75458,
+    "seen": 1792394658.2720919,
+    "ast_hash": "ec2c0f88a4c7e92de234d377de4b8bcd",
+    "semantic_hash": "ec2c0f88a4c7e92de234d377de4b8bcd"
+  },
+  "electron/preload.ts": {
+    "mtime": 1792392690.75458,
+    "seen": 1792394658.2720919,
+    "ast_hash": "4e00db91295d8adba12853be3c452d05",
+    "semantic_hash": "4e00db91295d8adba12853be3c452d05"
+  },
+  "electron/updater.ts": {
+    "mtime": 1792392690.75458,
+    "seen": 1792394658.2720919,
+    "ast_hash": "0797ee264b27cbee6f3e15743468201b",
+    "semantic_hash": "0797ee264b27cbee6f3e15743468201b"
+  },
+  "eslint.config.ts": {
+    "mtime": 1792397492.495103,
+    "seen": 1792397959.9642107,
+    "ast_hash": "eebf84a53af90d9be128b12b30c6ba60",
+    "semantic_hash": ""
+  },
+  "mcp/server.ts": {
+    "mtime": 1792413859.7284055,
+    "seen": 1792417566.0849361,
+    "ast_hash": "4f6eb50f4c006bfec95cfb42dd9c2ddb",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1792418531.0519438,
+    "seen": 1792418572.9176521,
+    "ast_hash": "82dd0126dbaeb9e67fae511e841ea8ad",
+    "semantic_hash": ""
+  },
+  "scripts/copy-wasm.mjs": {
+    "mtime": 1792392690.758597,
+    "seen": 1792394658.2720919,
+    "ast_hash": "3e6df0e3bf1d926546186b7f08b13e3a",
+    "semantic_hash": "3e6df0e3bf1d926546186b7f08b13e3a"
+  },
+  "scripts/run-ts.mjs": {
+    "mtime": 1792392690.7595806,
+    "seen": 1792394658.2720919,
+    "ast_hash": "1405f0ea6c5548079c3d6a29f85951f0",
+    "semantic_hash": "1405f0ea6c5548079c3d6a29f85951f0"
+  },
+  "scripts/seed-data.ts": {
+    "mtime": 1792392690.7595806,
+    "seen": 1792394658.2720919,
+    "ast_hash": "fa0a6760f2cec23e953d28b84094cb08",
+    "semantic_hash": "fa0a6760f2cec23e953d28b84094cb08"
+  },
+  "scripts/zip-mcp.mjs": {
+    "mtime": 1792392690.7595806,
+    "seen": 1792394658.2720919,
+    "ast_hash": "80882014e612cfc958057f510d8af896",
+    "semantic_hash": "80882014e612cfc958057f510d8af896"
+  },
+  "skills-lock.json": {
+    "mtime": 1792392690.7595806,
+    "seen": 1792394658.2720919,
+    "ast_hash": "7c70dfc46352f85f7c08c79bfff1097c",
+    "semantic_hash": "7c70dfc46352f85f7c08c79bfff1097c"
+  },
+  "src/App.vue": {
+    "mtime": 1792413859.768953,
+    "seen": 1792417566.0849361,
+    "ast_hash": "eef91e91551e55789ff23b9e1a9a0615",
+    "semantic_hash": ""
+  },
+  "src/components/KpiCard.vue": {
+    "mtime": 1792392690.76058,
+    "seen": 1792394658.2720919,
+    "ast_hash": "8eb67370cdae9469258caf19bfff3f91",
+    "semantic_hash": "8eb67370cdae9469258caf19bfff3f91"
+  },
+  "src/components/Modal.vue": {
+    "mtime": 1792397492.5011494,
+    "seen": 1792397959.9642107,
+    "ast_hash": "596873915aa212d7b71de502f1b234d0",
+    "semantic_hash": ""
+  },
+  "src/components/PageHeader.vue": {
+    "mtime": 1792392690.76158,
+    "seen": 1792394658.2720919,
+    "ast_hash": "f6b7fd6fff605fb3675e7e5711141a08",
+    "semantic_hash": "f6b7fd6fff605fb3675e7e5711141a08"
+  },
+  "src/env.d.ts": {
+    "mtime": 1792392690.76158,
+    "seen": 1792394658.2720919,
+    "ast_hash": "112301de1b3e67ef87a1d438297a0e42",
+    "semantic_hash": "112301de1b3e67ef87a1d438297a0e42"
+  },
+  "src/lib/api.ts": {
+    "mtime": 1792392690.76158,
+    "seen": 1792394658.2720919,
+    "ast_hash": "ff79887b8e3654140fa4f84ee9511c38",
+    "semantic_hash": "ff79887b8e3654140fa4f84ee9511c38"
+  },
+  "src/lib/appearance.ts": {
+    "mtime": 1792418529.216895,
+    "seen": 1792418572.9176521,
+    "ast_hash": "e7560ece7e75d9c9453877b228972b83",
+    "semantic_hash": ""
+  },
+  "src/lib/charts.ts": {
+    "mtime": 1792418964.4291594,
+    "seen": 1792419111.6574657,
+    "ast_hash": "6fcdf16eda5fd65d0a74386ffdd5542d",
+    "semantic_hash": ""
+  },
+  "src/lib/format.ts": {
+    "mtime": 1792392690.7625802,
+    "seen": 1792394658.2720919,
+    "ast_hash": "44a1d741046ca2ce0f2d8ce8f86d01dd",
+    "semantic_hash": "44a1d741046ca2ce0f2d8ce8f86d01dd"
+  },
+  "src/lib/toast.ts": {
+    "mtime": 1792392690.7625802,
+    "seen": 1792394658.2720919,
+    "ast_hash": "f73b108c5690a7030654bbf098d56942",
+    "semantic_hash": "f73b108c5690a7030654bbf098d56942"
+  },
+  "src/lib/update.ts": {
+    "mtime": 1792392690.7635798,
+    "seen": 1792394658.2720919,
+    "ast_hash": "033caadd073f5dffcdbc948ecb32aaf4",
+    "semantic_hash": "033caadd073f5dffcdbc948ecb32aaf4"
+  },
+  "src/main.ts": {
+    "mtime": 1792417337.3800576,
+    "seen": 1792417566.0849361,
+    "ast_hash": "ac648d77a8e6df8745b93454c2b8fc45",
+    "semantic_hash": ""
+  },
+  "src/router.ts": {
+    "mtime": 1792413859.7717214,
+    "seen": 1792417566.0849361,
+    "ast_hash": "855551f41ddf1248e699c32ea63e9f6e",
+    "semantic_hash": ""
+  },
+  "src/views/Allocation.vue": {
+    "mtime": 1792418972.0197089,
+    "seen": 1792419111.6574657,
+    "ast_hash": "a07fb80840fd892c89949c8f95e98288",
+    "semantic_hash": ""
+  },
+  "src/views/Budget.vue": {
+    "mtime": 1792419653.3346827,
+    "seen": 1792419674.8312747,
+    "ast_hash": "ffae385d18a5d84932f7f8c0981a1219",
+    "semantic_hash": ""
+  },
+  "src/views/Dashboard.vue": {
+    "mtime": 1792418966.5888195,
+    "seen": 1792419111.6574657,
+    "ast_hash": "6afecf791f2bf402f51e9f7085bf6667",
+    "semantic_hash": ""
+  },
+  "src/views/Envelopes.vue": {
+    "mtime": 1792397492.5011494,
+    "seen": 1792397959.9642107,
+    "ast_hash": "a3fdb4ab442d4b9373f35a731c7a8bf6",
+    "semantic_hash": ""
+  },
+  "src/views/Goals.vue": {
+    "mtime": 1792397492.5011494,
+    "seen": 1792397959.9642107,
+    "ast_hash": "68eb9f67248f478ddec2c92608e86266",
+    "semantic_hash": ""
+  },
+  "src/views/Import.vue": {
+    "mtime": 1792397492.5011494,
+    "seen": 1792397959.9642107,
+    "ast_hash": "4fa72c075717d3f9fcb5af5341faafcd",
+    "semantic_hash": ""
+  },
+  "src/views/Networth.vue": {
+    "mtime": 1792418130.1959338,
+    "seen": 1792418154.8850799,
+    "ast_hash": "bd5fb837434e8164065eb73d214d7c22",
+    "semantic_hash": ""
+  },
+  "src/views/Portfolio.vue": {
+    "mtime": 1792397492.5011494,
+    "seen": 1792397959.9642107,
+    "ast_hash": "c8ee8f62ff68dad7ef338f08d8ff8851",
+    "semantic_hash": ""
+  },
+  "src/views/Projection.vue": {
+    "mtime": 1792418970.8915567,
+    "seen": 1792419111.6574657,
+    "ast_hash": "1975b6d007805c1a93563ecd2cef9ba6",
+    "semantic_hash": ""
+  },
+  "src/views/Recurring.vue": {
+    "mtime": 1792413859.8166282,
+    "seen": 1792417566.0849361,
+    "ast_hash": "099b3d85027c0cafa2c7dbca69d0b9f5",
+    "semantic_hash": ""
+  },
+  "src/views/Refunds.vue": {
+    "mtime": 1792397492.5108273,
+    "seen": 1792397959.9642107,
+    "ast_hash": "2af05d0b24d697e7ab9d3533a33677ca",
+    "semantic_hash": ""
+  },
+  "src/views/Rules.vue": {
+    "mtime": 1792397492.5122974,
+    "seen": 1792397959.9642107,
+    "ast_hash": "1bc847d1aa9e6e9c118d284dc0b30682",
+    "semantic_hash": ""
+  },
+  "src/views/Settings.vue": {
+    "mtime": 1792397492.5122974,
+    "seen": 1792397959.9642107,
+    "ast_hash": "cf2a06ac39369c9e5c5ba40c78944b8f",
+    "semantic_hash": ""
+  },
+  "src/views/Transactions.vue": {
+    "mtime": 1792413859.8208778,
+    "seen": 1792417566.0849361,
+    "ast_hash": "d67c7e1689b70061610398aacf3e3db3",
+    "semantic_hash": ""
+  },
+  "src/views/envelopes/EnvelopeCard.vue": {
+    "mtime": 1792397492.5153556,
+    "seen": 1792397959.9642107,
+    "ast_hash": "5aacd169bfe2740634d2051055ee5151",
+    "semantic_hash": ""
+  },
+  "src/views/envelopes/EnvelopeModal.vue": {
+    "mtime": 1792397492.516433,
+    "seen": 1792397959.9642107,
+    "ast_hash": "ab5e44367d66fdacc65ead0aea0fff21",
+    "semantic_hash": ""
+  },
+  "src/views/envelopes/MovesCard.vue": {
+    "mtime": 1792392690.7694175,
+    "seen": 1792394658.2720919,
+    "ast_hash": "aeede1eda2021f3de69b88256ad5a932",
+    "semantic_hash": "aeede1eda2021f3de69b88256ad5a932"
+  },
+  "src/views/portfolio/AllocationPanel.vue": {
+    "mtime": 1792418130.1969347,
+    "seen": 1792418154.8854167,
+    "ast_hash": "a0a000cfd38757ff9916b4225ac0eeb3",
+    "semantic_hash": ""
+  },
+  "src/views/portfolio/AssetModal.vue": {
+    "mtime": 1792397492.517432,
+    "seen": 1792397959.9642107,
+    "ast_hash": "6450c2def4ea822213f1b6948b66ee8a",
+    "semantic_hash": ""
+  },
+  "src/views/portfolio/HistoryPanel.vue": {
+    "mtime": 1792418130.197942,
+    "seen": 1792418154.8854167,
+    "ast_hash": "5d0db064a3bc7b59ffc517528a0d6254",
+    "semantic_hash": ""
+  },
+  "src/views/portfolio/OperationModal.vue": {
+    "mtime": 1792397492.517432,
+    "seen": 1792397959.9642107,
+    "ast_hash": "0a6b67be08cc3bf99dbedcc9e4db8410",
+    "semantic_hash": ""
+  },
+  "src/views/portfolio/OperationsTable.vue": {
+    "mtime": 1792397492.518433,
+    "seen": 1792397959.9642107,
+    "ast_hash": "2acefffefd1419a6b2f6929105e4de82",
+    "semantic_hash": ""
+  },
+  "src/views/portfolio/PositionsTable.vue": {
+    "mtime": 1792397492.518433,
+    "seen": 1792397959.9642107,
+    "ast_hash": "7041a73fdcf6e6b767317c69dbae5ad1",
+    "semantic_hash": ""
+  },
+  "src/views/recurring/RecurringCalendar.vue": {
+    "mtime": 1792397492.5194337,
+    "seen": 1792397959.9642107,
+    "ast_hash": "fb34f58059e84dcfb23897874a0464b5",
+    "semantic_hash": ""
+  },
+  "src/views/refunds/PayerRulesCard.vue": {
+    "mtime": 1792397492.5194337,
+    "seen": 1792397959.9642107,
+    "ast_hash": "662d35aadf72206074bc7ac7e4e0c00c",
+    "semantic_hash": ""
+  },
+  "src/views/refunds/PickerModal.vue": {
+    "mtime": 1792397492.5204334,
+    "seen": 1792397959.9642107,
+    "ast_hash": "3f785cba8f3a6f38fb4e48f8096e6892",
+    "semantic_hash": ""
+  },
+  "src/views/refunds/RefundsTable.vue": {
+    "mtime": 1792397492.5204334,
+    "seen": 1792397959.9642107,
+    "ast_hash": "2b13a6360b10b27ac0dd7ed1de92d50a",
+    "semantic_hash": ""
+  },
+  "src/views/settings/AccountsCard.vue": {
+    "mtime": 1792397492.5214343,
+    "seen": 1792397959.9642107,
+    "ast_hash": "5a8625c832315ff10e8e9cd6e816b37b",
+    "semantic_hash": ""
+  },
+  "src/views/settings/AppearanceCard.vue": {
+    "mtime": 1792397492.5214343,
+    "seen": 1792397959.9642107,
+    "ast_hash": "d1d2e1b22b921625d145906833814c3f",
+    "semantic_hash": ""
+  },
+  "src/views/settings/CategoriesCard.vue": {
+    "mtime": 1792397492.5224335,
+    "seen": 1792397959.9642107,
+    "ast_hash": "c0e84283e6636ca45fde61e25e1ddd37",
+    "semantic_hash": ""
+  },
+  "src/views/settings/McpCard.vue": {
+    "mtime": 1792397492.5224335,
+    "seen": 1792397959.9642107,
+    "ast_hash": "3fa06dd22f7696679a6626374339e2df",
+    "semantic_hash": ""
+  },
+  "src/views/settings/PreferencesCard.vue": {
+    "mtime": 1792397492.5224335,
+    "seen": 1792397959.9642107,
+    "ast_hash": "82e37164cc99c300fd5ceb2f9d7a6efe",
+    "semantic_hash": ""
+  },
+  "src/views/settings/UpdatesCard.vue": {
+    "mtime": 1792397492.5234349,
+    "seen": 1792397959.9642107,
+    "ast_hash": "9feedf09ff382e39dad50e25f0e615f1",
+    "semantic_hash": ""
+  },
+  "src/views/transactions/RuleModal.vue": {
+    "mtime": 1792397492.5244343,
+    "seen": 1792397959.9642107,
+    "ast_hash": "88ba50e0f274900901bc3e6df0e75e7b",
+    "semantic_hash": ""
+  },
+  "src/views/transactions/TransactionModal.vue": {
+    "mtime": 1792397492.5244343,
+    "seen": 1792397959.9642107,
+    "ast_hash": "ddf92f91ae3a2e19f638042fa515c9c2",
+    "semantic_hash": ""
+  },
+  "tests/core.test.ts": {
+    "mtime": 1792392690.7754185,
+    "seen": 1792394658.2720919,
+    "ast_hash": "db75dd212c922bbdadd7ab6eb1139619",
+    "semantic_hash": "db75dd212c922bbdadd7ab6eb1139619"
+  },
+  "tests/features.test.ts": {
+    "mtime": 1792397492.525434,
+    "seen": 1792397959.9642107,
+    "ast_hash": "7450bffcf9aadbf30029ef1249459c5e",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1792392690.7764173,
+    "seen": 1792394658.2720919,
+    "ast_hash": "a3b73b736edc03a5e029b0415aee254f",
+    "semantic_hash": "a3b73b736edc03a5e029b0415aee254f"
+  },
+  "vite.config.ts": {
+    "mtime": 1792413859.8412292,
+    "seen": 1792417566.0849361,
+    "ast_hash": "0a3021e9ca05f8a2a9a3bed4e9ec1533",
+    "semantic_hash": ""
+  },
+  "vitest.config.ts": {
+    "mtime": 1792392690.7764173,
+    "seen": 1792394658.2720919,
+    "ast_hash": "ccd5bc9bc249b804ccfe2064c85db8df",
+    "semantic_hash": "ccd5bc9bc249b804ccfe2064c85db8df"
+  },
+  ".agents/skills/frontend-design/LICENSE.txt": {
+    "mtime": 1792392690.731382,
+    "seen": 1792394658.2720919,
+    "ast_hash": "29256199be2a609aac596980ffc11996",
+    "semantic_hash": "29256199be2a609aac596980ffc11996"
+  },
+  ".agents/skills/frontend-design/SKILL.md": {
+    "mtime": 1792392690.731382,
+    "seen": 1792394658.2720919,
+    "ast_hash": "9dab6b03d40b3a94a97a70bc65cf00f5",
+    "semantic_hash": "9dab6b03d40b3a94a97a70bc65cf00f5"
+  },
+  ".claude/skills/frontend-design/LICENSE.txt": {
+    "mtime": 1792392690.7338564,
+    "seen": 1792394658.2720919,
+    "ast_hash": "29256199be2a609aac596980ffc11996",
+    "semantic_hash": "29256199be2a609aac596980ffc11996"
+  },
+  ".claude/skills/frontend-design/SKILL.md": {
+    "mtime": 1792392690.7348652,
+    "seen": 1792394658.2720919,
+    "ast_hash": "9dab6b03d40b3a94a97a70bc65cf00f5",
+    "semantic_hash": "9dab6b03d40b3a94a97a70bc65cf00f5"
+  },
+  ".claude/skills/vue-best-practices/SKILL.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "a8bf2ee40a2a0d02a914165da78f8d36",
+    "semantic_hash": "a8bf2ee40a2a0d02a914165da78f8d36"
+  },
+  ".claude/skills/vue-best-practices/references/animation-class-based-technique.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "17e4306814e21699e569ba049fe310b7",
+    "semantic_hash": "17e4306814e21699e569ba049fe310b7"
+  },
+  ".claude/skills/vue-best-practices/references/animation-state-driven-technique.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "a66ccff889f175c3e055f67ba54b6663",
+    "semantic_hash": "a66ccff889f175c3e055f67ba54b6663"
+  },
+  ".claude/skills/vue-best-practices/references/component-async.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "3da7c4fd7263f3e792cc975c81788d7e",
+    "semantic_hash": "3da7c4fd7263f3e792cc975c81788d7e"
+  },
+  ".claude/skills/vue-best-practices/references/component-data-flow.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "a446f2930d526f18e039e1935d555336",
+    "semantic_hash": "a446f2930d526f18e039e1935d555336"
+  },
+  ".claude/skills/vue-best-practices/references/component-fallthrough-attrs.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "6a2091cd1f66b86a1c3e716126d51a99",
+    "semantic_hash": "6a2091cd1f66b86a1c3e716126d51a99"
+  },
+  ".claude/skills/vue-best-practices/references/component-keep-alive.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "8af3cc090a87ac3854869d23ac76ac5f",
+    "semantic_hash": "8af3cc090a87ac3854869d23ac76ac5f"
+  },
+  ".claude/skills/vue-best-practices/references/component-slots.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "6881ba4080eb6a514684c1c3cd3a2a93",
+    "semantic_hash": "6881ba4080eb6a514684c1c3cd3a2a93"
+  },
+  ".claude/skills/vue-best-practices/references/component-suspense.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "4c2c77df10a40467894e9ba856530bab",
+    "semantic_hash": "4c2c77df10a40467894e9ba856530bab"
+  },
+  ".claude/skills/vue-best-practices/references/component-teleport.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "dc08718f85c3cc91ed2c21ac1fad4bcd",
+    "semantic_hash": "dc08718f85c3cc91ed2c21ac1fad4bcd"
+  },
+  ".claude/skills/vue-best-practices/references/component-transition-group.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "441476270ef5a0a1b8784b2627b8ba63",
+    "semantic_hash": "441476270ef5a0a1b8784b2627b8ba63"
+  },
+  ".claude/skills/vue-best-practices/references/component-transition.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "46ff51af415ee3bada2591366728dfce",
+    "semantic_hash": "46ff51af415ee3bada2591366728dfce"
+  },
+  ".claude/skills/vue-best-practices/references/composables.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "53332c25cc12b98c65edd969a1533411",
+    "semantic_hash": "53332c25cc12b98c65edd969a1533411"
+  },
+  ".claude/skills/vue-best-practices/references/directives.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "c694f5ca80c6ff078333f5a368aaae4d",
+    "semantic_hash": "c694f5ca80c6ff078333f5a368aaae4d"
+  },
+  ".claude/skills/vue-best-practices/references/perf-avoid-component-abstraction-in-lists.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "539aaab3c5a7d1e6cfdb6fa551f45dc6",
+    "semantic_hash": "539aaab3c5a7d1e6cfdb6fa551f45dc6"
+  },
+  ".claude/skills/vue-best-practices/references/perf-v-once-v-memo-directives.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "8edea6dfa40a15072b8e8332cac233eb",
+    "semantic_hash": "8edea6dfa40a15072b8e8332cac233eb"
+  },
+  ".claude/skills/vue-best-practices/references/perf-virtualize-large-lists.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "9a63e7f18fb1283f90e17441f56777b9",
+    "semantic_hash": "9a63e7f18fb1283f90e17441f56777b9"
+  },
+  ".claude/skills/vue-best-practices/references/plugins.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "dbd9732320a910c82b50c9774b69a133",
+    "semantic_hash": "dbd9732320a910c82b50c9774b69a133"
+  },
+  ".claude/skills/vue-best-practices/references/reactivity.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "2f8a0ca3af8dbef9b627480891f2e276",
+    "semantic_hash": "2f8a0ca3af8dbef9b627480891f2e276"
+  },
+  ".claude/skills/vue-best-practices/references/render-functions.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "4501605bcda232400304a70d6d60835a",
+    "semantic_hash": "4501605bcda232400304a70d6d60835a"
+  },
+  ".claude/skills/vue-best-practices/references/sfc.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "e2075ee7bdf87bbb2f219a585c67f683",
+    "semantic_hash": "e2075ee7bdf87bbb2f219a585c67f683"
+  },
+  ".claude/skills/vue-best-practices/references/state-management.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "be0411775c262cf153d265ed93942f4c",
+    "semantic_hash": "be0411775c262cf153d265ed93942f4c"
+  },
+  ".claude/skills/vue-best-practices/references/updated-hook-performance.md": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "ea08002c220fc805206d4d76dce702ce",
+    "semantic_hash": "ea08002c220fc805206d4d76dce702ce"
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "e58ef5abfbed91f418373e31430bedae",
+    "semantic_hash": "e58ef5abfbed91f418373e31430bedae"
+  },
+  ".github/workflows/release.yml": {
+    "mtime": 1792392690.735711,
+    "seen": 1792394658.2720919,
+    "ast_hash": "716d040296aa71e6213d4c9a7fffc641",
+    "semantic_hash": "716d040296aa71e6213d4c9a7fffc641"
+  },
+  "CHANGELOG.md": {
+    "mtime": 1792397142.8879404,
+    "seen": 1792397389.8603146,
+    "ast_hash": "475ce8b53925b27599b7d1345bf701cd",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1792413859.699904,
+    "seen": 1792417566.0849361,
+    "ast_hash": "b6055899b25a5520f7792159fcd5f2e4",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1792418529.2962852,
+    "seen": 1792418572.9176521,
+    "ast_hash": "6884999df22b7862977874c210c39a21",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-17-refactor-composants-ui.md": {
+    "mtime": 1792392690.752583,
+    "seen": 1792394658.2720919,
+    "ast_hash": "370027e4e477591986ae0db0065e2e95",
+    "semantic_hash": "370027e4e477591986ae0db0065e2e95"
+  },
+  "docs/superpowers/specs/2026-10-17-refactor-composants-ui-design.md": {
+    "mtime": 1792392690.7535803,
+    "seen": 1792394658.2720919,
+    "ast_hash": "8822be95fcc23d61bb739c8f8dd9b124",
+    "semantic_hash": "8822be95fcc23d61bb739c8f8dd9b124"
+  },
+  "index.html": {
+    "mtime": 1792392690.7555802,
+    "seen": 1792394658.2720919,
+    "ast_hash": "0ba72d0ca6fd209009d05b659d87a9fc",
+    "semantic_hash": "0ba72d0ca6fd209009d05b659d87a9fc"
+  },
+  "core/budgetPlan.ts": {
+    "mtime": 1792413859.7171147,
+    "seen": 1792417566.0849361,
+    "ast_hash": "4f0610b03bfa030c66e9e886f485574f",
+    "semantic_hash": ""
+  },
+  "src/views/budget/ScenarioModal.vue": {
+    "mtime": 1792413859.8251693,
+    "seen": 1792417566.0849361,
+    "ast_hash": "250216b54401555fcc63bcb52421f533",
+    "semantic_hash": ""
+  },
+  "tests/budgetPlan.test.ts": {
+    "mtime": 1792413859.839198,
+    "seen": 1792417566.0849361,
+    "ast_hash": "74aeb0602e07a2486abf34cc829c5fe8",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-18-assistant-budget.md": {
+    "mtime": 1792397142.9045138,
+    "seen": 1792397389.8603146,
+    "ast_hash": "f05a974ffb8995d30b45d2ba69f05348",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-18-assistant-budget-design.md": {
+    "mtime": 1792413859.7284055,
+    "seen": 1792417566.0849361,
+    "ast_hash": "408a5e8460b141f15ab4bb3feab82753",
+    "semantic_hash": ""
+  },
+  "src/components/SelectField.vue": {
+    "mtime": 1792397492.5011494,
+    "seen": 1792397959.9642107,
+    "ast_hash": "d9db0525e7e5dbb2c9d553eafc519f35",
+    "semantic_hash": ""
+  },
+  "scripts/seed-dev.ts": {
+    "mtime": 1792413859.764479,
+    "seen": 1792417566.0849361,
+    "ast_hash": "a8df55fd3eecd38dc17a25ff19d1a6fd",
+    "semantic_hash": ""
+  },
+  ".claude/settings.json": {
+    "mtime": 1792417192.5211215,
+    "seen": 1792417566.0849361,
+    "ast_hash": "0d7aad3c99659b178ace41ed830ab248",
+    "semantic_hash": ""
+  },
+  "tests/budgetMonth.test.ts": {
+    "mtime": 1792413859.833147,
+    "seen": 1792417566.0849361,
+    "ast_hash": "46ec430f106c9b1d828f0458203d4a71",
+    "semantic_hash": ""
+  },
+  "tests/budgetAuto.test.ts": {
+    "mtime": 1792413859.8315022,
+    "seen": 1792417566.0849361,
+    "ast_hash": "4c75bedffe3811ddb21d05b8a38ce3f1",
+    "semantic_hash": ""
+  },
+  "src/views/budget/TransactionsModal.vue": {
+    "mtime": 1792413859.8290005,
+    "seen": 1792417566.0849361,
+    "ast_hash": "c8967417aa3afdc2ddf7e0837054cb54",
+    "semantic_hash": ""
+  },
+  "tests/budgetMonths.test.ts": {
+    "mtime": 1792413859.8355339,
+    "seen": 1792417566.0849361,
+    "ast_hash": "bc754130962758fb04e44f262ed39400",
+    "semantic_hash": ""
+  },
+  "src/components/ApexChart.vue": {
+    "mtime": 1792417343.2563157,
+    "seen": 1792417566.0849361,
+    "ast_hash": "139194cca5bdd624f69b7de64af47af6",
+    "semantic_hash": ""
+  },
+  "tests/charts.test.ts": {
+    "mtime": 1792418949.3122861,
+    "seen": 1792419111.6574657,
+    "ast_hash": "e58348b4c91735d6375004a17ab31e3b",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-19-graphiques-apexcharts.md": {
+    "mtime": 1792416119.387,
+    "seen": 1792417566.0849361,
+    "ast_hash": "dc103810f994da5ba4b6cf60cb457581",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-design.md": {
+    "mtime": 1792415956.376592,
+    "seen": 1792417566.0849361,
+    "ast_hash": "a58fa17157a0edaecd476867f997ec50",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/autres-graphiques.html": {
+    "mtime": 1792415920.971803,
+    "seen": 1792417566.0849361,
+    "ast_hash": "8e79c9580571e5eb6f4f6e5b4876130c",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/budget-anneaux-ecarts.html": {
+    "mtime": 1792415920.9809055,
+    "seen": 1792417566.0849361,
+    "ast_hash": "415a613a68091107068f37d92f6726cf",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/budget-taux-epargne.html": {
+    "mtime": 1792415920.975395,
+    "seen": 1792417566.0849361,
+    "ast_hash": "9fce2afc94173c8ba1eb2e0cff43b29b",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-10-19-graphiques-apexcharts-maquettes/projection-styles.html": {
+    "mtime": 1792415920.9658387,
+    "seen": 1792417566.0849361,
+    "ast_hash": "b2bf5f68f2b0f88c835df3ec3ba67cc3",
+    "semantic_hash": ""
+  }
+}

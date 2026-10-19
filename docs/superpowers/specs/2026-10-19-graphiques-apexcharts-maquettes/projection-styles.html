@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Projection — styles ApexCharts</title>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
+<style>
+  :root { --bg:#f8fafd; --panel:#fff; --line:#e1e3e1; --text:#1f1f1f; --muted:#5e5e5e; --accent:#0b57d0; --accent-soft:#d3e3fd; }
+  body { margin:0; padding:28px 32px 60px; font:14px/1.5 Roboto, "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  h1 { font-size:22px; font-weight:500; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 24px; }
+  .opt { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; margin-bottom:22px; cursor:pointer; transition:border-color .15s, box-shadow .15s; }
+  .opt:hover { border-color:#c4c7c5; }
+  .opt.selected { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft); }
+  .opt h2 { font-size:16px; font-weight:500; margin:0 0 2px; }
+  .opt h2 span { display:inline-block; width:26px; height:26px; border-radius:8px; background:var(--accent-soft); color:#041e49; text-align:center; line-height:26px; margin-right:8px; font-size:13px; }
+  .opt p { color:var(--muted); margin:0 0 10px; font-size:13px; }
+</style>
+</head>
+<body>
+<h1>Graphique de projection : trois styles ApexCharts</h1>
+<p class="sub">Mêmes données (25 000 € de départ, 400 €/mois, 30 ans, objectif 100 000 €). Survolez, et pour C essayez de zoomer. Cliquez sur celui qui vous parle le plus.</p>
+
+<div class="opt" data-choice="a" onclick="toggleSelect(this)">
+  <h2><span>A</span>Éventail</h2>
+  <p>Une bande colorée entre prudent et dynamique (l'incertitude), le scénario central en trait plein par-dessus, l'objectif en ligne annotée.</p>
+  <div id="ca"></div>
+</div>
+
+<div class="opt" data-choice="b" onclick="toggleSelect(this)">
+  <h2><span>B</span>Ce que je verse / ce que ça rapporte</h2>
+  <p>Aires empilées en dégradé pour le scénario central : vos versements en bas, les intérêts au-dessus. Prudent et dynamique en pointillés fins.</p>
+  <div id="cb"></div>
+</div>
+
+<div class="opt" data-choice="c" onclick="toggleSelect(this)">
+  <h2><span>C</span>Courbes lisses et interactives</h2>
+  <p>Les cinq courbes actuelles, mais lissées, animées, avec un léger remplissage, un point marquant l'année où l'objectif est atteint, et le zoom à la souris.</p>
+  <div id="cc"></div>
+</div>
+
+<script>
+  const Y = 30, init = 25000, m = 400, goal = 100000, y0 = 2026;
+  const proj = (r) => { let v = init, out = [v]; for (let y = 1; y <= Y; y++) { for (let k = 0; k < 12; k++) v = v * (1 + r / 12) + m; out.push(Math.round(v)); } return out; };
+  const years = Array.from({ length: Y + 1 }, (_, i) => y0 + i);
+  const low = proj(.04), mid = proj(.06), high = proj(.08), paid = years.map((_, i) => init + m * 12 * i);
+  const eur = (v) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
+  const keur = (v) => v >= 1e6 ? (v / 1e6).toFixed(1).replace(".", ",") + " M€" : Math.round(v / 1000) + " k€";
+  const goalIdx = mid.findIndex((v) => v >= goal);
+  const base = {
+    chart: { height: 340, fontFamily: "Roboto, 'Segoe UI', sans-serif", toolbar: { show: false }, animations: { enabled: true, easing: "easeinout", speed: 700 }, zoom: { enabled: false } },
+    grid: { borderColor: "#eceeee", strokeDashArray: 4, padding: { left: 8, right: 12 } },
+    xaxis: { type: "numeric", tickAmount: 6, labels: { style: { colors: "#5e5e5e" }, formatter: (v) => Math.round(v) }, axisBorder: { show: false }, axisTicks: { show: false }, tooltip: { enabled: false } },
+    yaxis: { labels: { style: { colors: "#5e5e5e" }, formatter: keur } },
+    legend: { position: "top", horizontalAlign: "left", fontSize: "13px", markers: { size: 6, shape: "circle" }, itemMargin: { horizontal: 10 } },
+    tooltip: { shared: true, intersect: false, y: { formatter: (v) => v == null ? "" : eur(v) }, x: { formatter: (v) => "Année " + Math.round(v) } },
+    dataLabels: { enabled: false },
+    annotations: { yaxis: [{ y: goal, borderColor: "#d93025", strokeDashArray: 5, label: { text: "Objectif " + eur(goal), position: "left", textAnchor: "start", offsetX: 6, borderColor: "transparent", style: { background: "#fce8e6", color: "#a50e0e", fontSize: "12px", padding: { left: 8, right: 8, top: 3, bottom: 3 } } } }] },
+  };
+  const pts = (arr) => arr.map((v, i) => ({ x: years[i], y: v }));
+
+  // A — éventail
+  new ApexCharts(document.querySelector("#ca"), { ...base,
+    chart: { ...base.chart, type: "rangeArea" },
+    series: [
+      { type: "rangeArea", name: "Fourchette 4 – 8 %", data: years.map((x, i) => ({ x, y: [low[i], high[i]] })) },
+      { type: "line", name: "Central 6 %", data: pts(mid) },
+      { type: "line", name: "Total versé", data: pts(paid) },
+    ],
+    colors: ["#0b57d0", "#0b57d0", "#80868b"],
+    fill: { opacity: [0.16, 1, 1] },
+    stroke: { curve: "smooth", width: [0, 3, 2], dashArray: [0, 0, 6] },
+  }).render();
+
+  // B — versé / gains empilés
+  new ApexCharts(document.querySelector("#cb"), { ...base,
+    chart: { ...base.chart, type: "area", stacked: false },
+    series: [
+      { name: "Gains (central 6 %)", type: "area", data: pts(mid) },
+      { name: "Vos versements", type: "area", data: pts(paid) },
+      { name: "Prudent 4 %", type: "line", data: pts(low) },
+      { name: "Dynamique 8 %", type: "line", data: pts(high) },
+    ],
+    colors: ["#1e8e3e", "#0b57d0", "#80868b", "#80868b"],
+    fill: { type: ["gradient", "gradient", "solid", "solid"], gradient: { shadeIntensity: 0, opacityFrom: 0.55, opacityTo: 0.08, stops: [0, 100] } },
+    stroke: { curve: "smooth", width: [2, 2, 1.5, 1.5], dashArray: [0, 0, 4, 4] },
+  }).render();
+
+  // C — courbes lisses interactives
+  new ApexCharts(document.querySelector("#cc"), { ...base,
+    chart: { ...base.chart, type: "area", toolbar: { show: true, tools: { download: false, pan: true, zoom: true, zoomin: true, zoomout: true, reset: true } }, zoom: { enabled: true, type: "x" } },
+    series: [
+      { name: "Dynamique 8 %", data: pts(high) },
+      { name: "Central 6 %", data: pts(mid) },
+      { name: "Prudent 4 %", data: pts(low) },
+      { name: "Total versé", data: pts(paid) },
+    ],
+    colors: ["#e37400", "#0b57d0", "#1e8e3e", "#80868b"],
+    fill: { type: "gradient", gradient: { opacityFrom: [0.10, 0.28, 0.10, 0], opacityTo: 0, stops: [0, 95] } },
+    stroke: { curve: "smooth", width: [2, 3.5, 2, 2], dashArray: [0, 0, 0, 6] },
+    markers: { size: 0, hover: { size: 6 } },
+    annotations: { ...base.annotations, points: goalIdx < 0 ? [] : [{ x: years[goalIdx], y: mid[goalIdx], marker: { size: 7, fillColor: "#fff", strokeColor: "#0b57d0", strokeWidth: 3 }, label: { text: "Objectif atteint en " + years[goalIdx], borderColor: "#0b57d0", offsetY: -8, style: { background: "#0b57d0", color: "#fff", fontSize: "12px" } } }] },
+  }).render();
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 Application bureau de gestion de patrimoine personnel : comptes bancaires, budget, relevé de patrimoine mensuel, portefeuille bourse & crypto, allocation, projection — avec un **serveur MCP** pour que Claude lise et modifie les mêmes données.
 
-- **Stack** : Electron · Vue 3 · TypeScript · SQLite (sql.js, sans compilation native) · Chart.js · exceljs
+- **Stack** : Electron · Vue 3 · TypeScript · SQLite (sql.js, sans compilation native) · ApexCharts · exceljs
 - **Données** : un seul fichier SQLite local, aucun cloud, aucun compte. Export Excel complet en un clic.
 - **MCP** : serveur stdio (SDK officiel `@modelcontextprotocol/sdk`), 42 outils, même code métier que l'application.
 

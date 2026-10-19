@@ -1,35 +1,31 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { eur0, pct, date, sign } from "../../lib/format";
-import { theme, rgba } from "../../lib/appearance";
-import Chart from "../../components/Chart.vue";
-import type { ChartConfiguration } from "chart.js";
-import { PALETTE, eurTick, eurTip } from "../../lib/charts";
+import { theme } from "../../lib/appearance";
+import ApexChart from "../../components/ApexChart.vue";
+import type { ApexOptions } from "apexcharts";
+import { PALETTE } from "../../lib/charts";
 import type { PortfolioHistory } from "../../../core/history";
 
 const props = defineProps<{ hist: PortfolioHistory }>();
 
-const histChart = computed<ChartConfiguration<"line">>(() => {
-  const pts = props.hist.points;
-  return {
-    type: "line",
-    data: {
-      labels: pts.map((p) => new Date(p.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "2-digit" })),
-      datasets: [
-        { label: "Valeur", data: pts.map((p) => p.value), borderColor: theme.accent, backgroundColor: rgba(theme.accent, .10), fill: true, tension: .2, pointRadius: 0, borderWidth: 2 },
-        { label: "Montant investi", data: pts.map((p) => p.invested), borderColor: PALETTE[6], borderDash: [5, 4], pointRadius: 0, borderWidth: 1.5, stepped: true },
-      ],
-    },
-    options: { interaction: { mode: "index", intersect: false }, plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } }, x: { ticks: { maxTicksLimit: 8 } } } },
-  };
-});
+const series = computed(() => [
+  { name: "Valeur", data: props.hist.points.map((p) => p.value) },
+  { name: "Montant investi", data: props.hist.points.map((p) => p.invested) }]);
+const options = computed<ApexOptions>(() => ({
+  colors: [theme.accent, PALETTE[6]],
+  // montant investi : en escalier, pointillés, sans remplissage
+  stroke: { curve: ["smooth", "stepline"], width: [2, 1.5], dashArray: [0, 5] },
+  fill: { type: ["gradient", "solid"], opacity: [1, 0] },
+  xaxis: { categories: props.hist.points.map((p) => new Date(p.date + "T00:00:00").toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "2-digit" })), tickAmount: 8 },
+}));
 </script>
 
 <template>
   <div class="card">
     <div class="card-title"><h2>Évolution depuis le {{ date(hist.start) }}</h2>
       <span class="help">{{ hist.historyPoints }} cours historiques · {{ pct(hist.coverage, 0) }} de la valeur sur cours réels</span></div>
-    <Chart :config="histChart" :height="400" />
+    <ApexChart type="area" zoom :series="series" :options="options" :height="400" />
   </div>
   <div class="card">
     <h3>Performance par période</h3>

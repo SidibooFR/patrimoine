@@ -2,11 +2,11 @@
 import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
 import { eur, eur0, pct, monthLong, date, sign } from "../lib/format";
-import { theme, rgba } from "../lib/appearance";
+import { theme } from "../lib/appearance";
 import { guard } from "../lib/toast";
-import Chart from "../components/Chart.vue";
-import type { ChartConfiguration } from "chart.js";
-import { CLASS_COLORS, PALETTE, eurTick, pctTick, eurTip } from "../lib/charts";
+import ApexChart from "../components/ApexChart.vue";
+import type { ApexOptions } from "apexcharts";
+import { CLASS_COLORS, PALETTE, pctTick } from "../lib/charts";
 import type { Dashboard } from "../../core/reports";
 import KpiCard from "../components/KpiCard.vue";
 import PageHeader from "../components/PageHeader.vue";
@@ -14,27 +14,31 @@ import PageHeader from "../components/PageHeader.vue";
 const d = ref<Dashboard>();
 onMounted(async () => { d.value = await guard(() => api.dashboard()); });
 
-const nwChart = computed<ChartConfiguration<"line">>(() => ({
-  type: "line",
-  data: { labels: d.value!.series.months.map((m) => new Date(m + "T00:00:00").toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })),
-    datasets: [{ label: "Patrimoine", data: d.value!.series.total, borderColor: theme.navy, backgroundColor: rgba(theme.navy, .12), fill: true, tension: .25, spanGaps: true, pointRadius: 4 }] },
-  options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } } },
+const moisNw = computed(() => d.value!.series.months.map((m) => new Date(m + "T00:00:00").toLocaleDateString("fr-FR", { month: "short", year: "2-digit" })));
+const budgetMois = computed(() => d.value!.budgetSeries.months.map((m) => new Date(m + "-01T00:00:00").toLocaleDateString("fr-FR", { month: "short" })));
+
+// Les mois sans relevé (null) sont retirés : la courbe les enjambe, comme spanGaps
+const nwSeries = computed(() => [{ name: "Patrimoine", data: d.value!.series.total.map((y, i) => ({ x: moisNw.value[i], y })).filter((p) => p.y !== null) }]);
+const nwOptions = computed<ApexOptions>(() => ({ colors: [theme.navy], legend: { show: false } }));
+
+const classEntries = computed(() => Object.entries(d.value!.byClass).filter(([, v]) => v > 0));
+const classSeries = computed(() => classEntries.value.map((e) => e[1]));
+const classOptions = computed<ApexOptions>(() => ({ labels: classEntries.value.map((e) => e[0]), colors: classEntries.value.map((e) => CLASS_COLORS[e[0]] ?? PALETTE[6]) }));
+
+const budgetSeries = computed(() => [{ name: "Revenus", data: d.value!.budgetSeries.income }, { name: "Dépenses", data: d.value!.budgetSeries.expense }]);
+const budgetOptions = computed<ApexOptions>(() => ({
+  colors: [PALETTE[1], PALETTE[4]],
+  xaxis: { categories: budgetMois.value },
+  fill: { type: "gradient", gradient: { shade: "light", type: "vertical", opacityFrom: 1, opacityTo: 0.75, stops: [0, 100] } },
 }));
-const classChart = computed<ChartConfiguration<"doughnut">>(() => {
-  const entries = Object.entries(d.value!.byClass).filter(([, v]) => v > 0);
-  return { type: "doughnut", data: { labels: entries.map((e) => e[0]), datasets: [{ data: entries.map((e) => e[1]), backgroundColor: entries.map((e) => CLASS_COLORS[e[0]] ?? "#999") }] },
-    options: { plugins: { legend: { position: "right" }, tooltip: { callbacks: { label: (c) => `${c.label} : ${eur0(c.parsed)}` } } }, cutout: "62%" } };
-});
-const budgetChart = computed<ChartConfiguration<"bar">>(() => ({
-  type: "bar",
-  data: { labels: d.value!.budgetSeries.months.map((m) => new Date(m + "-01T00:00:00").toLocaleDateString("fr-FR", { month: "short" })),
-    datasets: [{ label: "Revenus", data: d.value!.budgetSeries.income, backgroundColor: PALETTE[1] }, { label: "Dépenses", data: d.value!.budgetSeries.expense, backgroundColor: PALETTE[4] }] },
-  options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { y: { ticks: { callback: eurTick } } } },
-}));
-const rateChart = computed<ChartConfiguration<"bar">>(() => ({
-  type: "bar",
-  data: { labels: budgetChart.value.data.labels, datasets: [{ label: "Taux d'épargne", data: d.value!.budgetSeries.rate, backgroundColor: d.value!.budgetSeries.rate.map((r) => (r ?? 0) < 0 ? PALETTE[4] : theme.accent) }] },
-  options: { plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => pct(c.parsed.y) } } }, scales: { y: { ticks: { callback: pctTick }, min: -1, max: 1 } } },
+
+const rateSeries = computed(() => [{ name: "Taux d'épargne", data: d.value!.budgetSeries.rate }]);
+const rateOptions = computed<ApexOptions>(() => ({
+  colors: [({ value }: { value: number }) => (value < 0 ? PALETTE[4] : theme.accent)],
+  xaxis: { categories: budgetMois.value },
+  yaxis: { min: -1, max: 1, labels: { formatter: pctTick } },
+  tooltip: { y: { formatter: (v: number) => pct(v) } },
+  legend: { show: false },
 }));
 </script>
 
@@ -103,10 +107,10 @@ const rateChart = computed<ChartConfiguration<"bar">>(() => ({
     </div>
 
     <div class="grid c2 mt-3">
-      <div class="card"><h3>Évolution du patrimoine</h3><Chart :config="nwChart" /></div>
-      <div class="card"><h3>Répartition actuelle</h3><Chart :config="classChart" /></div>
-      <div class="card"><h3>Revenus vs dépenses</h3><Chart :config="budgetChart" /></div>
-      <div class="card"><h3>Taux d'épargne mensuel</h3><Chart :config="rateChart" /></div>
+      <div class="card"><h3>Évolution du patrimoine</h3><ApexChart type="area" :series="nwSeries" :options="nwOptions" zoom /></div>
+      <div class="card"><h3>Répartition actuelle</h3><ApexChart v-if="classSeries.length" type="donut" :series="classSeries" :options="classOptions" /></div>
+      <div class="card"><h3>Revenus vs dépenses</h3><ApexChart type="bar" :series="budgetSeries" :options="budgetOptions" /></div>
+      <div class="card"><h3>Taux d'épargne mensuel</h3><ApexChart type="bar" :series="rateSeries" :options="rateOptions" /></div>
     </div>
   </div>
 </template>

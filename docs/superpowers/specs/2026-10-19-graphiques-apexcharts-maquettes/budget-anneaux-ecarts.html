@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Budget — anneaux et écarts</title>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.54.1/dist/apexcharts.min.js"></script>
+<style>
+  :root { --bg:#f8fafd; --panel:#fff; --line:#e1e3e1; --outline:#c4c7c5; --text:#1f1f1f; --muted:#5e5e5e; --accent:#0b57d0; --accent-soft:#d3e3fd; --pos:#146c2e; --neg:#b3261e; --surface-2:#f0f4f9; }
+  body { margin:0; padding:28px 32px 60px; font:14px/1.5 Roboto, "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  h1 { font-size:22px; font-weight:500; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 20px; max-width:950px; }
+  .row { border:1px solid var(--line); border-radius:20px; padding:16px; margin-bottom:24px; cursor:pointer; background:#fbfcfe; }
+  .row.selected { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft); }
+  .tagline { font-size:13px; color:var(--muted); margin:0 0 12px; }
+  .tagline b { display:inline-block; width:22px; height:22px; border-radius:7px; background:var(--accent-soft); color:#041e49; text-align:center; line-height:22px; margin-right:6px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; min-width:0; }
+  h2.card-h { font-size:16px; font-weight:500; margin:0 0 14px; }
+  .help { font-size:12px; color:var(--muted); }
+  .pos { color:var(--pos); } .neg { color:var(--neg); } .muted { color:var(--muted); }
+  .card-title { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:4px 12px; margin-bottom:10px; }
+  /* réplique de style.css */
+  .donut-wrap { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .donut { position: relative; width: 176px; height: 176px; border-radius: 50%; flex-shrink: 0; }
+  .donut .hole { position: absolute; inset: 26px; border-radius: 50%; background: var(--panel); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .donut-legend { flex: 1 1 200px; min-width: 200px; display: flex; flex-direction: column; }
+  .donut-legend > div { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 38px; gap: 8px; align-items: center; padding: 4px 0; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .donut-legend .sw { width: 10px; height: 10px; border-radius: 3px; }
+  .donut-legend .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .diverge { display: flex; flex-direction: column; gap: 3px; }
+  .diverge > div { display: grid; grid-template-columns: minmax(80px, 140px) minmax(0, 1fr) minmax(0, 1fr) 58px; align-items: center; font-size: 12px; height: 20px; }
+  .diverge .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); padding-right: 8px; }
+  .diverge .l { display: flex; justify-content: flex-end; height: 12px; border-right: 1px solid var(--outline); } .diverge .l i { background: var(--pos); border-radius: 3px 0 0 3px; }
+  .diverge .r { display: flex; height: 12px; } .diverge .r i { background: var(--neg); border-radius: 0 3px 3px 0; }
+  .diverge .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  /* version ApexCharts : anneau ApexCharts + même légende détaillée */
+  .ax-wrap { display:flex; gap:16px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .ax-donut { width:200px; flex-shrink:0; }
+</style>
+</head>
+<body>
+<h1>Budget : anneaux et écarts au budget</h1>
+<p class="sub">Mêmes données fictives (octobre). En haut, la version actuelle faite main ; en bas, ApexCharts dans le style C. Dans la version ApexCharts, je garde la légende détaillée (montant + %) qui est plus lisible que la légende standard. Survolez les parts et les barres. Cliquez sur la ligne que vous préférez.</p>
+
+<div class="row" data-choice="main" onclick="toggleSelect(this)">
+  <p class="tagline"><b>1</b>Actuel : fait main</p>
+  <div class="grid">
+    <div class="card"><h2 class="card-h">Répartition des dépenses</h2><div class="donut-wrap" id="h-exp"></div></div>
+    <div class="card"><h2 class="card-h">Répartition des revenus</h2><div class="donut-wrap" id="h-inc"></div></div>
+    <div class="card"><div class="card-title"><h2 class="card-h" style="margin:0">Écart au budget</h2><div class="help" style="display:flex;gap:14px"><span class="pos">← sous le budget</span><span class="neg">au-dessus →</span></div></div><div class="diverge" id="h-dv"></div></div>
+  </div>
+</div>
+
+<div class="row" data-choice="apex" onclick="toggleSelect(this)">
+  <p class="tagline"><b>2</b>ApexCharts, style C</p>
+  <div class="grid">
+    <div class="card"><h2 class="card-h">Répartition des dépenses</h2><div class="ax-wrap"><div class="ax-donut" id="a-exp"></div><div class="donut-legend" id="a-exp-l"></div></div></div>
+    <div class="card"><h2 class="card-h">Répartition des revenus</h2><div class="ax-wrap"><div class="ax-donut" id="a-inc"></div><div class="donut-legend" id="a-inc-l"></div></div></div>
+    <div class="card"><div class="card-title"><h2 class="card-h" style="margin:0">Écart au budget</h2><div class="help" style="display:flex;gap:14px"><span class="pos">← sous le budget</span><span class="neg">au-dessus →</span></div></div><div id="a-dv"></div></div>
+  </div>
+</div>
+
+<script>
+  const PALETTE = ["#0b57d0", "#1e8e3e", "#e37400", "#9334e6", "#d93025", "#12a4af", "#80868b"];
+  const eur0 = (v) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
+  const sgn = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + eur0(Math.abs(v));
+  const exps = [{ name: "Logement", v: 850 }, { name: "Courses", v: 412 }, { name: "Transports", v: 186 }, { name: "Loisirs", v: 154 }, { name: "Restaurants", v: 128 }, { name: "Abonnements", v: 64 }, { name: "Santé", v: 38 }, { name: "Cadeaux", v: 25 }];
+  const incs = [{ name: "Salaire", v: 2650 }, { name: "Prime", v: 200 }, { name: "Remboursements", v: 46 }];
+  const budgets = { Logement: 850, Courses: 380, Transports: 220, Loisirs: 120, Restaurants: 150, Abonnements: 64, Santé: 60 };
+
+  function donut(items) {
+    const sorted = items.filter((x) => x.v > 0).sort((a, c) => c.v - a.v);
+    const total = sorted.reduce((s, x) => s + x.v, 0);
+    const rest = sorted.slice(6).reduce((s, x) => s + x.v, 0);
+    const list = [...sorted.slice(0, 6), ...(rest ? [{ name: "Autres", v: rest }] : [])];
+    const segs = list.map((s, i) => ({ ...s, color: PALETTE[i % PALETTE.length], p: s.v / total }));
+    let acc = 0;
+    const conic = "conic-gradient(" + segs.map((s) => { const a = acc * 100; acc += s.p; return `${s.color} ${a}% ${acc * 100}%`; }).join(",") + ")";
+    return { segs, conic, total };
+  }
+  const legend = (segs) => segs.map((s) => `<div><span class="sw" style="background:${s.color}"></span><span class="nm">${s.name}</span><span style="font-weight:500">${eur0(s.v)}</span><span class="muted" style="text-align:right">${Math.round(s.p * 100)} %</span></div>`).join("");
+
+  // 1 — fait main
+  for (const [id, items] of [["h-exp", exps], ["h-inc", incs]]) {
+    const d = donut(items);
+    document.getElementById(id).innerHTML = `<div class="donut" style="background:${d.conic}"><div class="hole"><span class="help">Total</span><span style="font-size:20px;font-weight:500;font-variant-numeric:tabular-nums">${eur0(d.total)}</span></div></div><div class="donut-legend">${legend(d.segs)}</div>`;
+  }
+  const dv = exps.filter((x) => budgets[x.name] != null).map((x) => ({ name: x.name, d: x.v - budgets[x.name] })).sort((a, c) => c.d - a.d);
+  const dmax = Math.max(...dv.map((x) => Math.abs(x.d)), 1);
+  document.getElementById("h-dv").innerHTML = dv.map((x) => {
+    const lw = x.d < 0 ? (-x.d / dmax) * 100 : 0, rw = x.d > 0 ? (x.d / dmax) * 100 : 0, tone = x.d > 0 ? "neg" : x.d < 0 ? "pos" : "";
+    return `<div><span class="nm">${x.name}</span><div class="l"><i style="width:${lw}%"></i></div><div class="r"><i style="width:${rw}%"></i></div><span class="v ${tone}">${sgn(x.d)}</span></div>`;
+  }).join("");
+
+  // 2 — ApexCharts
+  const font = "Roboto, 'Segoe UI', sans-serif";
+  for (const [id, items] of [["a-exp", exps], ["a-inc", incs]]) {
+    const d = donut(items);
+    document.getElementById(id + "-l").innerHTML = legend(d.segs);
+    new ApexCharts(document.getElementById(id), {
+      chart: { type: "donut", height: 210, fontFamily: font, animations: { enabled: true, easing: "easeinout", speed: 700 } },
+      series: d.segs.map((s) => s.v), labels: d.segs.map((s) => s.name), colors: d.segs.map((s) => s.color),
+      legend: { show: false }, dataLabels: { enabled: false }, stroke: { width: 3, colors: ["#fff"] },
+      states: { hover: { filter: { type: "darken", value: .9 } } },
+      plotOptions: { pie: { expandOnClick: true, donut: { size: "70%", labels: { show: true,
+        name: { fontSize: "12px", color: "#5e5e5e", offsetY: -4 },
+        value: { fontSize: "20px", fontWeight: 500, color: "#1f1f1f", offsetY: 4, formatter: (v) => eur0(Number(v)) },
+        total: { show: true, label: "Total", fontSize: "12px", color: "#5e5e5e", formatter: () => eur0(d.total) } } } } },
+      tooltip: { y: { formatter: (v) => `${eur0(v)} · ${Math.round(v / d.total * 100)} %` } },
+    }).render();
+  }
+  new ApexCharts(document.getElementById("a-dv"), {
+    chart: { type: "bar", height: Math.max(dv.length * 30 + 30, 160), fontFamily: font, toolbar: { show: false }, animations: { enabled: true, easing: "easeinout", speed: 700 } },
+    series: [{ name: "Écart", data: dv.map((x) => x.d) }],
+    xaxis: { categories: dv.map((x) => x.name), labels: { show: false }, axisBorder: { show: false }, axisTicks: { show: false }, min: -dmax * 1.35, max: dmax * 1.35 },
+    yaxis: { labels: { style: { colors: "#5e5e5e", fontSize: "12px" }, maxWidth: 120 } },
+    colors: [({ value }) => value > 0 ? "#b3261e" : "#146c2e"],
+    plotOptions: { bar: { horizontal: true, barHeight: "55%", borderRadius: 4, borderRadiusApplication: "end", dataLabels: { position: "top" } } },
+    dataLabels: { enabled: true, formatter: sgn, offsetX: 0, textAnchor: "start", style: { fontSize: "12px", fontWeight: 500, colors: ["#1f1f1f"] } },
+    grid: { borderColor: "#eceeee", strokeDashArray: 4, xaxis: { lines: { show: false } }, yaxis: { lines: { show: false } }, padding: { right: 10 } },
+    annotations: { xaxis: [{ x: 0, borderColor: "#c4c7c5", strokeDashArray: 0 }] },
+    tooltip: { y: { formatter: (v, { dataPointIndex }) => { const x = dv[dataPointIndex]; const b = budgets[x.name]; return `${sgn(v)} (budget ${eur0(b)}, réel ${eur0(b + v)})`; } } },
+    legend: { show: false },
+  }).render();
+</script>
+</body>
+</html>
