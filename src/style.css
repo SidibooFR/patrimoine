@@ -79,6 +79,11 @@ th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: l
 th { background: var(--panel); color: var(--muted); font-weight: 500; font-size: 12.5px; position: sticky; top: 0; z-index: 1; white-space: nowrap; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 tr.total td { font-weight: 600; background: var(--surface-2); }
+/* Budget : mois au-dessus du budget (dépense) ou en dessous (revenu, épargne) ; barre du suivi du mois */
+td.over { background: var(--neg-soft); color: #601410; }
+td.under { background: var(--warn-soft); color: #5c2c00; }
+.track-bar { min-width: 140px; width: 22%; }
+.track-bar md-linear-progress { display: block; }
 tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--surface-2); }
 .table-wrap { overflow: auto; max-height: calc(100vh - 260px); }
 td.ellipsis { max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -116,6 +121,7 @@ md-linear-progress.done, md-linear-progress.ok { --md-linear-progress-active-ind
 md-linear-progress.late, md-linear-progress.low { --md-linear-progress-active-indicator-color: var(--warn); }
 md-linear-progress.gauge { --md-linear-progress-track-height: 8px; --md-linear-progress-active-indicator-height: 8px; --md-linear-progress-track-color: var(--surface-2); --md-linear-progress-active-indicator-color: var(--pos); }
 md-linear-progress.gauge.low { --md-linear-progress-active-indicator-color: var(--warn); }
+md-linear-progress.over { --md-linear-progress-active-indicator-color: var(--neg); }
 md-circular-progress.inline { --md-circular-progress-size: 20px; }
 md-icon-button.danger { --md-icon-button-icon-color: var(--neg); --md-icon-button-hover-icon-color: var(--neg); --md-icon-button-focus-icon-color: var(--neg); --md-icon-button-pressed-icon-color: var(--neg); color: var(--neg); }
 .toolbar md-outlined-text-field, .toolbar md-outlined-select, .card-title md-outlined-text-field, .card-title md-outlined-select { --md-outlined-field-top-space: 8px; --md-outlined-field-bottom-space: 8px; }
