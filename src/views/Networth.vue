@@ -4,9 +4,9 @@ import { onMounted, ref, computed } from "vue";
 import { api } from "../lib/api";
 import { eur0, pct, sign, month, thisMonth, date } from "../lib/format";
 import { guard, notify } from "../lib/toast";
-import Chart from "../components/Chart.vue";
-import type { ChartConfiguration } from "chart.js";
-import { CLASS_COLORS, eurTick, eurTip } from "../lib/charts";
+import ApexChart from "../components/ApexChart.vue";
+import type { ApexOptions } from "apexcharts";
+import { CLASS_COLORS, PALETTE } from "../lib/charts";
 
 const nw = ref<Awaited<ReturnType<typeof api.networth>>>();
 const suggested = ref<Record<number, { balance: number; date: string }>>({});
@@ -45,11 +45,11 @@ const draftTotal = computed(() => Object.values(draft.value).reduce((s, v) => s 
 const rowsDesc = computed(() => [...(nw.value?.rows ?? [])].reverse());
 const classes = computed(() => Object.keys(nw.value?.rows[0]?.byClass ?? {}));
 
-const chart = computed<ChartConfiguration<"bar">>(() => ({
-  type: "bar",
-  data: { labels: nw.value!.rows.map((r) => month(r.month)),
-    datasets: classes.value.map((c) => ({ label: c, data: nw.value!.rows.map((r) => (r.total === null ? null : r.byClass[c])), backgroundColor: CLASS_COLORS[c] ?? "#999", stack: "a" })) },
-  options: { plugins: { tooltip: { callbacks: { label: eurTip } } }, scales: { x: { stacked: true }, y: { stacked: true, ticks: { callback: eurTick } } } },
+const series = computed(() => classes.value.map((c) => ({ name: c, data: nw.value!.rows.map((r) => (r.total === null ? null : r.byClass[c])) })));
+const options = computed<ApexOptions>(() => ({
+  chart: { stacked: true },
+  colors: classes.value.map((c) => CLASS_COLORS[c] ?? PALETTE[6]),
+  xaxis: { categories: nw.value!.rows.map((r) => month(r.month)) },
 }));
 </script>
 
@@ -75,7 +75,7 @@ const chart = computed<ChartConfiguration<"bar">>(() => ({
       </div>
       <p class="help">Les comptes d'investissement (crypto, actions) ne sont pas dans les exports : reprends la valeur affichée par l'application de ton courtier.</p>
     </div>
-    <div class="card"><h3>Répartition par classe d'actif</h3><Chart :config="chart" :height="360" /></div>
+    <div class="card"><h3>Répartition par classe d'actif</h3><ApexChart type="bar" :series="series" :options="options" :height="360" /></div>
   </div>
 
   <div v-if="nw" class="card pad0 mt-3">
