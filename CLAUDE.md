@@ -15,6 +15,7 @@ npm test                 # vitest run
 npx vitest run tests/core.test.ts -t "xirr"   # single file / single test by name
 npm run package          # Windows installer + portable exe + MCP zip in release/
 node scripts/run-ts.mjs <script.ts> [args]   # run a project TS script (esbuild bundle on the fly)
+npm run seed:dev         # (re)create the `npm run dev` DB with fictitious data (scripts/seed-dev.ts, --months/--seed/--force)
 ```
 
 CI (`.github/workflows/ci.yml`) runs typecheck → test → build. Tests needing real bank exports in `tests/fixtures/` (not versioned) are skipped via `describe.skipIf(!HAS_FX)`.

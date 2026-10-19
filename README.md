@@ -87,6 +87,12 @@ Une base existante (version 1.0) est mise à niveau automatiquement à l'ouvertu
 
 Pour la reconstruire depuis des exports : `node scripts/run-ts.mjs scripts/seed-data.ts <dossier des exports> <fichier.sqlite>`.
 
+### Base de développement fictive
+
+`npm run seed:dev` (re)crée la base utilisée par `npm run dev` (`PATRIMOINE_DB`, sinon `<tmpdir>/patrimoine-dev.sqlite`) avec des données inventées, sans aucun export : 18 mois de relevés sur les comptes par défaut (salaire, loyer et part de la colocataire, abonnements dont une hausse de tarif, crédit soldé, courses, sorties, vacances), remboursements rapprochés ou non, quelques opérations sans catégorie et une catégorie bancaire non reconnue, portefeuille ETF + crypto avec historique de cours simulé (achats programmés, une vente, des frais), LEP et compte rémunéré, budgets, relevés de patrimoine mensuels et objectifs. Les données sont déterministes et datées par rapport au jour courant.
+
+Options : `npm run seed:dev -- [fichier.sqlite] [--months 18] [--seed 42]`. Le script refuse d'écraser la base de l'application (`%APPDATA%\Patrimoine\patrimoine.sqlite`) sauf avec `--force`. Les cours étant simulés, éviter « Actualiser les cours » si l'on veut garder des positions cohérentes avec l'historique.
+
 ## Connexion à Claude (MCP)
 
 1. `npm run build` (ou application installée).
