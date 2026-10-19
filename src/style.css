@@ -79,9 +79,24 @@ th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: l
 th { background: var(--panel); color: var(--muted); font-weight: 500; font-size: 12.5px; position: sticky; top: 0; z-index: 1; white-space: nowrap; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 tr.total td { font-weight: 600; background: var(--surface-2); }
-/* Budget : mois au-dessus du budget (dépense) ou en dessous (revenu, épargne) ; barre du suivi du mois */
+/* Budget : grille catégories × mois */
+.budget-grid thead tr.groups th { top: 0; height: 30px; padding: 6px 12px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; border-bottom: 0; }
+.budget-grid thead tr:not(.groups) th { top: 30px; }
+.budget-grid th:first-child, .budget-grid td:first-child { position: sticky; left: 0; z-index: 2; background: var(--panel); min-width: 200px; }
+.budget-grid thead th:first-child { z-index: 3; }
+.budget-grid tr.group td { background: var(--surface-2); font-weight: 500; color: var(--text); }
+.budget-grid tr.total td:first-child, .budget-grid tr.group td:first-child { background: var(--surface-2); }
+.budget-grid tr.total.grand td { border-top: 2px solid var(--line); }
+.budget-grid tbody tr:not(.group):not(.total):hover td { background: var(--hover); }
+.budget-grid th.cur, .budget-grid td.cur { background: var(--accent-tint); }
+.budget-grid th.cur { color: var(--accent); }
+.budget-grid th.future, .budget-grid td.future { color: var(--muted); opacity: .7; }
+.budget-grid td.gap { font-weight: 500; }
+/* Mois au-dessus du budget (dépense) ou en dessous (revenu, épargne) ; prime sur le mois courant */
 td.over { background: var(--neg-soft); color: #601410; }
 td.under { background: var(--warn-soft); color: #5c2c00; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--line); vertical-align: -2px; margin-right: 6px; }
 .track-bar { min-width: 140px; width: 22%; }
 .track-bar md-linear-progress { display: block; }
 /* Budget : « à prévoir chaque mois » */

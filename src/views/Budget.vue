@@ -61,13 +61,22 @@ const autoCount = computed(() => b.value ? b.value.rows.filter((r) => r.source =
 
 /** Mois terminé (passé) pour l'année affichée. */
 const monthDone = (i: number) => year.value < curYear || (year.value === curYear && i < curMonth);
-/** Surligne un mois au-dessus du budget (dépense) ou, une fois le mois terminé, en dessous (revenu, épargne). */
+const isCur = (i: number) => year.value === curYear && i === curMonth;
+const isFuture = (i: number) => year.value > curYear || (year.value === curYear && i > curMonth);
+/** Surligne un mois au-dessus du budget (dépense) ou, une fois le mois terminé, en dessous (revenu, épargne) ; marque le mois courant et les mois à venir. */
 function cellClass(r: BudgetRow, i: number) {
   const v = r.months[i];
-  if (r.budget === null) return { muted: v === 0 };
-  if (r.kind === "Dépense") return { over: v > r.budget, muted: v === 0 };
-  return { under: monthDone(i) && v < r.budget, muted: v === 0 };
+  const base = { muted: v === 0, cur: isCur(i), future: isFuture(i) };
+  if (r.budget === null) return base;
+  if (r.kind === "Dépense") return { ...base, over: v > r.budget };
+  return { ...base, under: monthDone(i) && v < r.budget };
 }
+const GROUP_LABEL: Record<string, string> = { Revenu: "Revenus", Dépense: "Dépenses", Épargne: "Épargne & investissements placés" };
+const GROUP_TOTAL: Record<string, string> = { Revenu: "Total revenus", Dépense: "Total dépenses", Épargne: "Épargne placée" };
+const kindTotals = (kind: string) => (kind === "Revenu" ? b.value!.totals.income : kind === "Dépense" ? b.value!.totals.expense : b.value!.totals.savings);
+const kindPlan = (kind: string) => (kind === "Revenu" ? b.value!.plan.income : kind === "Dépense" ? b.value!.plan.expense : b.value!.plan.savings);
+const kindYear = (kind: string) => (kind === "Revenu" ? b.value!.yearTotals.income : kind === "Dépense" ? b.value!.yearTotals.expense : b.value!.yearTotals.savings);
+const gapText = (g: number | null) => (g === null ? "–" : (g > 0 ? "+" : "") + eur0(g));
 
 // ---------------------------------------------------------------- suivi du mois
 const monthGroups = computed(() => {
@@ -208,26 +217,55 @@ const untrackedTitle = computed(() => m.value ? m.value.untracked.map((u) => `${
 
   <div v-if="b" class="card pad0">
     <div class="table-wrap">
-      <table>
-        <thead><tr><th>Catégorie</th><th class="num" style="background:var(--edit)">Budget / mois</th><th v-for="(mo, i) in MONTHS" :key="mo" class="num" :style="i === curMonth && year === curYear ? 'color:var(--accent)' : ''">{{ mo }}</th><th class="num">Total</th><th class="num">Moy. / mois</th><th class="num">Écart</th></tr></thead>
+      <table class="budget-grid">
+        <thead>
+          <tr class="groups">
+            <th></th>
+            <th colspan="3" class="num">Par mois : prévu vs réel</th>
+            <th colspan="12" class="num">Réel {{ year }}, mois par mois</th>
+            <th class="num">Année</th>
+          </tr>
+          <tr>
+            <th>Catégorie</th>
+            <th class="num" style="background:var(--edit)" title="Montant mensuel prévu : ta saisie, ou le scénario suivi (italique)">Budget</th>
+            <th class="num" :title="`Réel moyen par mois sur ${b.monthsWithData} mois avec des données`">Moy. réelle</th>
+            <th class="num" title="Écart entre le budget et la moyenne réelle. Positif = mieux que prévu : dépense en dessous du budget, revenu ou épargne au-dessus.">Écart</th>
+            <th v-for="(mo, i) in MONTHS" :key="mo" class="num" :class="{ cur: isCur(i), future: isFuture(i) }" :title="isCur(i) ? 'Mois en cours' : isFuture(i) ? 'Mois à venir' : ''">{{ mo }}</th>
+            <th class="num">Total</th>
+          </tr>
+        </thead>
         <tbody>
           <template v-for="g in groupsShown" :key="g.kind">
-            <tr><td colspan="17" style="background:var(--surface-2);font-weight:500;color:var(--text)">{{ g.kind === "Revenu" ? "Revenus" : g.kind === "Dépense" ? "Dépenses" : "Épargne & investissements placés" }}</td></tr>
+            <tr class="group"><td colspan="17">{{ GROUP_LABEL[g.kind] }}</td></tr>
             <tr v-for="r in g.rows" :key="r.category_id">
               <td>{{ r.name }} <span v-if="r.refunded" class="tag ok" :title="`Remboursements rapprochés : ${eur0(r.refunded)} sur l'année (onglet Remboursements)`">↺ {{ eur0(r.refunded) }}</span></td>
-              <td class="num"><input class="cell" :class="{ auto: r.source === 'auto' }" type="number" step="10" :value="r.source === 'manuel' ? r.budget : ''" :placeholder="r.source === 'auto' ? String(r.budget) : '–'" :title="r.source === 'auto' ? `Automatique (scénario ${scenarioLabel}) : saisis un montant pour le fixer` : ''" @change="setBudget(r, ($event.target as HTMLInputElement).value)" /></td>
+              <td class="num"><input class="cell" :class="{ auto: r.source === 'auto' }" type="number" step="10" :value="r.source === 'manuel' ? r.budget : ''" :placeholder="r.source === 'auto' ? String(r.budget) : '–'" :title="r.source === 'auto' ? `Automatique (scénario ${scenarioLabel}) : saisis un montant pour le fixer` : 'Budget mensuel prévu'" @change="setBudget(r, ($event.target as HTMLInputElement).value)" /></td>
+              <td class="num">{{ eur0(r.average) }}</td>
+              <td class="num gap" :class="sign(r.gap)">{{ gapText(r.gap) }}</td>
               <td v-for="(v, i) in r.months" :key="i" class="num" :class="cellClass(r, i)">{{ v === 0 ? "–" : eur0(v) }}</td>
-              <td class="num"><b>{{ eur0(r.total) }}</b></td><td class="num">{{ eur0(r.average) }}</td>
-              <td class="num" :class="sign(r.gap)">{{ r.gap === null ? "–" : eur0(r.gap) }}</td>
+              <td class="num"><b>{{ eur0(r.total) }}</b></td>
+            </tr>
+            <tr class="total">
+              <td>{{ GROUP_TOTAL[g.kind] }}</td>
+              <td class="num" title="Somme des budgets">{{ kindPlan(g.kind) ? eur0(kindPlan(g.kind)) : "" }}</td>
+              <td class="num">{{ eur0(kindYear(g.kind) / b.monthsWithData) }}</td>
+              <td class="num gap" :class="kindPlan(g.kind) ? sign(g.kind === 'Dépense' ? kindPlan(g.kind) - kindYear(g.kind) / b.monthsWithData : kindYear(g.kind) / b.monthsWithData - kindPlan(g.kind)) : ''">{{ kindPlan(g.kind) ? gapText(g.kind === "Dépense" ? kindPlan(g.kind) - kindYear(g.kind) / b.monthsWithData : kindYear(g.kind) / b.monthsWithData - kindPlan(g.kind)) : "–" }}</td>
+              <td v-for="(v, i) in kindTotals(g.kind)" :key="i" class="num" :class="{ cur: isCur(i), future: isFuture(i), pos: g.kind === 'Revenu', neg: g.kind === 'Dépense' }">{{ eur0(v) }}</td>
+              <td class="num">{{ eur0(kindYear(g.kind)) }}</td>
             </tr>
           </template>
-          <tr class="total"><td>Total revenus</td><td class="num" title="Somme des budgets">{{ b.plan.income ? eur0(b.plan.income) : "" }}</td><td v-for="(v, i) in b.totals.income" :key="i" class="num pos">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.income) }}</td><td class="num">{{ eur0(b.yearTotals.income / b.monthsWithData) }}</td><td></td></tr>
-          <tr class="total"><td>Total dépenses</td><td class="num" title="Somme des budgets">{{ b.plan.expense ? eur0(b.plan.expense) : "" }}</td><td v-for="(v, i) in b.totals.expense" :key="i" class="num neg">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.expense) }}</td><td class="num">{{ eur0(b.yearTotals.avgExpense) }}</td><td></td></tr>
-          <tr class="total"><td>Épargne placée</td><td class="num" title="Somme des budgets">{{ b.plan.savings ? eur0(b.plan.savings) : "" }}</td><td v-for="(v, i) in b.totals.savings" :key="i" class="num">{{ eur0(v) }}</td><td class="num">{{ eur0(b.yearTotals.savings) }}</td><td></td><td></td></tr>
-          <tr class="total"><td>Reste</td><td class="num" :class="sign(b.plan.remaining)" title="Revenus − dépenses budgétés">{{ b.plan.income ? eur0(b.plan.remaining) : "" }}</td><td v-for="(v, i) in b.totals.remaining" :key="i" class="num" :class="sign(v)">{{ eur0(v) }}</td><td class="num" :class="sign(b.yearTotals.remaining)">{{ eur0(b.yearTotals.remaining) }}</td><td></td><td></td></tr>
-          <tr class="total"><td>Taux d'épargne</td><td class="num" :class="sign(b.plan.rate)" title="Taux d'épargne prévu">{{ b.plan.rate === null ? "" : pct(b.plan.rate, 0) }}</td><td v-for="(v, i) in b.totals.rate" :key="i" class="num" :class="sign(v)">{{ pct(v, 0) }}</td><td class="num" :class="sign(b.yearTotals.rate)">{{ pct(b.yearTotals.rate) }}</td><td></td><td></td></tr>
+          <tr class="total grand"><td title="Revenus − dépenses (l'épargne placée n'est pas déduite : elle fait partie du reste)">Reste (revenus − dépenses)</td><td class="num" :class="sign(b.plan.remaining)" title="Prévu : revenus − dépenses budgétés">{{ b.plan.income ? eur0(b.plan.remaining) : "" }}</td><td class="num" :class="sign(b.yearTotals.remaining)">{{ eur0(b.yearTotals.remaining / b.monthsWithData) }}</td><td class="num"></td><td v-for="(v, i) in b.totals.remaining" :key="i" class="num" :class="[sign(v), { cur: isCur(i), future: isFuture(i) }]">{{ eur0(v) }}</td><td class="num" :class="sign(b.yearTotals.remaining)">{{ eur0(b.yearTotals.remaining) }}</td></tr>
+          <tr class="total grand"><td>Taux d'épargne</td><td class="num" :class="sign(b.plan.rate)" title="Taux d'épargne prévu">{{ b.plan.rate === null ? "" : pct(b.plan.rate, 0) }}</td><td class="num" :class="sign(b.yearTotals.rate)">{{ pct(b.yearTotals.rate, 0) }}</td><td class="num"></td><td v-for="(v, i) in b.totals.rate" :key="i" class="num" :class="[sign(v), { cur: isCur(i), future: isFuture(i) }]">{{ pct(v, 0) }}</td><td class="num" :class="sign(b.yearTotals.rate)">{{ pct(b.yearTotals.rate) }}</td></tr>
         </tbody>
       </table>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--edit)"></i>Budget saisi</span>
+      <span v-if="b.scenario"><i class="sw" style="background:var(--accent-tint)"></i>Budget automatique ({{ scenarioLabel }})</span>
+      <span><i class="sw" style="background:var(--neg-soft)"></i>Mois au-dessus du budget (dépense)</span>
+      <span><i class="sw" style="background:var(--warn-soft)"></i>Mois terminé sous le budget (revenu, épargne)</span>
+      <span v-if="year === curYear"><i class="sw" style="background:var(--accent-tint);border-color:var(--accent)"></i>Mois en cours</span>
+      <span>Écart : <b class="pos">+</b> mieux que prévu, <b class="neg">−</b> moins bien</span>
     </div>
   </div>
 </template>
