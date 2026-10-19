@@ -76,7 +76,7 @@ async function follow() {
         <span class="big">{{ eur0(s.savings) }} <span class="line">/ mois</span></span>
         <span><span class="tag" :class="rateTone(s.rate)">{{ pct(s.rate, 0) }} d'épargne</span></span>
         <span class="line">Dépenses : {{ eur0(s.expense) }} / mois</span>
-        <span v-if="s.key === 'investissement'" class="line">dont bourse &amp; crypto : {{ eur0(s.invest) }} / mois</span>
+        <span class="line" :title="`Somme des budgets proposés pour les catégories d'épargne ; le reste (${eur0(s.savings - s.placed)}) demeure sur le compte courant`">Placé : {{ eur0(s.placed) }} / mois{{ s.key === 'investissement' ? ` · bourse & crypto ${eur0(s.invest)}` : "" }}</span>
         <span v-if="s.goalsMonthly" class="line" :class="{ warn: s.goalsShortfall > 0 }">Objectifs : {{ eur0(s.goalsMonthly) }} / mois{{ s.goalsShortfall > 0 ? ` · il manque ${eur0(s.goalsShortfall)}` : " ✓" }}</span>
       </label>
     </div>

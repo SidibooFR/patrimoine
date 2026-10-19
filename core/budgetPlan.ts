@@ -23,6 +23,8 @@ export interface Scenario {
   rate: number | null;
   /** Somme des montants proposés pour bourse + crypto. */
   invest: number;
+  /** Somme des montants proposés pour toutes les catégories d'épargne (le reste non réparti reste sur le compte courant). */
+  placed: number;
   /** Versements mensuels exigés par les objectifs, et part que le reste du scénario ne couvre pas. */
   goalsMonthly: number;
   goalsShortfall: number;
@@ -32,8 +34,8 @@ export interface Scenario {
 
 export const SCENARIOS: { key: ScenarioKey; label: string; hint: string }[] = [
   { key: "moyenne", label: "Ma moyenne", hint: "12 derniers mois" },
-  { key: "equilibre", label: "Équilibré", hint: "Vise 20 % d'épargne" },
-  { key: "econome", label: "Économe", hint: "+10 pts d'épargne, max 30 %" },
+  { key: "equilibre", label: "Équilibré", hint: "Vise 20 % d'épargne, ou +5 pts" },
+  { key: "econome", label: "Économe", hint: "+10 pts d'épargne" },
   { key: "loisirs", label: "Loisirs", hint: "+15 % de dépenses variables" },
   { key: "investissement", label: "Investissement", hint: "Surplus vers bourse & crypto" },
 ];
@@ -68,8 +70,9 @@ export function buildScenarios(rows: AvgRow[], fixed: string[], goals: GoalTarge
     if (!ok) return 1;
     switch (key) {
       case "moyenne": return 1;
-      case "equilibre": return clamp(kFor(Math.max(t0, 0.20, tGoal)), 0.85, 1);
-      case "econome": case "investissement": return clamp(kFor(Math.max(t0, Math.min(t0 + 0.10, 0.30), tGoal)), 0.75, 1);
+      // Cibles relatives au taux actuel : un bon épargnant (t0 au-dessus de 20 ou 30 %) a quand même des scénarios distincts
+      case "equilibre": return clamp(kFor(Math.max(0.20, t0 + 0.05, tGoal)), 0.85, 1);
+      case "econome": case "investissement": return clamp(kFor(Math.max(t0 + 0.10, tGoal)), 0.75, 1);
       case "loisirs": return clamp(kFor(Math.max(Math.min(t0, 0.10), 0, tGoal)), 1, 1.15);
     }
   };
@@ -106,11 +109,13 @@ export function buildScenarios(rows: AvgRow[], fixed: string[], goals: GoalTarge
     const amounts = R <= 0 ? [] : rows.map((r) => ({ category_id: r.category_id, amount: round10(value.get(r.category_id) ?? 0) })).filter((a) => a.amount > 0);
     const expense = C + k * V;
     const investIds = new Set(savingsRows.filter((r) => isInvest(r.name)).map((r) => r.category_id));
+    const savingsIds = new Set(savingsRows.map((r) => r.category_id));
     return {
       key, label, hint, k,
       income: round2(R), expense: round2(expense), savings: round2(R - expense),
       rate: R > 0 ? (R - expense) / R : null,
       invest: amounts.filter((a) => investIds.has(a.category_id)).reduce((s, a) => s + a.amount, 0),
+      placed: amounts.filter((a) => savingsIds.has(a.category_id)).reduce((s, a) => s + a.amount, 0),
       goalsMonthly: round2(G), goalsShortfall: round2(Math.max(0, G - (R - expense))),
       amounts,
     };
