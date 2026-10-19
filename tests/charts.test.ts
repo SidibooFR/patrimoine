@@ -1,6 +1,4 @@
 import { describe, it, expect } from "vitest";
-// Ordre de typage : sans ceci, vue-tsc type les fichiers de src depuis ce test d'abord et les types de Chart.js divergent (à retirer avec Chart.js, Tâche 6).
-import type {} from "../src/components/Chart.vue";
 import { appearance } from "../src/lib/appearance";
 import { moneyAxis, mergeOptions, styleC } from "../src/lib/charts";
 

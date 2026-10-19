@@ -1,6 +1,5 @@
 /** Apparence de l'interface : couleur principale, police, taille du texte et devise d'affichage. */
 import { reactive } from "vue";
-import { Chart } from "chart.js";
 
 export const DEFAULT_ACCENT = "#0b57d0";
 const LEGACY_ACCENT = "#2f6fed"; // ancien bleu par défaut, remplacé par celui de Material 3
@@ -72,7 +71,6 @@ export function applyAppearance(p: Appearance) {
   root.setProperty("--accent-tint", rgba(p.accent, 0.08));
   const stack = FONTS.find((f) => f.id === p.font)?.stack ?? SANS;
   root.setProperty("--font", stack);
-  Chart.defaults.font.family = stack;
   // Zoom natif sous Electron (mise en page exacte), zoom CSS dans le navigateur de dev.
   if (window.patrimoine?.setZoom) { window.patrimoine.setZoom(p.scale); root.removeProperty("zoom"); } else root.setProperty("zoom", String(p.scale));
   try { localStorage.setItem(CACHE, JSON.stringify(p)); } catch { /* stockage indisponible */ }
