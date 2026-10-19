@@ -52,7 +52,6 @@ async function stopAuto() {
 // ---------------------------------------------------------------- vue du mois : calculs
 const isCur = computed(() => ym.value === curYm);
 const future = computed(() => ym.value > curYm);
-const prevYm = computed(() => shiftYm(ym.value, -1));
 /** Lignes du mois précédent (décembre de l'année d'avant quand on est en janvier). */
 const prevRow = (id: number): BudgetRow | undefined => (mi.value === 0 ? bPrev.value : b.value)?.rows.find((r) => r.category_id === id);
 const prevIdx = computed(() => (mi.value === 0 ? 11 : mi.value - 1));
@@ -69,9 +68,7 @@ const hasPrev = computed(() => pinc.value + pexp.value > 0);
 const rate = computed(() => (inc.value ? (inc.value - exp.value) / inc.value : 0));
 const prate = computed(() => (pinc.value ? (pinc.value - pexp.value) / pinc.value : 0));
 const sumBudget = (kind: string) => b.value ? b.value.rows.filter((r) => r.kind === kind).reduce((s, r) => s + (r.monthBudgets[mi.value] ?? 0), 0) : 0;
-const incB = computed(() => sumBudget("Revenu"));
 const expB = computed(() => sumBudget("Dépense"));
-const savB = computed(() => sumBudget("Épargne"));
 const reste = computed(() => expB.value - exp.value);
 const daysLeft = computed(() => (isCur.value ? daysIn(ym.value) - today + 1 : 0));
 const vs = computed(() => (hasPrev.value ? ` vs ${MONTHS[prevIdx.value]}` : ""));

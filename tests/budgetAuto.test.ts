@@ -149,7 +149,7 @@ describe("budgetPlan : budget automatique", () => {
   });
 
   it("suivi du mois avec budget automatique", async () => {
-    const { store, api, add, history, cat } = await setup();
+    const { api, add, history, cat } = await setup();
     history();
     api.setBudgetScenario("moyenne");
     add("2026-10-10", "Courses", -450);
