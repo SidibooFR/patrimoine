@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792418531.0519438,
-    "seen": 1792418572.9176521,
-    "ast_hash": "82dd0126dbaeb9e67fae511e841ea8ad",
+    "mtime": 1792480466.8423955,
+    "seen": 1792480506.4795167,
+    "ast_hash": "ebc4cce18bdac8da8b1a9122880b89e4",
     "semantic_hash": ""
   },
   "scripts/copy-wasm.mjs": {
@@ -186,9 +186,9 @@
     "semantic_hash": "7c70dfc46352f85f7c08c79bfff1097c"
   },
   "src/App.vue": {
-    "mtime": 1792413859.768953,
-    "seen": 1792417566.0849361,
-    "ast_hash": "eef91e91551e55789ff23b9e1a9a0615",
+    "mtime": 1792480466.8491669,
+    "seen": 1792480506.4795167,
+    "ast_hash": "3b0068426eb9391689584f701f6e4089",
     "semantic_hash": ""
   },
   "src/components/KpiCard.vue": {
@@ -198,9 +198,9 @@
     "semantic_hash": "8eb67370cdae9469258caf19bfff3f91"
   },
   "src/components/Modal.vue": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "596873915aa212d7b71de502f1b234d0",
+    "mtime": 1792480466.8549726,
+    "seen": 1792480506.4795167,
+    "ast_hash": "8143d9f032487761102537adfbbdb227",
     "semantic_hash": ""
   },
   "src/components/PageHeader.vue": {
@@ -252,33 +252,33 @@
     "semantic_hash": "033caadd073f5dffcdbc948ecb32aaf4"
   },
   "src/main.ts": {
-    "mtime": 1792417337.3800576,
-    "seen": 1792417566.0849361,
-    "ast_hash": "ac648d77a8e6df8745b93454c2b8fc45",
+    "mtime": 1792480466.859462,
+    "seen": 1792480506.4795167,
+    "ast_hash": "37aed311456eff0489d8a2ccd446b3fb",
     "semantic_hash": ""
   },
   "src/router.ts": {
-    "mtime": 1792413859.7717214,
-    "seen": 1792417566.0849361,
-    "ast_hash": "855551f41ddf1248e699c32ea63e9f6e",
+    "mtime": 1792480466.8611543,
+    "seen": 1792480506.4795167,
+    "ast_hash": "d4157daa3885817a0a423eb14ccf2371",
     "semantic_hash": ""
   },
   "src/views/Allocation.vue": {
-    "mtime": 1792418972.0197089,
-    "seen": 1792419111.6574657,
-    "ast_hash": "a07fb80840fd892c89949c8f95e98288",
+    "mtime": 1792480466.867503,
+    "seen": 1792480506.4795167,
+    "ast_hash": "ba0259fbbab78c2435d706c16e6feb2d",
     "semantic_hash": ""
   },
   "src/views/Budget.vue": {
-    "mtime": 1792421034.8515997,
-    "seen": 1792421577.372334,
-    "ast_hash": "22345926dac07803f1da40f025af6479",
+    "mtime": 1792480466.8732812,
+    "seen": 1792480506.4795167,
+    "ast_hash": "e0441f96f491692f08587481889e4e7c",
     "semantic_hash": ""
   },
   "src/views/Dashboard.vue": {
-    "mtime": 1792418966.5888195,
-    "seen": 1792419111.6574657,
-    "ast_hash": "6afecf791f2bf402f51e9f7085bf6667",
+    "mtime": 1792480466.8732812,
+    "seen": 1792480506.4795167,
+    "ast_hash": "69ceccb579cbe102cbadb6aa24cc2699",
     "semantic_hash": ""
   },
   "src/views/Envelopes.vue": {
@@ -288,15 +288,15 @@
     "semantic_hash": ""
   },
   "src/views/Goals.vue": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "68eb9f67248f478ddec2c92608e86266",
+    "mtime": 1792480466.8796766,
+    "seen": 1792480506.4795167,
+    "ast_hash": "4bbab88f9aeabcec1254381420dbf975",
     "semantic_hash": ""
   },
   "src/views/Import.vue": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "4fa72c075717d3f9fcb5af5341faafcd",
+    "mtime": 1792480466.8796766,
+    "seen": 1792480506.4795167,
+    "ast_hash": "bb00b0ef5f336e6f7f2e0511e3cdc9aa",
     "semantic_hash": ""
   },
   "src/views/Networth.vue": {
@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "src/views/Portfolio.vue": {
-    "mtime": 1792397492.5011494,
-    "seen": 1792397959.9642107,
-    "ast_hash": "c8ee8f62ff68dad7ef338f08d8ff8851",
+    "mtime": 1792480466.88445,
+    "seen": 1792480506.4795167,
+    "ast_hash": "ea44592e7f15cb9ee069e62794357e32",
     "semantic_hash": ""
   },
   "src/views/Projection.vue": {
@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "src/views/Recurring.vue": {
-    "mtime": 1792413859.8166282,
-    "seen": 1792417566.0849361,
-    "ast_hash": "099b3d85027c0cafa2c7dbca69d0b9f5",
+    "mtime": 1792480480.7754903,
+    "seen": 1792480506.4795167,
+    "ast_hash": "3abd1552a9935397d289e9e3e07fffa6",
     "semantic_hash": ""
   },
   "src/views/Refunds.vue": {
@@ -330,27 +330,27 @@
     "semantic_hash": ""
   },
   "src/views/Rules.vue": {
-    "mtime": 1792397492.5122974,
-    "seen": 1792397959.9642107,
-    "ast_hash": "1bc847d1aa9e6e9c118d284dc0b30682",
+    "mtime": 1792480466.8878908,
+    "seen": 1792480506.4795167,
+    "ast_hash": "3f14acd4c03837d83950a5fce7f04641",
     "semantic_hash": ""
   },
   "src/views/Settings.vue": {
-    "mtime": 1792397492.5122974,
-    "seen": 1792397959.9642107,
-    "ast_hash": "cf2a06ac39369c9e5c5ba40c78944b8f",
+    "mtime": 1792480466.8878908,
+    "seen": 1792480506.4795167,
+    "ast_hash": "a6fb09a75da5eaf333bc397190062be1",
     "semantic_hash": ""
   },
   "src/views/Transactions.vue": {
-    "mtime": 1792413859.8208778,
-    "seen": 1792417566.0849361,
-    "ast_hash": "d67c7e1689b70061610398aacf3e3db3",
+    "mtime": 1792480466.8974853,
+    "seen": 1792480506.4795167,
+    "ast_hash": "a2188dd0e3f4e88ed9914799596c184c",
     "semantic_hash": ""
   },
   "src/views/envelopes/EnvelopeCard.vue": {
-    "mtime": 1792397492.5153556,
-    "seen": 1792397959.9642107,
-    "ast_hash": "5aacd169bfe2740634d2051055ee5151",
+    "mtime": 1792480466.90116,
+    "seen": 1792480506.4795167,
+    "ast_hash": "1a025ad3ec839343a24cfa9b3bf9b1a5",
     "semantic_hash": ""
   },
   "src/views/envelopes/EnvelopeModal.vue": {
@@ -390,27 +390,21 @@
     "semantic_hash": ""
   },
   "src/views/portfolio/OperationsTable.vue": {
-    "mtime": 1792397492.518433,
-    "seen": 1792397959.9642107,
-    "ast_hash": "2acefffefd1419a6b2f6929105e4de82",
+    "mtime": 1792480466.9054387,
+    "seen": 1792480506.4795167,
+    "ast_hash": "ad0fa54e54f661022448b3a9d12b05e2",
     "semantic_hash": ""
   },
   "src/views/portfolio/PositionsTable.vue": {
-    "mtime": 1792397492.518433,
-    "seen": 1792397959.9642107,
-    "ast_hash": "7041a73fdcf6e6b767317c69dbae5ad1",
-    "semantic_hash": ""
-  },
-  "src/views/recurring/RecurringCalendar.vue": {
-    "mtime": 1792397492.5194337,
-    "seen": 1792397959.9642107,
-    "ast_hash": "fb34f58059e84dcfb23897874a0464b5",
+    "mtime": 1792480466.907467,
+    "seen": 1792480506.4795167,
+    "ast_hash": "a8bd1495efedea22f9267a2232993323",
     "semantic_hash": ""
   },
   "src/views/refunds/PayerRulesCard.vue": {
-    "mtime": 1792397492.5194337,
-    "seen": 1792397959.9642107,
-    "ast_hash": "662d35aadf72206074bc7ac7e4e0c00c",
+    "mtime": 1792480466.9133053,
+    "seen": 1792480506.4795167,
+    "ast_hash": "76ce6bc179abd0a73017c9e268755217",
     "semantic_hash": ""
   },
   "src/views/refunds/PickerModal.vue": {
@@ -426,21 +420,21 @@
     "semantic_hash": ""
   },
   "src/views/settings/AccountsCard.vue": {
-    "mtime": 1792397492.5214343,
-    "seen": 1792397959.9642107,
-    "ast_hash": "5a8625c832315ff10e8e9cd6e816b37b",
+    "mtime": 1792480466.9155805,
+    "seen": 1792480506.4795167,
+    "ast_hash": "d850e6053bb34a95249fb5c2b6bc56ac",
     "semantic_hash": ""
   },
   "src/views/settings/AppearanceCard.vue": {
-    "mtime": 1792397492.5214343,
-    "seen": 1792397959.9642107,
-    "ast_hash": "d1d2e1b22b921625d145906833814c3f",
+    "mtime": 1792480466.9155805,
+    "seen": 1792480506.4795167,
+    "ast_hash": "96d1aa42db40d75bacbcc3df08c724a1",
     "semantic_hash": ""
   },
   "src/views/settings/CategoriesCard.vue": {
-    "mtime": 1792397492.5224335,
-    "seen": 1792397959.9642107,
-    "ast_hash": "c0e84283e6636ca45fde61e25e1ddd37",
+    "mtime": 1792480466.9178822,
+    "seen": 1792480506.4795167,
+    "ast_hash": "c523c1cfa5f45101df3a92f1f9f8b061",
     "semantic_hash": ""
   },
   "src/views/settings/McpCard.vue": {
@@ -684,9 +678,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792413859.699904,
-    "seen": 1792417566.0849361,
-    "ast_hash": "b6055899b25a5520f7792159fcd5f2e4",
+    "mtime": 1792480466.8237126,
+    "seen": 1792480506.4795167,
+    "ast_hash": "0ff936ee708e72e369232e2761f519f5",
     "semantic_hash": ""
   },
   "README.md": {
@@ -720,9 +714,9 @@
     "semantic_hash": ""
   },
   "src/views/budget/ScenarioModal.vue": {
-    "mtime": 1792413859.8251693,
-    "seen": 1792417566.0849361,
-    "ast_hash": "250216b54401555fcc63bcb52421f533",
+    "mtime": 1792480466.8992238,
+    "seen": 1792480506.4795167,
+    "ast_hash": "8e56f7fbab84b10d06725ccccbda1ea6",
     "semantic_hash": ""
   },
   "tests/budgetPlan.test.ts": {
