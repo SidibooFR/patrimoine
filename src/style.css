@@ -193,6 +193,8 @@ label.check { display: inline-flex; align-items: center; gap: 8px; cursor: point
 
 /* Boîte de dialogue (md-dialog) */
 md-dialog.modal { width: min(720px, 94vw); max-width: 94vw; max-height: 90vh; }
+/* Fenêtre ouverte : la page derrière ne défile plus (sinon les listes déroulantes ouvertes restent figées) ; la gouttière évite le décalage. */
+html:has(md-dialog.modal[open]) { overflow: hidden; scrollbar-gutter: stable; }
 /* Les libellés flottants des champs md débordent au-dessus du cadre : écarts plus généreux. */
 * + .form { margin-top: 20px; }
 .modal-foot { display: flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%; }
